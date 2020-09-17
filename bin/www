@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 const app = require('../app');
-var debug = require('debug')('hatewait-server:server');
+const debug = require('debug')('hatewait-server:server');
 const http = require('http');
 
 /**

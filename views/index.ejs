@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= HateWait %></title>
+    <title><% title %>></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Capstone Design team no.3</p>
+    <h2>Capstone Design <%= teamNumber%>팀</h2>
     <p>임시 서버를 만들어 봤어요.</p>
+    <table class="table">
+      <thead>
+      <tr>
+        <th><%= teamMember[0]%></th>
+        <th><%= teamMember[1]%></th>
+        <th><%= teamMember[2]%></th>
+      </tr>
+      </thead>
+    </table>
   </body>
 </html>
