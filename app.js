@@ -6,8 +6,19 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const memberRouter = require('./routes/member');
 
 const app = express();
+
+const dbConnection = require('./db/db');
+
+
+dbConnection.query('SHOW TABLES', function(err, result){
+  if (err) throw err;
+  console.log('result: ', result);
+});
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/member', memberRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
