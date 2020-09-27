@@ -1,5 +1,23 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require('mysql');
+
+const dbConnection = mysql.createConnection({
+  host: process.env.DB_HOSTNAME,
+  user: process.env.DB_USERNAME,
+  password : process.env.DB_PASSWORD,
+  database: 'heroku_d1cc8045f99880f'
+});
+
+dbConnection.connect(function(err){
+  if(err) throw err;
+  console.log("MySQL Database is Connected!");
+})
+
+dbConnection.query('SHOW TABLES', function(err, result){
+  if (err) throw err;
+  console.log('result: ', result);
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
