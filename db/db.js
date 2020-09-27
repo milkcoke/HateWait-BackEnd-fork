@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const settings = require('db/settings');
+const settings = require('./settings');
 
 const dbConnection = mysql.createConnection(settings);
 
