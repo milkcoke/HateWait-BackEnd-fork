@@ -8,4 +8,4 @@ dbConnection.connect(function(err){
     console.log("MySQL Database is Connected!");
 });
 
-moudle.exports = dbConnection;
+module.exports = dbConnection;
