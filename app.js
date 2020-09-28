@@ -10,10 +10,10 @@ const customerRouter = require('./routes/customer');
 
 const app = express();
 
-const dbConnection = require('./db/db');
+const db = require('./db/db');
 
-
-dbConnection.query('SHOW TABLES', function(err, result){
+db.disconnectHandleFunction();
+db.dbConnection.query('SHOW TABLES', function(err, result){
   if (err) throw err;
   console.log('result: ', result);
 });
