@@ -6,8 +6,7 @@ router.get('/', function(req, res) {
     dbConnection().query('SELECT * FROM customer', (error, rows) => {
         if (error) {
             res.send(error);
-        }
-        else {
+        } else {
             res.send(rows);
         }
     })
