@@ -9,6 +9,10 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const customerRouter = require('./routes/customer');
 const reactRouter = require('./routes/reactTest');
+
+const session = require('express-session');
+const passport = require('./config/passport');
+
 const app = express();
 // Local host test 시 DB 사용 X
 const dbConnection = require('./db/db')();
@@ -32,11 +36,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+// passport - session connect method!
+app.use(passport.session());
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/customer', customerRouter);
 app.use('/react-test', reactRouter);
 
+
+app.use(function(request, response, next) {
+  // isAuthenticated : 현재 로그인 되어있는지 true, false
+  request.locals.isAuthenticated = request.isAuthenticated();
+  //passport에서 추가하는 항목으로 로그인 되면 session으로 부터 user를 deserialize하여 생성됨.
+  //locals에 담긴 변수는 ejs에서 바로 사용 가능.
+  //로그인된 user 정보를 불러오는데 사용됨.
+  request.locals.currentUser = request.user;
+  next();
+})
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

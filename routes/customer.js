@@ -7,7 +7,7 @@ router.get('/', function(req, res) {
         if (error) {
             res.send(error);
         } else {
-            res.send(rows);
+            res.json(rows);
         }
     })
 });
