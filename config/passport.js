@@ -57,7 +57,7 @@ passport.use('local-login', new LocalStrategy({
                     action : 'login',
                     error_message: 'ID or password is incorrect'})
             }
-            if (user && user.authenticate(password)) {
+            if (row && row.pw == password) {
                 console.log('passport Login Success!');
                 return done(null, row);
             }
