@@ -2,6 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
 const dbConnection = require('../db/db');
 
+console.log('passport 자체가 안되나?');
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
 
