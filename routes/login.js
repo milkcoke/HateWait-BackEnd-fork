@@ -8,6 +8,7 @@ router.post('/members', passport.authenticate('local-login',
     {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
     //로그인 이후 메인 페이지로 이동.
+    console.log('아니 왜 안띄우냐 아 ㄹㅇ');
     response.json('login-trying is completed!');
 });
 
