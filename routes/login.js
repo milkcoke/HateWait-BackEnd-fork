@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
-router.post('/', passport.authenticate('local-login',
+router.post('/members', passport.authenticate('local-login',
     {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
     //로그인 이후 메인 페이지로 이동.
