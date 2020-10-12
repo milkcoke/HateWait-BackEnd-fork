@@ -2,8 +2,8 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-//React use port '4000'
-//Nodejs port '3000' (Proxy)
+//React use port '4000' (Proxy)
+//Main Nodejs  Server port '3000'
 class App extends React.Component {
   constructor(props) {
     super(props);
