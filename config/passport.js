@@ -12,6 +12,7 @@ passport.serializeUser(function(user, done) {
     //메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 성공적으로 진행되었을 때 호출됨
     //done's first parameter: error, not exists error -> null
     // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
+    console.log('serial:' + user);
     done(null, user.id);
 //    user 의 id부분만 세션에 저장한다.
 //    앞으로의 request에서는 user.id가 유저를 식별하는 정보가된다.
@@ -26,6 +27,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(userId, done) {
     let sql = 'SELECT id FROM MEMBER where id=?'
+    console.log('deserialize:' + userId);
     dbConnection().query(sql, [userId], (error, row)=> {
         done(error, user);
     });
@@ -40,10 +42,10 @@ passport.use('local-login', new LocalStrategy({
     passwordField : 'password',
     passRequestToCallback : true
     }, function(request, userId, password, done) {
-        //The simplest form of .query() is .query(sqlString, callback)
+    //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM MEMBER WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
-        dbConnection().query(sql,[userId, password], (error, row)=> {
+        dbConnection().query(sql, [userId, password], (error, row)=> {
             if (error) {
                 console.error(error + 'query 결과 없다.');
                 return done(error);
