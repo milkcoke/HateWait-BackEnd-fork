@@ -49,16 +49,20 @@ passport.use('local-login', new LocalStrategy({
                 return done(error);
             }
             if(row.length === 0) {
-                console.log('ID or password is incorrect');
+                console.log('row : ' + row);
+                console.log("Can't find any id or password");
                 return done(null, false, {
                     action : 'login',
                     error_message: 'ID or password is incorrect'})
             }
-            if (user && user.authenticate(password)) return done(null, row);
+            if (user && user.authenticate(password)) {
+                console.log('passport Login Success!');
+                return done(null, row);
+            }
             else {
                 //여기 해석을 내가해야하는데...
-                // request.flash('userId', row.id);
-                // request.flash('errors', {login : 'id or password is incorrect'});
+                request.flash('userId', row.id);
+                request.flash('errors', {login : 'id or password is incorrect'});
                 return done(null, false);
             }
         })
