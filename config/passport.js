@@ -1,4 +1,3 @@
-
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
 const dbConnection = require('../db/db');
@@ -29,7 +28,7 @@ passport.deserializeUser(function(userId, done) {
     let sql = 'SELECT id FROM MEMBER where id=?'
     console.log('deserialize:' + userId);
     dbConnection().query(sql, [userId], (error, row)=> {
-        done(error, user);
+        done(error, row);
     });
 });
 
@@ -43,7 +42,7 @@ passport.use('local-login', new LocalStrategy({
     passRequestToCallback : true
     }, function(request, userId, password, done) {
     //The simplest form of .query() is .query(sqlString, callback)
-        let sql = 'SELECT * FROM MEMBER WHERE id=? AND pw=?';
+        let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
         console.log('여기 안오냐?');
         dbConnection().query(sql, [userId, password], (error, row)=> {
