@@ -8,7 +8,7 @@ const logger = require('morgan');
 const loginRouter = require('./routes/login');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const customerRouter = require('./routes/customer');
+const memberRouter = require('./routes/member');
 const reactRouter = require('./routes/reactTest');
 
 const session = require('express-session');
@@ -17,13 +17,13 @@ const passport = require('./config/passport');
 const flash = require('connect-flash');
 const app = express();
 // Local host test 시 DB 사용 X
-// const dbConnection = require('./db/db')();
-//
-//
-// dbConnection.query('SHOW TABLES', function(err, result){
-//   if (err) throw err;
-//   console.log('result: ', result);
-// });
+const dbConnection = require('./db/db')();
+
+
+dbConnection.query('SHOW TABLES', function(err, result){
+ if (err) throw err;
+ console.log('result: ', result);
+});
 
 
 
@@ -38,16 +38,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(flash())
+
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
 app.use(passport.session());
+app.use(flash());
 
 app.use('/', indexRouter);
 app.use('/login',loginRouter);
 app.use('/users', usersRouter);
-app.use('/customers', customerRouter);
+app.use('/members', memberRouter);
 app.use('/react-test', reactRouter);
 
 
