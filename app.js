@@ -38,7 +38,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+// secret : 쿠임의 변조를 방지하기 위한 값, 세션 암호화 키
+// resave : always save session?
+// saveUninitialized: before save session, uninitialized state save
+app.use(session({
+    secret : '$%HATEWAIT$%',
+    resave : false,
+    saveUninitialized: true
+    }));
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
