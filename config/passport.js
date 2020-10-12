@@ -25,7 +25,7 @@ passport.serializeUser(function(user, done) {
 //request 마다 db query 를 날려야한다는 단점 존재.
 
 passport.deserializeUser(function(userId, done) {
-    let sql = 'SELECT id FROM CUSTOMER where id=?'
+    let sql = 'SELECT id FROM MEMBER where id=?'
     dbConnection().query(sql, [userId], (error, row)=> {
         done(error, user);
     });
@@ -41,7 +41,7 @@ passport.use('local-login', new LocalStrategy({
     passRequestToCallback : true
     }, function(request, userId, password, done) {
         //The simplest form of .query() is .query(sqlString, callback)
-        let sql = 'SELECT * FROM CUSTOMER WHERE id=? AND password=?';
+        let sql = 'SELECT * FROM MEMBER WHERE id=? AND password=?';
     // The second form .query(sqlString, values, callback) comes when using
         dbConnection().query(sql,[userId, password], (error, row)=> {
             if (error) {
