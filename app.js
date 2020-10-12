@@ -38,6 +38,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// session 옵션 설정
 // secret : 쿠임의 변조를 방지하기 위한 값, 세션 암호화 키
 // resave : always save session?
 // saveUninitialized: before save session, uninitialized state save
@@ -46,6 +48,8 @@ app.use(session({
     resave : false,
     saveUninitialized: true
     }));
+
+
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
@@ -61,11 +65,11 @@ app.use('/react-test', reactRouter);
 
 app.use(function(request, response, next) {
   // isAuthenticated : 현재 로그인 되어있는지 true, false
-  request.locals.isAuthenticated = request.isAuthenticated();
+  response.locals.isAuthenticated = request.isAuthenticated();
   //passport에서 추가하는 항목으로 로그인 되면 session으로 부터 user를 deserialize하여 생성됨.
   //locals에 담긴 변수는 ejs에서 바로 사용 가능.
   //로그인된 user 정보를 불러오는데 사용됨.
-  //request.locals.currentUser = request.user;
+  response.locals.currentUser = request.user;
   next();
 })
 // catch 404 and forward to error handler
