@@ -41,7 +41,7 @@ passport.use('local-login', new LocalStrategy({
     passRequestToCallback : true
     }, function(request, userId, password, done) {
         //The simplest form of .query() is .query(sqlString, callback)
-        let sql = 'SELECT * FROM MEMBER WHERE id=? AND password=?';
+        let sql = 'SELECT * FROM MEMBER WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
         dbConnection().query(sql,[userId, password], (error, row)=> {
             if (error) {
