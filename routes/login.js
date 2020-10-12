@@ -1,6 +1,6 @@
-const passport = require('../config/passport');
 const express = require('express');
 const router = express.Router();
+const passport = require('../config/passport');
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
