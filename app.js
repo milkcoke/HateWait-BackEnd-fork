@@ -13,7 +13,8 @@ const reactRouter = require('./routes/reactTest');
 
 const session = require('express-session');
 const passport = require('./config/passport');
-
+// connect-flash middleware use 'cookie-parser' and 'express-session'
+const flash = require('connect-flash');
 const app = express();
 // Local host test 시 DB 사용 X
 // const dbConnection = require('./db/db')();
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(flash())
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
