@@ -61,6 +61,7 @@ passport.use('local-login', new LocalStrategy({
             }
             else {
                 //여기 해석을 내가해야하는데...
+                console.log('flash 직전');
                 request.flash('userId', row.id);
                 request.flash('errors', {login : 'id or password is incorrect'});
                 return done(null, false);
