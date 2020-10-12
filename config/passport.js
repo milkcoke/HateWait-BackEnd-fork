@@ -45,6 +45,7 @@ passport.use('local-login', new LocalStrategy({
     //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM MEMBER WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
+        console.log('여기 안오냐?');
         dbConnection().query(sql, [userId, password], (error, row)=> {
             if (error) {
                 console.error(error + 'query 결과 없다.');
