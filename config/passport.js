@@ -41,7 +41,7 @@ passport.use('local-login', new LocalStrategy({
     passwordField : 'password',
     passRequestToCallback : true
     }, function(request, userId, password, done) {
-    console.log('Local Strategy Authentication is conducted!')
+    console.log('Local Strategy Authentication is conducted!');
     //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
