@@ -29,7 +29,8 @@ passport.deserializeUser(function(userId, done) {
     let sql = 'SELECT id FROM MEMBER where id=?'
     console.log('deserialize:' + userId);
     dbConnection().query(sql, [userId], (error, row)=> {
-        done(error, row);
+        if (error) done(error, false);
+        else done(null, row);
     });
 });
 
@@ -45,20 +46,19 @@ passport.use('local-login', new LocalStrategy({
     //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
-        console.log('여기 안오냐?');
         dbConnection().query(sql, [userId, password], (error, row)=> {
             if (error) {
                 console.error(error + 'query 결과 없다.');
                 return done(error);
             }
-            if(row.length === 0) {
+            else if (row.length === 0) {
                 console.log('row : ' + row);
                 console.log("Can't find any id or password");
                 return done(null, false, {
                     action : 'login',
                     error_message: 'ID or password is incorrect'})
             }
-            if (row && row.pw == password) {
+            else if (row && row.pw == password) {
                 console.log('passport Login Success!');
                 return done(null, row);
             }
