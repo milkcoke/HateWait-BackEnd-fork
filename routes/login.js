@@ -9,7 +9,7 @@ router.post('/members', passport.authenticate('local-login'),
     function(request, response) {
     //로그인 이후 메인 페이지로 이동.
         console.log('??에에에엥');
-    response.json('login-trying is completed!')
+    response.json('login-trying is completed!');
     }
 );
 
