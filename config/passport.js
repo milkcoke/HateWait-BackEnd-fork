@@ -4,7 +4,6 @@ const dbConnection = require('../db/db');
 
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
-
 // serialize :  login시 DB에서 조회된 customer or store를 어떻게 session에 저장할지 정의하는 부분.
 // done: 예약어 메소드로 null, 유저 정보 객체를 넘긴다.
 passport.serializeUser(function(user, done) {
@@ -46,7 +45,7 @@ passport.use('local-login', new LocalStrategy({
     //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
-        dbConnection().query(`SELECT * FROM member WHERE id=${userId} AND pw=${password}`, (error, row)=> {
+        dbConnection().query(sql, [userId, password], (error, row)=> {
             if (error) {
                 console.error(error + 'query 결과 없다.');
                 return done(error);

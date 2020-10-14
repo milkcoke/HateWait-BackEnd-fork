@@ -16,16 +16,8 @@ const passport = require('./config/passport');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
 const flash = require('connect-flash');
 const app = express();
-// Local host test 시 DB 사용 X
-const dbConnection = require('./db/db')();
 
-
-dbConnection.query('SHOW TABLES', function(err, result){
- if (err) throw err;
- console.log('result: ', result);
-});
-
-
+console.log('==========server started!========');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
