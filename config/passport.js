@@ -38,7 +38,7 @@ passport.deserializeUser(function(userId, done) {
 // Both fields define the nameof the properties in the POST body that are sent to the server.
 
 passport.use('local-login', new LocalStrategy({
-    userIdField : 'userId',
+    usernameField : 'userId',
     passwordField : 'password',
     passRequestToCallback : true
     }, function(request, userId, password, done) {
