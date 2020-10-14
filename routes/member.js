@@ -3,7 +3,8 @@ const router = express.Router();
 const dbConnection = require('../db/db');
 
 router.get('/', function(req, res) {
-    dbConnection().query('SELECT * FROM MEMBER', (error, rows) => {
+    let sql = 'SELECT * FROM MEMBER';
+    dbConnection().query(sql, (error, rows) => {
         if (error) {
             res.send(error);
         } else {

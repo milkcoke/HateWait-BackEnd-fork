@@ -2,7 +2,6 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
 const dbConnection = require('../db/db');
 
-console.log('passport 자체가 안되나?');
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
 
@@ -13,7 +12,7 @@ passport.serializeUser(function(user, done) {
     //done's first parameter: error, not exists error -> null
     // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
     console.log('serial:' + user);
-    done(null, user.id);
+    done(null, user);
 //    user 의 id부분만 세션에 저장한다.
 //    앞으로의 request에서는 user.id가 유저를 식별하는 정보가된다.
 //    request.user에 저장된다.
@@ -46,7 +45,7 @@ passport.use('local-login', new LocalStrategy({
     //The simplest form of .query() is .query(sqlString, callback)
         let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
-        dbConnection().query(sql, [userId, password], (error, row)=> {
+        dbConnection().query(`SELECT * FROM member WHERE id=${userId} AND pw=${password}`, (error, row)=> {
             if (error) {
                 console.error(error + 'query 결과 없다.');
                 return done(error);
@@ -58,7 +57,7 @@ passport.use('local-login', new LocalStrategy({
                     action : 'login',
                     error_message: 'ID or password is incorrect'})
             }
-            else if (row && row.pw == password) {
+            else if (row && row.pw === password) {
                 console.log('passport Login Success!');
                 return done(null, row);
             }
