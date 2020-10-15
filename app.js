@@ -7,7 +7,6 @@ const logger = require('morgan');
 
 const loginRouter = require('./routes/login');
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const memberRouter = require('./routes/member');
 const reactRouter = require('./routes/reactTest');
 
@@ -50,7 +49,6 @@ app.use(flash());
 
 app.use('/', indexRouter);
 app.use('/login',loginRouter);
-app.use('/users', usersRouter);
 app.use('/members', memberRouter);
 app.use('/react-test', reactRouter);
 
