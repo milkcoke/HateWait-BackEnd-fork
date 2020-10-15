@@ -7,7 +7,7 @@ const dbConnection = require('../db/db');
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
 
-// serialize :  login시 DB에서 조회된 customer or store를 어떻게 session에 저장할지 정의하는 부분.
+// serialize : 로그인시 DB 에서 조회된 customer or store 를 어떻게 session 에 저장할지 정의하는 부분.
 //메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 '성공' 했을때 호출됨
 // done: 예약어 메소드로 null, 유저 정보 객체를 넘긴다.
 passport.serializeUser(function(memberInfo, done) {
@@ -27,7 +27,7 @@ passport.serializeUser(function(memberInfo, done) {
 
 
 // 사용자 인증 후 요청이 들어올 때마다 호출
-// 매번 request마다 user 정보를 DB 에서 읽어오는 식이라면 user 가 변경될 시 정보가 바로 변경되는 대신,
+// 매번 request 마다 user 정보를 DB 에서 읽어오는 식이라면 user 가 변경될 시 정보가 바로 변경되는 대신,
 // request 마다 db query 를 날려야한다는 단점 존재.
 
 passport.deserializeUser(function(memberInfo, done) {
@@ -54,12 +54,13 @@ passport.use('local-login', new LocalStrategy({
     passReqToCallback : true
     }, function(request, userId, password, done) {
         //암호화를 sql 날리기 전에 무조건 수행.
-        bcrypt.bcrypt.hash(password, bcrypt.SALT)
+        //여기의 bcrypt.SALT 는 genSalt 를 수행하는 promise 객체므로 then, catch 로 받는다.
+        bcrypt.SALT
+            .then(salt => {
+                return bcrypt.bcrypt.hash(password, salt);
+            })
             .then((hashedPassword) => {
                 console.log('Local Strategy Authentication is conducted!');
-                //The simplest form of .query() is .query(sqlString, callback)
-                // The second form .query(sqlString, values, callback) comes when using
-
                 const sql = 'SELECT id, name, phone FROM member WHERE id=? AND pw=?';
                 dbConnection().query(sql, [userId, hashedPassword], (error, rows) => {
                     if (error) {
@@ -89,7 +90,7 @@ passport.use('local-login', new LocalStrategy({
                 })
             })
             .catch(err => {
-                console.error(err);
+                throw err;
             });
     }));
 
