@@ -12,6 +12,14 @@ router.post('/members', passport.authenticate('local-login', {successRedirect : 
         message : 'login-trying is completed!'});
     });
 
+router.post('/stores', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
+    function(request, response) {
+        //로그인 이후 메인 페이지로 이동.
+        response.json({
+            message : 'login-trying is completed!'});
+    });
+
+
 // failureFlash: passport가 strategy verify callback에 의해 정의된 에러 메시지를 flash하게 하는 옵션.
 // 오류의 원인을 출력해줄 수 있게한다.
 

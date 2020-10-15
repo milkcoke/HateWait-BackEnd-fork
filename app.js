@@ -9,6 +9,7 @@ const loginRouter = require('./routes/login');
 const indexRouter = require('./routes/index');
 const memberRouter = require('./routes/member');
 const reactRouter = require('./routes/reactTest');
+const storeRouter = require('./routes/store');
 
 const session = require('express-session');
 const passport = require('./config/passport');
@@ -50,6 +51,7 @@ app.use(flash());
 app.use('/', indexRouter);
 app.use('/login',loginRouter);
 app.use('/members', memberRouter);
+app.use('/stores', storeRouter);
 app.use('/react-test', reactRouter);
 
 

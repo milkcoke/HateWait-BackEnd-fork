@@ -1,6 +1,8 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
+const bcrypt = require('../config/bcryptSetting');
 const dbConnection = require('../db/db');
+
 
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
@@ -32,12 +34,13 @@ passport.deserializeUser(function(memberInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
     let sql = 'SELECT id FROM MEMBER where id=?'
-    console.log('deserialize:' + memberInfo.id);
+    console.log('deserialize:' + memberInfo);
     // 현재 세션에 저장된 id와
     dbConnection().query(sql, [memberInfo.id], (error, rows)=> {
         if (error) done(error, false);
         // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
-        else done(null, rows);
+        // id만 붙이는게 나을까?
+        else done(null, rows[0].id);
     });
 });
 
@@ -50,39 +53,48 @@ passport.use('local-login', new LocalStrategy({
     passwordField : 'password',
     passReqToCallback : true
     }, function(request, userId, password, done) {
-    console.log('Local Strategy Authentication is conducted!');
-    //The simplest form of .query() is .query(sqlString, callback)
-    // The second form .query(sqlString, values, callback) comes when using
-        const sql = 'SELECT id, name, phone FROM member WHERE id=? AND pw=?';
-        dbConnection().query(sql, [userId, password], (error, rows)=> {
-            if (error) {
-                throw error;
-                console.error(error + 'query 결과 없다.');
-                return done(JSON.stringify(error));
+        //암호화를 sql 날리기 전에 무조건 수행.
+        bcrypt.bcrypt.hash(password, bcrypt.SALT)
+            .then((hashedPassword) => {
+                console.log('Local Strategy Authentication is conducted!');
+                //The simplest form of .query() is .query(sqlString, callback)
+                // The second form .query(sqlString, values, callback) comes when using
 
-            } else if (rows.length === 0) {
-                console.log("Can't find any id or password");
-                return done(null, false, JSON.stringify({
-                    action : 'login',
-                    error_message : 'ID or password is incorrect'
-                }));
-            } else {
-                //rows is object type
-                //Casting object -> json
-                const memberInfo = rows[0];
-                console.log('passport Login Success!');
-                return done(null, memberInfo);
-            }
-            // else {
-            //     //여기 해석을 내가해야하는데...
-            //     console.log('flash 직전');
-            //     request.flash('userId', rows.id);
-            //     request.flash('errors', {login : 'id or password is incorrect'});
-            //     return done(null, false);
-            // }
-        })
-    })
-);
+                const sql = 'SELECT id, name, phone FROM member WHERE id=? AND pw=?';
+                dbConnection().query(sql, [userId, hashedPassword], (error, rows) => {
+                    if (error) {
+                        throw error;
+                        console.error(error + 'query 결과 없다.');
+                        return done(JSON.stringify(error));
+                    } else if (rows.length === 0) {
+                        console.log("Can't find any id or password");
+                        return done(null, false, JSON.stringify({
+                            action: 'login',
+                            error_message: 'ID or password is incorrect'
+                        }));
+                    } else {
+                        //rows is object type
+                        //Casting object -> json
+                        const memberInfo = rows[0];
+                        console.log('passport Login Success!');
+                        return done(null, memberInfo);
+                    }
+                    // else {
+                    //     //여기 해석을 내가해야하는데...
+                    //     console.log('flash 직전');
+                    //     request.flash('userId', rows.id);
+                    //     request.flash('errors', {login : 'id or password is incorrect'});
+                    //     return done(null, false);
+                    // }
+                })
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }));
+
+
+
 
 module.exports = passport;
 
