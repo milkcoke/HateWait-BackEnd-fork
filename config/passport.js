@@ -39,7 +39,7 @@ passport.deserializeUser(function(userId, done) {
 passport.use('local-login', new LocalStrategy({
     usernameField : 'userId',
     passwordField : 'password',
-    passRequestToCallback : true
+    passReqToCallback : true
     }, function(request, userId, password, done) {
     console.log('Local Strategy Authentication is conducted!');
     //The simplest form of .query() is .query(sqlString, callback)
