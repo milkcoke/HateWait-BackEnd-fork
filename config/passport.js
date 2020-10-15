@@ -43,38 +43,35 @@ passport.use('local-login', new LocalStrategy({
     }, function(request, userId, password, done) {
     console.log('Local Strategy Authentication is conducted!');
     //The simplest form of .query() is .query(sqlString, callback)
-    console.log('================================');
-    console.log('userId type: ' + typeof userId);
-    console.log('password type: ' + typeof password);
-    console.log('userId, Pw Value : ' + userId, password);
-    console.log('================================');
-        let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
+        const sql = 'SELECT * FROM member WHERE id=? AND pw=?';
         dbConnection().query(sql, [userId, password], (error, rows)=> {
-            console.log('rows type : ' + typeof rows);
             if (error) {
                 throw error;
                 console.error(error + 'query 결과 없다.');
-                return done(error);
-            }
-            else if (rows.length === 0) {
+                return done(JSON.stringify(error));
+
+            } else if (rows.length === 0) {
                 console.log("Can't find any id or password");
-                return done(null, false, {
+                return done(null, false, JSON.stringify({
                     action : 'login',
-                    error_message: 'ID or password is incorrect'
-                })
-            }
-            else if (rows[0].id && rows[0].pw === password) {
+                    error_message : 'ID or password is incorrect'
+                }));
+            } else {
+                //rows is object type
+                //Casting object -> json
+                const member = JSON.stringify(rows[0]);
                 console.log('passport Login Success!');
-                return done(null, rows);
+
+                return done(null, member);
             }
-            else {
-                //여기 해석을 내가해야하는데...
-                console.log('flash 직전');
-                request.flash('userId', rows.id);
-                request.flash('errors', {login : 'id or password is incorrect'});
-                return done(null, false);
-            }
+            // else {
+            //     //여기 해석을 내가해야하는데...
+            //     console.log('flash 직전');
+            //     request.flash('userId', rows.id);
+            //     request.flash('errors', {login : 'id or password is incorrect'});
+            //     return done(null, false);
+            // }
         })
     })
 );
