@@ -50,27 +50,28 @@ passport.use('local-login', new LocalStrategy({
     console.log('================================');
         let sql = 'SELECT * FROM member WHERE id=? AND pw=?';
     // The second form .query(sqlString, values, callback) comes when using
-        dbConnection().query(sql, [userId, password], (error, row)=> {
+        dbConnection().query(sql, [userId, password], (error, rows)=> {
+            console.log('rows type : ' + typeof rows);
             if (error) {
                 throw error;
                 console.error(error + 'query 결과 없다.');
                 return done(error);
             }
-            else if (row.length === 0) {
-                console.log('row : ' + row);
+            else if (rows.length === 0) {
                 console.log("Can't find any id or password");
                 return done(null, false, {
                     action : 'login',
-                    error_message: 'ID or password is incorrect'})
+                    error_message: 'ID or password is incorrect'
+                })
             }
-            else if (row && row.pw === password) {
+            else if (rows[0].id && rows[0].pw === password) {
                 console.log('passport Login Success!');
-                return done(null, row);
+                return done(null, rows);
             }
             else {
                 //여기 해석을 내가해야하는데...
                 console.log('flash 직전');
-                request.flash('userId', row.id);
+                request.flash('userId', rows.id);
                 request.flash('errors', {login : 'id or password is incorrect'});
                 return done(null, false);
             }
