@@ -57,7 +57,7 @@ app.use(function(request, response, next) {
   // isAuthenticated : 현재 로그인 되어있는지 true, false
   response.locals.isAuthenticated = request.isAuthenticated();
   //passport에서 추가하는 항목으로 로그인 되면 session으로 부터 user를 deserialize하여 생성됨.
-  //locals에 담긴 변수는 ejs에서 바로 사용 가능.
+  //locals에 담긴 변수는 ejs 에서 바로 사용 가능.
   //로그인된 user 정보를 불러오는데 사용됨.
   response.locals.currentUser = request.user;
   next();

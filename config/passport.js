@@ -4,31 +4,40 @@ const dbConnection = require('../db/db');
 
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
+
 // serialize :  login시 DB에서 조회된 customer or store를 어떻게 session에 저장할지 정의하는 부분.
+//메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 '성공' 했을때 호출됨
 // done: 예약어 메소드로 null, 유저 정보 객체를 넘긴다.
-passport.serializeUser(function(user, done) {
-    //메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 성공적으로 진행되었을 때 호출됨
+passport.serializeUser(function(memberInfo, done) {
+
     //done's first parameter: error, not exists error -> null
     // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
-    console.log('serialize: ' + user);
-    done(null, user);
-//    user 의 id부분만 세션에 저장한다.
-//    앞으로의 request에서는 user.id가 유저를 식별하는 정보가된다.
-//    request.user에 저장된다.
+    console.log('serialize: ' + memberInfo);
+
+    //    user 의 id만 세션에 저장한다.
+    //    앞으로의 request 에서는 user.id가 유저를 식별하는 정보가된다.
+    //    request.user 에 저장된다.
+    done(null, memberInfo);
+    //second parameter is passed to deserialize method's first argument
+
 });
 
 
-// deserialize :  request시 session에서 어떻게 object를 생성할 지 정의.
-// 사용자 인증 후 요청이 들어올 때마다 호출
-// 매번 request마다 user 정보를 db에서 읽어오는 식이라면 user가 변경될 시 정보가 바로 변경되는 대신,
-//request 마다 db query 를 날려야한다는 단점 존재.
 
-passport.deserializeUser(function(userId, done) {
+// 사용자 인증 후 요청이 들어올 때마다 호출
+// 매번 request마다 user 정보를 DB 에서 읽어오는 식이라면 user 가 변경될 시 정보가 바로 변경되는 대신,
+// request 마다 db query 를 날려야한다는 단점 존재.
+
+passport.deserializeUser(function(memberInfo, done) {
+    // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
+
     let sql = 'SELECT id FROM MEMBER where id=?'
-    console.log('deserialize:' + userId);
-    dbConnection().query(sql, [userId], (error, row)=> {
+    console.log('deserialize:' + memberInfo.id);
+    // 현재 세션에 저장된 id와
+    dbConnection().query(sql, [memberInfo.id], (error, rows)=> {
         if (error) done(error, false);
-        else done(null, row);
+        // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
+        else done(null, rows);
     });
 });
 
@@ -44,7 +53,7 @@ passport.use('local-login', new LocalStrategy({
     console.log('Local Strategy Authentication is conducted!');
     //The simplest form of .query() is .query(sqlString, callback)
     // The second form .query(sqlString, values, callback) comes when using
-        const sql = 'SELECT * FROM member WHERE id=? AND pw=?';
+        const sql = 'SELECT id, name, phone FROM member WHERE id=? AND pw=?';
         dbConnection().query(sql, [userId, password], (error, rows)=> {
             if (error) {
                 throw error;
@@ -60,10 +69,9 @@ passport.use('local-login', new LocalStrategy({
             } else {
                 //rows is object type
                 //Casting object -> json
-                const member = JSON.stringify(rows[0]);
+                const memberInfo = rows[0];
                 console.log('passport Login Success!');
-
-                return done(null, member);
+                return done(null, memberInfo);
             }
             // else {
             //     //여기 해석을 내가해야하는데...
