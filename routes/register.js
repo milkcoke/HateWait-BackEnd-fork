@@ -7,6 +7,10 @@ router.post('/store', (request, response) => {
     let storeInfo = request.body
 //    null, "" 공백값 check
     console.log(storeInfo);
+    for(element in storeInfo) {
+        console.log(element)
+    }
+    console.log('========================');
 
     if (!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
         || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.pw) {
