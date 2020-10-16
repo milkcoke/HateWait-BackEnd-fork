@@ -43,29 +43,29 @@ router.post('/store', (request, response) => {
     //     storeInfo.password = hashedPassword;
     // }
 //    비밀번호 암호화
-    bcrypt.bcrypt.hash(storeInfo.pw, bcrypt.SALT)
-        .then(hashedPassword => {
-            storeInfo.pw = hashedPassword;
-
-            // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-            const register_store_sql = 'INSERT INT store VALUES(?,?,?,?,?,?,?,?,?)';
-            dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
-                if (error) console.error(error);
-                else if (!result) {
-                    return response.json({
-                    message : 'DB 가게정보 삽입 오류입니다.'
-                    });
-                } else {
-                    return response.json({
-                        message : '회원가입 완료!'
-                    });
-                }
-            })
+    bcrypt.SALT.then(SALT=> {
+        return bcrypt.bcrypt.hash(storeInfo.pw, SALT);
+    }).then(hashedPassword => {
+        storeInfo.pw = hashedPassword;
+        // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
+        const register_store_sql = 'INSERT INT store VALUES(?,?,?,?,?,?,?,?,?)';
+        dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
+            if (error) console.error(error);
+            else if (!result) {
+                return response.json({
+                message : 'DB 가게정보 삽입 오류입니다.'
+                });
+            } else {
+                return response.json({
+                    message : '회원가입 완료!'
+                });
+            }
         })
-        .catch(error => {
-            return response.status(500).json({
-                    message : "비밀번호 암호화 오류입니다."
-            })});
+    })
+    .catch(error => {
+        return response.status(500).json({
+                message : "비밀번호 암호화 오류입니다."
+        })});
 
 });
 
