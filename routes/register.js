@@ -48,7 +48,7 @@ router.post('/store', (request, response) => {
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-        const register_store_sql = 'INSERT INT store VALUES(?,?,?,?,?,?,?,?,?)';
+        const register_store_sql = 'INSERT INTO store VALUES(?,?,?,?,?,?,?,?,?)';
         dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
             if (error) console.error(error);
             else if (!result) {
