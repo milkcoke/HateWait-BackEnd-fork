@@ -19,7 +19,7 @@ router.post('/store', (request, response) => {
     const check_id_sql = 'SELECT id FROM store WHERE id=?';
     dbConnection().query(check_id_sql, [storeInfo.id], (error, row) => {
         if (error) response.send(error);
-        else if (!row) {
+        else if (row) {
             return response.json({
                 message : '이미 존재하는 ID입니다.'
             });
@@ -29,7 +29,7 @@ router.post('/store', (request, response) => {
     const check_phone_sql = 'SELECT phone FROM store WHERE phone=?';
     dbConnection().query(check_phone_sql, [storeInfo.phone], (error, row) => {
         if (error) response.send(error);
-        else if (!row) {
+        else if (row) {
             return response.json({
                 message : '이미 가입된 전화번호입니다.'
             })
