@@ -30,6 +30,7 @@ router.post('/stores-jwt', (request, response) => {
                 store : store
             });
         } else {
+            console.log('request  여기까지 받음 ==== ' + store);
             request.login(store, {session: false}, (error) => {
                 if (error) response.send(error);
             })
