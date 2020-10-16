@@ -22,23 +22,30 @@ router.post('/stores', passport.authenticate('local-login', {successRedirect : '
             message : 'login-trying is completed!'});
     });
 
-router.post('/stores-jwt', passportJwt.authenticate('jwt',
-    {successRedirect : '/success', failureRedirect : '/login', failureFlash : true},
-    (error, store) => {
-        if (error) throw error;
-        else {
-            //여기 수정 필요 id 받아서 jsonwebtoken 만들어줘야함.
-            jsonwebtoken.sign({store}, 'secret');
-            console.log('After authentication return store info : ' + store);
-        }
-    //    request.store = store;
-    }),
-    function(request, response) {
-        //로그인 이후 메인 페이지로 이동.
-        response.json({
-            request, token
-        });
+router.post('/stores-jwt', passportJwt.authenticate('jwt', {session: false}),
+    (request, response) => {
+        response.json(request.store)
     });
+
+
+// router.post('/stores-jwt',
+//     passportJwt.authenticate('jwt',
+//     {successRedirect : '/success', failureRedirect : '/login', failureFlash : true},
+//     (error, store) => {
+//         if (error) throw error;
+//         else {
+//             //여기 수정 필요 id 받아서 jsonwebtoken 만들어줘야함.
+//             jsonwebtoken.sign({store}, 'secret');
+//             console.log('After authentication return store info : ' + store);
+//         }
+//     //    request.store = store;
+//     }),
+//     function(request, response) {
+//         //로그인 이후 메인 페이지로 이동.
+//         response.json({
+//             store
+//         });
+//     });
 
 router.get('/success', (request, response) => {
     response.json()
