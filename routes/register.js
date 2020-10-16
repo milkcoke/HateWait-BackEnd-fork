@@ -19,7 +19,7 @@ router.post('/store', (request, response) => {
         else if (!row) {
             response.json({
                 message : '이미 존재하는 ID입니다.'
-            })
+            });
         }
     });
 //    phone 중복성 검사
@@ -48,9 +48,11 @@ router.post('/store', (request, response) => {
             const register_store_sql = 'INSERT INT store VALEUS(?,?,?,?,?,?,?,?,?)';
             dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
                 if (error) console.error(error);
-                else if (!result) response.json({
+                else if (!result) {
+                    response.json({
                     message : 'DB 삽입 오류입니다.'
-                }) else {
+                    });
+                } else {
                     response.json({
                         message : '회원가입 완료!'
                     });
