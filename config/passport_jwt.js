@@ -32,11 +32,13 @@ passport.use(new jwtStrategy(optionsAuthentication, (jwtPayload, done) => {
         if (error) {
             return done(error, false);
         } else if (rows) {
+            console.log('query result in : ' + rows);
             return done(null, rows[0]);
         } else {
+            console.log('query calling false')
             return done(null, false);
         }
-        console.log(rows);
+
     });
 
 }));

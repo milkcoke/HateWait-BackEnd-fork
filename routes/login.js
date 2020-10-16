@@ -22,10 +22,33 @@ router.post('/stores', passport.authenticate('local-login', {successRedirect : '
             message : 'login-trying is completed!'});
     });
 
-router.post('/stores-jwt', passportJwt.authenticate('jwt', {session: false}),
-    (request, response) => {
-        response.json(request.store)
-    });
+router.post('/stores-jwt', (request, response) => {
+        passportJwt.authenticate('jwt', {session: false}, (error, store)=> {
+        if (error || !store) {
+            return response.status(400).json({
+                message : 'your token is unauthorized',
+                store : store
+            });
+        } else {
+            request.login(store, {session: false}, (error) => {
+                if (error) response.send(error);
+            })
+            //token 인증
+            const token = jsonwebtoken.sign(store.toJSON(), 'secret');
+            return response.json({store, token});
+            console.log(store);
+        }
+    })
+});
+
+
+// router.post('/stores-jwt', passportJwt.authenticate('jwt', {session: false}, (error, store)=> {
+//         if (error) throw error;
+//         else console.log(store);
+//     }),
+//     (request, response) => {
+//         response.json(request.store)
+//     });
 
 
 // router.post('/stores-jwt',
