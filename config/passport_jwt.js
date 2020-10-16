@@ -28,15 +28,15 @@ const optionsTokenIssuance = {
 passport.use(new jwtStrategy(optionsAuthentication, (jwtPayload, done) => {
     const sql = 'SELECT id, name, phone FROM STORE WHERE id=? AND pw=?';
 
-    dbConnection().query(sql, [jwtPayload.id, jwtPayload.password], (error, rows) => {
+    dbConnection().query(sql, [jwtPayload.userId, jwtPayload.password], (error, rows) => {
         if (error) {
             return done(error, false);
         } else if (rows) {
-
-            return done(null, rows);
+            return done(null, rows[0]);
         } else {
             return done(null, false);
         }
+        console.log(rows);
     });
 
 }));

@@ -40,6 +40,9 @@ router.post('/stores-jwt', passportJwt.authenticate('jwt',
         });
     });
 
+router.get('/success', (request, response) => {
+    response.json()
+})
 
 // failureFlash: passport가 strategy verify callback에 의해 정의된 에러 메시지를 flash하게 하는 옵션.
 // 오류의 원인을 출력해줄 수 있게한다.
