@@ -5,9 +5,8 @@ const bcrypt = require('../config/bcrypt_setting');
 
 router.post('/store', (request, response) => {
 
-
+    let storeInfo = request.body
 //    null, "" 공백값 check
-
     console.log('========================');
 
     if (!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
