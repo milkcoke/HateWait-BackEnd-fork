@@ -8,7 +8,7 @@ router.post('/store', (request, response) => {
 //    null, "" 공백값 check
     if(!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
         || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.password) {
-        response.json({
+        return response.json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
@@ -17,7 +17,7 @@ router.post('/store', (request, response) => {
     dbConnection().query(sql, [storeInfo.id], (error, row) => {
         if (error) response.send(error);
         else if (!row) {
-            response.json({
+            return response.json({
                 message : '이미 존재하는 ID입니다.'
             });
         }
@@ -27,7 +27,7 @@ router.post('/store', (request, response) => {
     dbConnection().query(sql, [storeInfo.phone], (error, row) => {
         if (error) response.send(error);
         else if (!row) {
-            response.json({
+            return response.json({
                 message : '이미 가입된 전화번호입니다.'
             })
         }
@@ -49,19 +49,19 @@ router.post('/store', (request, response) => {
             dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
                 if (error) console.error(error);
                 else if (!result) {
-                    response.json({
-                    message : 'DB 삽입 오류입니다.'
+                    return response.json({
+                    message : 'DB 가게정보 삽입 오류입니다.'
                     });
                 } else {
-                    response.json({
+                    return response.json({
                         message : '회원가입 완료!'
                     });
                 }
             })
         })
         .catch(error => {
-            response.status(500).json({
-                    message : "비밀번호 암호화 오류"
+            return response.status(500).json({
+                    message : "비밀번호 암호화 오류입니다."
             })});
 
 });
