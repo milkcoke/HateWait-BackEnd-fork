@@ -6,7 +6,9 @@ const bcrypt = require('../config/bcrypt_setting');
 router.post('/store', (request, response) => {
     let storeInfo = request.body
 //    null, "" 공백값 check
-    if(!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
+    console.log(storeInfo);
+
+    if (!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
         || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.pw) {
         return response.json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
