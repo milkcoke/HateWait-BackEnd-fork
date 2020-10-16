@@ -4,12 +4,10 @@ const dbConnection = require('../db/db');
 const bcrypt = require('../config/bcrypt_setting');
 
 router.post('/store', (request, response) => {
-    let storeInfo = request.body
+
+
 //    null, "" 공백값 check
-    console.log(storeInfo);
-    for(element in storeInfo) {
-        console.log(element)
-    }
+
     console.log('========================');
 
     if (!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
@@ -20,7 +18,7 @@ router.post('/store', (request, response) => {
     }
 //    id 중복성 검사
     const check_id_sql = 'SELECT id FROM store WHERE id=?';
-    dbConnection().query(sql, [storeInfo.id], (error, row) => {
+    dbConnection().query(check_id_sql, [storeInfo.id], (error, row) => {
         if (error) response.send(error);
         else if (!row) {
             return response.json({
@@ -30,7 +28,7 @@ router.post('/store', (request, response) => {
     });
 //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM store WHERE phone=?';
-    dbConnection().query(sql, [storeInfo.phone], (error, row) => {
+    dbConnection().query(check_phone_sql, [storeInfo.phone], (error, row) => {
         if (error) response.send(error);
         else if (!row) {
             return response.json({
