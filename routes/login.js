@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const jsonwebtoken = require('jsonwebtoken');
 const passport = require('../config/passport');
+const passportJwt = require('../config/passport_jwt');
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
@@ -12,11 +14,30 @@ router.post('/members', passport.authenticate('local-login', {successRedirect : 
         message : 'login-trying is completed!'});
     });
 
+// authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
         //로그인 이후 메인 페이지로 이동.
         response.json({
             message : 'login-trying is completed!'});
+    });
+
+router.post('/stores-jwt', passportJwt.authenticate('jwt',
+    {successRedirect : '/success', failureRedirect : '/login', failureFlash : true},
+    (error, store) => {
+        if (error) throw error;
+        else {
+            //여기 수정 필요 id 받아서 jsonwebtoken 만들어줘야함.
+            jsonwebtoken.sign({store}, 'secret');
+            console.log('After authentication return store info : ' + store);
+        }
+    //    request.store = store;
+    }),
+    function(request, response) {
+        //로그인 이후 메인 페이지로 이동.
+        response.json({
+            request, token
+        });
     });
 
 
