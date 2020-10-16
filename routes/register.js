@@ -7,7 +7,7 @@ router.post('/store', (request, response) => {
     let storeInfo = request.body
 //    null, "" 공백값 check
     if(!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
-        || !storeInfo.maximumCapacity || !storeInfo.address || !storeInfo.password) {
+        || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.password) {
         response.json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
