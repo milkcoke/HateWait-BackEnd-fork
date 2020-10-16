@@ -7,7 +7,7 @@ router.post('/store', (request, response) => {
     let storeInfo = request.body
 //    null, "" 공백값 check
     if(!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
-        || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.password) {
+        || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.pw) {
         return response.json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
@@ -40,9 +40,9 @@ router.post('/store', (request, response) => {
     //     storeInfo.password = hashedPassword;
     // }
 //    비밀번호 암호화
-    bcrypt.bcrypt.hash(storeInfo.password, bcrypt.SALT)
+    bcrypt.bcrypt.hash(storeInfo.pw, bcrypt.SALT)
         .then(hashedPassword => {
-            storeInfo.password = hashedPassword;
+            storeInfo.pw = hashedPassword;
 
             // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
             const register_store_sql = 'INSERT INT store VALUES(?,?,?,?,?,?,?,?,?)';
