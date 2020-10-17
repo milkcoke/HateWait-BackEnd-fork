@@ -1,18 +1,18 @@
-var DataTypes = require("sequelize").DataTypes;
-var _visit_log = require("./visit_log");
-var _coupon = require("./coupon");
-var _member = require("./member");
-var _coupon_information = require("./coupon_information");
-var _store = require("./store");
-var _waiting_customer = require("./waiting_customer");
+const DataTypes = require("sequelize").DataTypes;
+const _visit_log = require("./visit_log");
+const _coupon = require("./coupon");
+const _member = require("./member");
+const _coupon_information = require("./coupon_information");
+const _store = require("./store");
+const _waiting_customer = require("./waiting_customer");
 
 function initModels(sequelize) {
-  var visit_log = _visit_log(sequelize, DataTypes);
-  var coupon = _coupon(sequelize, DataTypes);
-  var member = _member(sequelize, DataTypes);
-  var coupon_information = _coupon_information(sequelize, DataTypes);
-  var store = _store(sequelize, DataTypes);
-  var waiting_customer = _waiting_customer(sequelize, DataTypes);
+  const visit_log = _visit_log(sequelize, DataTypes);
+  const coupon = _coupon(sequelize, DataTypes);
+  const member = _member(sequelize, DataTypes);
+  const coupon_information = _coupon_information(sequelize, DataTypes);
+  const store = _store(sequelize, DataTypes);
+  const waiting_customer = _waiting_customer(sequelize, DataTypes);
 
   return {
     visit_log,

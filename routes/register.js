@@ -40,7 +40,7 @@ router.post('/member', (request, response) => {
 
     //    비밀번호 암호화
     bcrypt.SALT.then(SALT=> {
-        return bcrypt.bcrypt.hash(storeInfo.pw, SALT);
+        return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
@@ -58,10 +58,12 @@ router.post('/member', (request, response) => {
             }
         })
     })
-        .catch(error => {
-            return response.status(500).json({
-                message : "서버의 비밀번호 암호화 오류입니다."
-            })});
+    .catch(error => {
+    console.error(erorr);
+    return response.status(500).json({
+        message : "서버의 비밀번호 암호화 오류입니다."
+        })
+    });
 
 });
 
@@ -120,6 +122,7 @@ router.post('/store', (request, response) => {
         })
     })
     .catch(error => {
+        console.error(error);
         return response.status(500).json({
                 message : "비밀번호 암호화 오류입니다."
         })});
