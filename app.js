@@ -12,6 +12,7 @@ const reactRouter = require('./routes/reactTest');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 
+const sequelize = require('./models').sequelize;
 const session = require('express-session');
 const passport = require('./config/passport');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
@@ -43,6 +44,22 @@ app.use(session({
     }));
 
 
+
+sequelize.authenticate()
+    .then(success => {
+        console.log('sequelize success to connect with DB' + success);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+/* sequelize.sync()
+    .then(success => {
+        console.log('sequelize success to sychronize defined models to the DB' + success);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+ */
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
