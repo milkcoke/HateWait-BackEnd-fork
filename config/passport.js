@@ -63,7 +63,7 @@ passport.use('local-login', new LocalStrategy({
             // The second form .query(sqlString, values, callback) comes when using
 
             const sql = 'SELECT id, name, phone FROM STORE WHERE id=? AND pw=?';
-            dbConnection().query(sql, [userId, hashedPassword], (error, rows) => {
+            dbConnection().query(sql, [id, hashedPassword], (error, rows) => {
                 if (error) {
                     throw error;
                     console.error(error + 'query 결과 없다.');
