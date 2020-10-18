@@ -73,7 +73,7 @@ router.post('/stores-jwt', (request, response) => {
         } else {
             console.log('request  여기까지 받음 ==== ' + store);
             request.login(store, {session: false}, (error) => {
-                if (error) response.send(error);
+                if (error) return response.json(error);
             });
             //token 인증
             const token = jsonwebtoken.sign(store.toJSON(), 'secret');
