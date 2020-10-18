@@ -50,7 +50,7 @@ router.post('/member', (request, response) => {
     bcrypt.SALT.then(SALT=> {
         return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
     }).then(hashedPassword => {
-        storeInfo.pw = hashedPassword;
+        memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO member SET ?';
         dbConnection().execute(register_store_sql, [memberInfo], (error, result)=> {
@@ -67,7 +67,7 @@ router.post('/member', (request, response) => {
             }
         })
     })
-    .catch(error => {
+    .catch((error) => {
     console.error(erorr);
     return response.status(500).json({
         message : "서버의 비밀번호 암호화 오류입니다."
