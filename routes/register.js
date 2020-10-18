@@ -31,7 +31,7 @@ router.post('/member', (request, response) => {
     const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
     dbConnection().execute(check_phone_sql, [memberInfo.phone], (error, row) => {
         if (error) response.send(error);
-        else if (row) {
+        else if (row[0]) {
             return response.status(409).json({
                 message : '이미 가입된 전화번호입니다.'
             })
