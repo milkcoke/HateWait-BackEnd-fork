@@ -42,7 +42,7 @@ router.post('/members/test', (request, response) => {
                 .then(result => {
                     return response.status(200).json({
                         message : "로그인 성공!",
-                        member : row[0].name + "님 환영합니다."
+                        member : row[0].name
                     });
                 })
                 .catch(error => {
@@ -53,31 +53,6 @@ router.post('/members/test', (request, response) => {
         }
     });
 
-    // bcrypt.SALT.then(SALT=> {
-    //     return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
-    // //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
-    // }).then(hashedPassword => {
-    //     memberInfo.pw = hashedPassword;
-    //
-    //     const login_sql = 'SELECT name FROM member where id=? AND pw=?';
-    //     dbConnection().execute(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
-    //         if (error) console.error(error);
-    //         else if (!row[0]) {
-    //             return response.status(409).json({
-    //                 message : "아이디 혹은 비밀번호를 확인해주세요"
-    //             });
-    //         } else {
-    //             return response.status(200).json({
-    //                 message : "로그인 성공!",
-    //                 member : row[0].name
-    //             });
-    //         }
-    //     })
-    // }).catch(error => {
-    //     return response.status(500).json({
-    //         message : "서버의 비밀번호 암호화 오류입니다."
-    //     })
-    // })
 });
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
