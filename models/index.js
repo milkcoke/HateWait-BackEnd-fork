@@ -9,15 +9,23 @@ const db = {};
 const sequelize = new Sequelize(config.database, config.username, config.password, {
     dialect : config.dialect,
     port : config.port,
-    host : config.host
+    host : config.host,
+    define : {
+    charset : config.charset,
+    timestamps : config.timestamps
+    }
 });
+// define : {
+//     charset : config.charset,
+//         timestamps : config.timestamps
+// }
 
 
 fs
     .readdirSync(__dirname)
     .filter(function(file) {
         // 모든 model 파일들 걸러냄.
-        return (file.indexOf(".") !== 0 && (file !== "index.js" || file !== "init-models.js"));
+        return (file.indexOf(".") !== 0 && file !== "index.js" && file !== "init-models.js");
     })
     .forEach(function(file) {
         console.log('file string : ' + file);
