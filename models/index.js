@@ -6,10 +6,11 @@ const config = require('../config/sequelize_setting');
 
 const db = {};
 
-const sequelize = new Sequelize(config);
 console.log('===============');
 console.log(config.options);
 console.log(config);
+const sequelize = new Sequelize(config.database, config.username, config.password, config.options);
+
 console.log('===============');
 console.log(sequelize);
 console.log('===============');
