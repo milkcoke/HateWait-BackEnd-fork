@@ -19,7 +19,7 @@ router.post('/member', (request, response) => {
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
     dbConnection().execute(check_id_sql, [memberInfo.id], (error) => {
-        if(error) response.send(error);
+        if(error) return response.send(error);
         else {
             return response.status(409).json({
                 message : '이미 존재하는 ID입니다.'
@@ -63,7 +63,7 @@ router.post('/member', (request, response) => {
     console.error(erorr);
     return response.status(500).json({
         message : "서버의 비밀번호 암호화 오류입니다."
-        })
+        });
     });
 
 });
