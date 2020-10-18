@@ -17,7 +17,7 @@ fs
     .readdirSync(__dirname)
     .filter(function(file) {
         // 모든 model 파일들 걸러냄.
-        return (file.indexOf(".") !== 0) && (file !== "index.js" || file !== "init-models.js");
+        return (file.indexOf(".") !== 0) && ((file !== "index.js" || file !== "init-models.js"));
     })
     .forEach(function(file) {
         const model = require(path.join(__dirname, file));

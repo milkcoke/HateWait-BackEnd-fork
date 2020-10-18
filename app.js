@@ -45,21 +45,22 @@ app.use(session({
 
 
 
+// authenticate : Model - DB Connection authentication
+// sync : inform about information of tables in DB to sequelize
 sequelize.authenticate()
-    .then(success => {
-        console.log('sequelize success to connect with DB' + success);
+    .then(() => {
+        console.log('sequelize success to connect with DB');
+        return sequelize.sync()
     })
-    .catch(error => {
-        console.error(error);
-    });
-/* sequelize.sync()
     .then(success => {
         console.log('sequelize success to sychronize defined models to the DB' + success);
     })
     .catch(error => {
         console.error(error);
     });
- */
+
+
+
 app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
