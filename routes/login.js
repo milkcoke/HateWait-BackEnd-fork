@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jsonwebtoken = require('jsonwebtoken');
+//임시로 bcrypt, dbConnection 넣음, passport 모듈사용시 다시 삭제할 예정
+const bcrypt = require('../config/bcrypt_setting');
+const dbConnection = require('../db/db');
+// 삭제 예정 2줄
 const passport = require('../config/passport');
 const passportJwt = require('../config/passport_jwt');
 
@@ -13,6 +17,39 @@ router.post('/members', passport.authenticate('local-login', {successRedirect : 
     response.json({
         message : 'login-trying is completed!'});
     });
+
+router.post('/members/test', (request, response) => {
+    const memberInfo = request.body;
+    console.log('=================');
+    if(!memberInfo.id || !memberInfo.pw) {
+        return response.status(409).json({
+            message : "아이디 비밀번호중 입력하지 않은게 있는데 어찌 시도하셨나요?"
+        });
+    }
+    bcrypt.SALT.then(SALT=> {
+        return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
+    }).then(hashedPassword => {
+        const login_sql = 'SELECT id, pw FROM member where id=? AND pw=?';
+        dbConnection().query(login_sql, [memberInfo], (error, result)=> {
+            console.log(result);
+            if (error) console.error(error);
+            else if (!result) {
+                return response.status(409).json({
+                    message : "아이디 혹은 비밀번호를 확인해주세요"
+                });
+            } else {
+                return response.status(200).json({
+                    message : "로그인 성공!",
+                    memberId : result.id
+                });
+            }
+        })
+    }).catch(error => {
+        return response.status(500).json({
+            message : "서버의 비밀번호 암호화 오류입니다."
+        })
+    })
+})
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
