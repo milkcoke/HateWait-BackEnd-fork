@@ -7,7 +7,9 @@ const config = require('../config/sequelize_setting');
 const db = {};
 
 const sequelize = new Sequelize(config);
-
+console.log('===============');
+console.log(config.options);
+console.log(config);
 console.log('===============');
 console.log(sequelize);
 console.log('===============');
