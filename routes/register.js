@@ -16,6 +16,7 @@ router.post('/member', (request, response) => {
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
+    console.log(memberInfo);
     for (let element in memberInfo) {
         console.log(element);
     }
@@ -23,6 +24,7 @@ router.post('/member', (request, response) => {
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
     dbConnection().execute(check_id_sql, [memberInfo.id], (error, row) => {
+        console.log('id체크');
         if(error) {
             return response.status(500).json(error);
         } else if (row[0]) {
@@ -36,6 +38,7 @@ router.post('/member', (request, response) => {
     //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
     dbConnection().execute(check_phone_sql, [memberInfo.phone], (error, row) => {
+        console.log('phone 체크');
         if (error) {
             return response.status(500).json(error);
         } else if (row[0]) {
@@ -52,8 +55,9 @@ router.post('/member', (request, response) => {
     }).then(hashedPassword => {
         memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-        const register_store_sql = 'INSERT INTO member SET ?';
-        dbConnection().execute(register_store_sql, [memberInfo], (error, result)=> {
+        const register_member_sql = 'INSERT INTO member SET ?';
+        dbConnection().execute(register_member_sql, [memberInfo], (error, result)=> {
+            console.log('비밀번호 암호화 체크');
             if (error) console.error(error);
             else if (!result) {
                 return response.status(500).json({
