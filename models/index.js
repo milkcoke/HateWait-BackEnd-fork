@@ -6,17 +6,12 @@ const config = require('../config/sequelize_setting');
 
 const db = {};
 
-console.log('===============');
-console.log(config);
 const sequelize = new Sequelize(config.database, config.username, config.password, {
     dialect : config.dialect,
     port : config.port,
     host : config.host
 });
 
-console.log('===============');
-console.log(sequelize);
-console.log('===============');
 
 fs
     .readdirSync(__dirname)
@@ -25,7 +20,7 @@ fs
         return (file.indexOf(".") !== 0) && (file !== "index.js" || file !== "init-models.js");
     })
     .forEach(function(file) {
-        const model = sequelize.import(path.join(__dirname, file));
+        const model = require(path.join(__dirname, file));
         db[model.name] = model;
         console.log('model.name:' + model.name);  // 테스트로그 model명..
     });
