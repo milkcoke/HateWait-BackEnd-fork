@@ -3,7 +3,8 @@ const router = express.Router();
 const jsonwebtoken = require('jsonwebtoken');
 //임시로 bcrypt, dbConnection 넣음, passport 모듈사용시 다시 삭제할 예정
 const bcrypt = require('../config/bcrypt_setting');
-const dbConnection = require('../db/db');
+// const dbConnection = require('../db/db');
+const dbConnection2 = require('../db/db2');
 // 삭제 예정 2줄
 const passport = require('../config/passport');
 const passportJwt = require('../config/passport_jwt');
@@ -31,7 +32,7 @@ router.post('/members/test', (request, response) => {
     //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
     }).then(hashedPassword => {
         const login_sql = 'SELECT name FROM member where id=? AND pw=?';
-        dbConnection().query(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
+        dbConnection2().execute(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
             if (error) console.error(error);
             else if (!row[0]) {
                 return response.status(409).json({
