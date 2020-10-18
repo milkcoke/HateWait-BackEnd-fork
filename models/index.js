@@ -26,11 +26,11 @@ for(let [name, value] in Object.entries(initiatedModelNames)) {
 
 console.log('first db console : ' + db);
 
-Object.keys(db).forEach(function(modelName) {
-    if ("associate" in db[modelName]) {
-        db[modelName].associate(db);
-    }
-});
+// Object.keys(db).forEach( modelName => {
+//     if (db[modelName].associate in db[modelName]) {
+//         db[modelName].associate(db);
+//     }
+// });
 console.log('second db console : ' + db);
 // fs
 //     .readdirSync(__dirname)
