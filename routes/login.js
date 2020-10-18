@@ -32,7 +32,6 @@ router.post('/members/test', (request, response) => {
     }).then(hashedPassword => {
         const login_sql = 'SELECT name FROM member where id=? AND pw=?';
         dbConnection().query(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
-            console.log(row);
             if (error) console.error(error);
             else if (!row[0]) {
                 return response.status(409).json({
@@ -40,7 +39,7 @@ router.post('/members/test', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : "로그인 성공!\\n이름: " + `${row[0].name}`
+                    message : "로그인 성공!\n이름: " + `${row[0].name}`
                 });
             }
         })
