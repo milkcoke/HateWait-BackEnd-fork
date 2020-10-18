@@ -17,15 +17,18 @@ fs
     .readdirSync(__dirname)
     .filter(function(file) {
         // 모든 model 파일들 걸러냄.
-        return (file.indexOf(".") !== 0) && ((file !== "index.js" || file !== "init-models.js"));
+        return (file.indexOf(".") !== 0 && (file !== "index.js" || file !== "init-models.js"));
     })
     .forEach(function(file) {
+        console.log('file string : ' + file);
         const model = require(path.join(__dirname, file));
+        console.log('model : ' + model);
         db[model.name] = model;
         console.log('model.name:' + model.name);  // 테스트로그 model명..
     });
 
-Object.keys(db).forEach(function(modelName) {
+Object.keys(db).forEach(modelName => {
+    console.log('model name : ' + modelName)
     if ("associate" in db[modelName]) {
         db[modelName].associate(db);
     }

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
-const memberModel = require('../models').member;
+const memberModel = require('../models/index').member;
 
 router.get('/', function(req, res) {
     // const sql = 'SELECT * FROM MEMBER';

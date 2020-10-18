@@ -47,6 +47,7 @@ app.use(session({
 
 // authenticate : Model - DB Connection authentication
 // sync : inform about information of tables in DB to sequelize
+// Synchronizing all models at once!
 sequelize.authenticate()
     .then(() => {
         console.log('sequelize success to connect with DB');
