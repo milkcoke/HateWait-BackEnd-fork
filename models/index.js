@@ -6,12 +6,11 @@ const config = require('../config/sequelize_setting');
 
 const db = {};
 
-const sequelize = new Sequelize(
-    config.DB_NAME,
-    config.DB_USER,
-    config.DB_PASSWORD,
-    config.options
-);
+const sequelize = new Sequelize(config);
+
+console.log('===============');
+console.log(sequelize);
+console.log('===============');
 
 fs
     .readdirSync(__dirname)
