@@ -31,17 +31,17 @@ router.post('/members/test', (request, response) => {
     //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
     }).then(hashedPassword => {
         const login_sql = 'SELECT id, pw FROM member where id=? AND pw=?';
-        dbConnection().query(login_sql, [memberInfo.id, memberInfo.pw], (error, result)=> {
-            console.log(result);
+        dbConnection().query(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
+            console.log(row);
             if (error) console.error(error);
-            else if (!result) {
+            else if (!row[0]) {
                 return response.status(409).json({
                     message : "아이디 혹은 비밀번호를 확인해주세요"
                 });
             } else {
                 return response.status(200).json({
                     message : "로그인 성공!",
-                    memberId : result.id
+                    memberId : row[0].id
                 });
             }
         })
