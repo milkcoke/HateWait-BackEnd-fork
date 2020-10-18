@@ -30,7 +30,7 @@ router.post('/members/test', (request, response) => {
         return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
     //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
     }).then(hashedPassword => {
-        const login_sql = 'SELECT id, pw FROM member where id=? AND pw=?';
+        const login_sql = 'SELECT name FROM member where id=? AND pw=?';
         dbConnection().query(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
             console.log(row);
             if (error) console.error(error);
@@ -40,8 +40,7 @@ router.post('/members/test', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : "로그인 성공!",
-                    memberId : row[0].id
+                    message : "로그인 성공!\\n이름: " + `${row[0].name}`
                 });
             }
         })
