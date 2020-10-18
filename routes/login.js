@@ -27,7 +27,7 @@ router.post('/members/test', (request, response) => {
         });
     }
 
-    const password_sql = 'SELECT pw FROM member where id=?';
+    const password_sql = 'SELECT name, pw FROM member where id=?';
     dbConnection().execute(password_sql, [memberInfo.id], (error, row)=> {
         if (error) {
             response.status(500).json({
@@ -42,7 +42,7 @@ router.post('/members/test', (request, response) => {
                 .then(result => {
                     return response.status(200).json({
                         message : "로그인 성공!",
-                        member : row[0].name
+                        member : row[0].name + "님 환영합니다."
                     });
                 })
                 .catch(error => {
