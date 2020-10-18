@@ -1,7 +1,6 @@
 const mysql = require('mysql2');
 const settings = require('./settings.js');
 
-const dbConnection = mysql.createConnection(settings);
 
 
 //dissconnectiion Handling

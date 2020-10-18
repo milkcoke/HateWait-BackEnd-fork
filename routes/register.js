@@ -18,7 +18,7 @@ router.post('/member', (request, response) => {
     }
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
-    dbConnection().execute(check_id_sql, [memberInfo.id], (error, row) => {
+    dbConnection().execute(check_id_sql, [memberInfo.id], (error) => {
         if(error) response.send(error);
         else {
             return response.status(409).json({
