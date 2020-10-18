@@ -6,7 +6,6 @@ const settings = require('./settings.js');
 //dissconnectiion Handling
 //10~20초 사이마다 새로운 쿼리가 없을 시 disconnect된다.
 
-
 module.exports = function handleDisconnect() {
     const dbConnection = mysql.createConnection(settings);
     dbConnection.connect(function(err){

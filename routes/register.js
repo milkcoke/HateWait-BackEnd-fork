@@ -53,7 +53,8 @@ router.post('/member', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : '회원가입 완료!'
+                    message : '회원가입 완료!',
+                    memberName : memberInfo.name + "님 회원가입 축하해요!"
                 });
             }
         })
@@ -116,7 +117,8 @@ router.post('/store', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : '회원가입 완료!'
+                    message : '회원가입 완료!',
+                    storeName : storeInfo.name + "가게 가입을 축하해요!"
                 });
             }
         })
