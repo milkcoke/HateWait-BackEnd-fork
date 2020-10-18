@@ -24,7 +24,7 @@ router.post('/member', (request, response) => {
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
     dbConnection().execute(check_id_sql, [memberInfo.id], (error, row) => {
         if(error) {
-            response.send(error);
+            return response.status(500).json(error);
         } else if (row[0]) {
             console.log(row[0]);
             return response.status(409).json({
@@ -37,7 +37,7 @@ router.post('/member', (request, response) => {
     const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
     dbConnection().execute(check_phone_sql, [memberInfo.phone], (error, row) => {
         if (error) {
-            response.send(error);
+            return response.status(500).json(error);
         } else if (row[0]) {
             console.log(row[0]);
             return response.status(409).json({
@@ -91,8 +91,8 @@ router.post('/store', (request, response) => {
 //    id 중복성 검사
     const check_id_sql = 'SELECT id FROM store WHERE id=?';
     dbConnection().execute(check_id_sql, [storeInfo.id], (error, row) => {
-        if (error) response.send(error);
-        else if (row) {
+        if (error) return response.status(500).json(error);
+        else if (row[0]) {
             return response.status(409).json({
                 message : '이미 존재하는 ID입니다.'
             });
@@ -101,8 +101,8 @@ router.post('/store', (request, response) => {
 //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM store WHERE phone=?';
     dbConnection().execute(check_phone_sql, [storeInfo.phone], (error, row) => {
-        if (error) response.send(error);
-        else if (row) {
+        if (error) return response.status(500).json(error);
+        else if (row[0]) {
             return response.status(409).json({
                 message : '이미 가입된 전화번호입니다.'
             })
