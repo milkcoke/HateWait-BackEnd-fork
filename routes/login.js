@@ -40,7 +40,8 @@ router.post('/members/test', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : "로그인 성공!\n이름: " + `${row[0].name}`
+                    message : "로그인 성공!",
+                    member : row[0].name
                 });
             }
         })
