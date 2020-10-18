@@ -18,7 +18,7 @@ router.post('/member', (request, response) => {
     }
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
-    dbConnection().query(check_id_sql, [memberInfo.id], (error, row) => {
+    dbConnection().execute(check_id_sql, [memberInfo.id], (error, row) => {
         if(error) response.send(error);
         else {
             return response.status(409).json({
@@ -29,7 +29,7 @@ router.post('/member', (request, response) => {
 
     //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
-    dbConnection().query(check_phone_sql, [memberInfo.phone], (error, row) => {
+    dbConnection().execute(check_phone_sql, [memberInfo.phone], (error, row) => {
         if (error) response.send(error);
         else if (row) {
             return response.status(409).json({
@@ -45,7 +45,7 @@ router.post('/member', (request, response) => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO member SET ?';
-        dbConnection().query(register_store_sql, [memberInfo], (error, result)=> {
+        dbConnection().execute(register_store_sql, [memberInfo], (error, result)=> {
             if (error) console.error(error);
             else if (!result) {
                 return response.status(500).json({
@@ -81,7 +81,7 @@ router.post('/store', (request, response) => {
     }
 //    id 중복성 검사
     const check_id_sql = 'SELECT id FROM store WHERE id=?';
-    dbConnection().query(check_id_sql, [storeInfo.id], (error, row) => {
+    dbConnection().execute(check_id_sql, [storeInfo.id], (error, row) => {
         if (error) response.send(error);
         else if (row) {
             return response.status(409).json({
@@ -91,7 +91,7 @@ router.post('/store', (request, response) => {
     });
 //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM store WHERE phone=?';
-    dbConnection().query(check_phone_sql, [storeInfo.phone], (error, row) => {
+    dbConnection().execute(check_phone_sql, [storeInfo.phone], (error, row) => {
         if (error) response.send(error);
         else if (row) {
             return response.status(409).json({
@@ -108,7 +108,7 @@ router.post('/store', (request, response) => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO store SET ?';
-        dbConnection().query(register_store_sql, [storeInfo], (error, result)=> {
+        dbConnection().execute(register_store_sql, [storeInfo], (error, result)=> {
             if (error) console.error(error);
             else if (!result) {
                 return response.status(500).json({

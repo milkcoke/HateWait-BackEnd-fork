@@ -5,7 +5,7 @@ const memberModel = require('../models/index').member;
 
 router.get('/', function(req, res) {
     const sql = 'SELECT * FROM MEMBER';
-    dbConnection().query(sql, (error, rows) => {
+    dbConnection().execute(sql, (error, rows) => {
         if (error) {
             res.send(error);
         } else {

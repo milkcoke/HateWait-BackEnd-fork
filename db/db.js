@@ -1,7 +1,7 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const settings = require('./settings.js');
 
-// const dbConnection = mysql.createConnection(settings);
+const dbConnection = mysql.createConnection(settings);
 
 
 //dissconnectiion Handling
@@ -20,7 +20,7 @@ module.exports = function handleDisconnect() {
     });
 
     dbConnection.on('error', function(err) {
-        console.error('Database Error :', err);
+        // console.error('Database Error :', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {

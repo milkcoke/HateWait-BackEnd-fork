@@ -36,7 +36,7 @@ passport.deserializeUser(function(storeInfo, done) {
     let sql = 'SELECT id FROM STORE where id=?'
     console.log('deserialize:' + storeInfo);
     // 현재 세션에 저장된 id와
-    dbConnection().query(sql, [storeInfo.id], (error, rows)=> {
+    dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
         if (error) done(error, false);
         // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
         // id만 붙이는게 나을까?
@@ -63,7 +63,7 @@ passport.use('local-login', new LocalStrategy({
             // The second form .query(sqlString, values, callback) comes when using
 
             const sql = 'SELECT id, name, phone FROM STORE WHERE id=? AND pw=?';
-            dbConnection().query(sql, [id, hashedPassword], (error, rows) => {
+            dbConnection().execute(sql, [id, hashedPassword], (error, rows) => {
                 if (error) {
                     throw error;
                     console.error(error + 'query 결과 없다.');

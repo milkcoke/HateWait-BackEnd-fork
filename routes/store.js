@@ -4,7 +4,7 @@ const dbConnection = require('../db/db');
 
 router.get('/', function(req, res) {
     const sql = 'SELECT * FROM store';
-    dbConnection().query(sql, (error, rows) => {
+    dbConnection().execute(sql, (error, rows) => {
         if (error) {
             res.send(error);
         } else {
