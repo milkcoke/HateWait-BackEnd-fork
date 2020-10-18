@@ -16,11 +16,7 @@ router.post('/member', (request, response) => {
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
-    console.log(memberInfo);
-    for (let element in memberInfo) {
-        console.log(element);
-    }
-    console.log('==============')
+
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
     dbConnection().query(check_id_sql, [memberInfo.id], (error, row) => {
@@ -118,8 +114,8 @@ router.post('/store', (request, response) => {
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-        const register_store_sql = 'INSERT INTO store SET ?';
-        dbConnection().execute(register_store_sql, [storeInfo], (error, result)=> {
+        const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        dbConnection().execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=> {
             if (error) {
                 console.error(error);
                 return response.status(500).json({
