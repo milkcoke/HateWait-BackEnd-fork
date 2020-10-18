@@ -26,31 +26,59 @@ router.post('/members/test', (request, response) => {
             message : "아이디 비밀번호중 입력하지 않은게 있는데 어찌 시도하셨나요?"
         });
     }
-    bcrypt.SALT.then(SALT=> {
-        return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
-    //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
-    }).then(hashedPassword => {
-        memberInfo.pw = hashedPassword;
-        const login_sql = 'SELECT name FROM member where id=? AND pw=?';
-        dbConnection().execute(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
-            if (error) console.error(error);
-            else if (!row[0]) {
-                return response.status(409).json({
-                    message : "아이디 혹은 비밀번호를 확인해주세요"
+
+    const password_sql = 'SELECT pw FROM member where id=?';
+    dbConnection().execute(password_sql, [memberInfo.id], (error, row)=> {
+        if (error) {
+            response.status(500).json({
+                message : "서버 오류에요"
+            });
+        } else if (!row[0]) {
+            return response.status(409).json({
+                message : "해당 사용자가 존재하지 않습니다."
+            });
+        } else {
+            bcrypt.bcrypt.compare(memberInfo.pw, row[0].pw)
+                .then(result => {
+                    return response.status(200).json({
+                        message : "로그인 성공!",
+                        member : row[0].name
+                    });
+                })
+                .catch(error => {
+                    return response.status(409).json({
+                        message : "비밀번호가 옳지 않아요"
+                    })
                 });
-            } else {
-                return response.status(200).json({
-                    message : "로그인 성공!",
-                    member : row[0].name
-                });
-            }
-        })
-    }).catch(error => {
-        return response.status(500).json({
-            message : "서버의 비밀번호 암호화 오류입니다."
-        })
-    })
-})
+        }
+    });
+
+    // bcrypt.SALT.then(SALT=> {
+    //     return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
+    // //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
+    // }).then(hashedPassword => {
+    //     memberInfo.pw = hashedPassword;
+    //
+    //     const login_sql = 'SELECT name FROM member where id=? AND pw=?';
+    //     dbConnection().execute(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
+    //         if (error) console.error(error);
+    //         else if (!row[0]) {
+    //             return response.status(409).json({
+    //                 message : "아이디 혹은 비밀번호를 확인해주세요"
+    //             });
+    //         } else {
+    //             return response.status(200).json({
+    //                 message : "로그인 성공!",
+    //                 member : row[0].name
+    //             });
+    //         }
+    //     })
+    // }).catch(error => {
+    //     return response.status(500).json({
+    //         message : "서버의 비밀번호 암호화 오류입니다."
+    //     })
+    // })
+});
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
