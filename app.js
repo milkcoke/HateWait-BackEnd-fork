@@ -41,7 +41,8 @@ app.use(session({
     secret : '$%HATEWAIT$%',
     resave : false,
     saveUninitialized: true
-    }));
+    })
+);
 
 
 

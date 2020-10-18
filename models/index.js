@@ -6,6 +6,8 @@ const config = require('../config/sequelize_setting');
 
 const db = {};
 
+//timestamp : true 일 경우 createAt, updateAt, deleteAt 칼럼이 자동생성됨
+
 const sequelize = new Sequelize(config.database, config.username, config.password, {
     dialect : config.dialect,
     port : config.port,
@@ -15,32 +17,43 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     timestamps : config.timestamps
     }
 });
-// define : {
-//     charset : config.charset,
-//         timestamps : config.timestamps
-// }
 
+const initiatedModelNames = require('./init-models').initModels(sequelize);
 
-fs
-    .readdirSync(__dirname)
-    .filter(function(file) {
-        // 모든 model 파일들 걸러냄.
-        return (file.indexOf(".") !== 0 && file !== "index.js" && file !== "init-models.js");
-    })
-    .forEach(function(file) {
-        console.log('file string : ' + file);
-        const model = require(path.join(__dirname, file));
-        console.log('model : ' + model);
-        db[model.name] = model;
-        console.log('model.name:' + model.name);  // 테스트로그 model명..
-    });
+for(let [name, value] in Object.entries(initiatedModelNames)) {
+    db[name] = value;
+}
 
-Object.keys(db).forEach(modelName => {
-    console.log('model name : ' + modelName)
+console.log('first db console : ' + db);
+
+Object.keys(db).forEach(function(modelName) {
     if ("associate" in db[modelName]) {
         db[modelName].associate(db);
     }
 });
+console.log('second db console : ' + db);
+// fs
+//     .readdirSync(__dirname)
+//     .filter(function(file) {
+//         // 모든 model 파일들 걸러냄.
+//         return (file.indexOf(".") !== 0 && file !== "index.js" && file !== "init-models.js");
+//     })
+//     .forEach(function(file) {
+//         console.log('file string : ' + file);
+//         const model = require(path.join(__dirname, file));
+//         console.log('model : ' + model);
+//         db[model.name] = model;
+//         console.log('model.name:' + model.name);  // 테스트로그 model명..
+//     });
+
+
+
+// Object.keys(db).forEach(modelName => {
+//     console.log('model name : ' + modelName)
+//     if ("associate" in db[modelName]) {
+//         db[modelName].associate(db);
+//     }
+// });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
