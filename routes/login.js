@@ -30,6 +30,7 @@ router.post('/members/test', (request, response) => {
         return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
     //    일단 가입된거 암호화되지 않았기 때문에 평문으로 비교
     }).then(hashedPassword => {
+        memberInfo.pw = hashedPassword;
         const login_sql = 'SELECT name FROM member where id=? AND pw=?';
         dbConnection().execute(login_sql, [memberInfo.id, memberInfo.pw], (error, row)=> {
             if (error) console.error(error);
