@@ -16,11 +16,17 @@ router.post('/member', (request, response) => {
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
+    for (element in memberInfo) {
+        console.log(element);
+    }
+    console.log('==============')
     // 중복 회원가입 방지
     const check_id_sql = 'SELECT id FROM member WHERE id=?';
-    dbConnection().execute(check_id_sql, [memberInfo.id], (error) => {
-        if(error) return response.send(error);
-        else {
+    dbConnection().execute(check_id_sql, [memberInfo.id], (error, row) => {
+        if(error) {
+            response.send(error);
+        } else if (row[0]) {
+            console.log(row[0]);
             return response.status(409).json({
                 message : '이미 존재하는 ID입니다.'
             });
@@ -30,8 +36,10 @@ router.post('/member', (request, response) => {
     //    phone 중복성 검사
     const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
     dbConnection().execute(check_phone_sql, [memberInfo.phone], (error, row) => {
-        if (error) response.send(error);
-        else if (row[0]) {
+        if (error) {
+            response.send(error);
+        } else if (row[0]) {
+            console.log(row[0]);
             return response.status(409).json({
                 message : '이미 가입된 전화번호입니다.'
             })
