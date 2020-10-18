@@ -7,9 +7,12 @@ const config = require('../config/sequelize_setting');
 const db = {};
 
 console.log('===============');
-console.log(config.options);
 console.log(config);
-const sequelize = new Sequelize(config.database, config.username, config.password, config.options);
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+    dialect : config.dialect,
+    port : config.port,
+    host : config.host
+});
 
 console.log('===============');
 console.log(sequelize);
