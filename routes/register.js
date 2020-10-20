@@ -128,8 +128,7 @@ router.post('/store', (request, response) => {
                 });
             } else {
                 return response.status(200).json({
-                    message : '회원가입 완료!',
-                    storeName : storeInfo.name + "가게 가입을 축하해요!"
+                    message : '회원가입 완료!'
                 });
             }
         })
