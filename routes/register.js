@@ -66,7 +66,7 @@ router.post('/member', (request, response) => {
         })
     })
     .catch((error) => {
-    console.error(erorr);
+    console.error(error);
     return response.status(500).json({
         message : "서버의 비밀번호 암호화 오류입니다."
         });
