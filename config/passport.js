@@ -67,7 +67,7 @@ passport.use('local-login', new LocalStrategy({
     passReqToCallback : true
     }, function(request, id, pw, done) {
         //암호화를 sql 날리기 전에 무조건 수행.
-            console.log('Local Strategy Authentication is conducted!');
+
             //The simplest form of .query() is .query(sqlString, callback)
             // The second form .query(sqlString, values, callback) comes when using
             const sql = 'SELECT id, name, phone, pw FROM STORE WHERE id=?';
@@ -76,7 +76,7 @@ passport.use('local-login', new LocalStrategy({
                     throw error;
                     console.error(error + 'query 결과 없다.');
                     return done(error);
-                } else if (rows[0].length === 0) {
+                } else if (!rows[0]) {
                     console.log("Can't find store id");
                     return done(null, false, {
                         message: '해당 사용자를 찾지 못했어요.'
