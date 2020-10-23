@@ -77,6 +77,7 @@ passport.use('local-login', new LocalStrategy({
                     // 패스워드 검증
                     bcrypt.bcrypt.compare(pw, rows[0].pw)
                     .catch(error => {
+                        console.error(error);
                         return done(null, false, {
                             message : "비밀번호 검증 오류!"
                         });
@@ -109,9 +110,6 @@ passport.use('local-login', new LocalStrategy({
                 //     return done(null, false);
                 // }
             })
-        .catch(err => {
-            console.error(err);
-        });
     }));
 
 
