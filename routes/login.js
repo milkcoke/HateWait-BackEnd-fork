@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const jsonwebtoken = require('jsonwebtoken');
-//임시로 bcrypt, dbConnection 넣음, passport 모듈사용시 다시 삭제할 예정
 const bcrypt = require('../config/bcrypt_setting');
 const dbConnection = require('../db/db');
 // 삭제 예정 2줄
@@ -9,10 +8,17 @@ const passport = require('../config/passport');
 
 router.post('/', (request, response)=> {
     const reLoginFlash = request.flash();
+    console.log(reLoginFlash);
+    console.error(reLoginFlash.error);
+
     if (reLoginFlash.error) {
        response.json({
            message : reLoginFlash.error
        })
+    } else {
+        response.json({
+            message : '재로그인 페이지입니다.'
+        })
     }
 });
 
