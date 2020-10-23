@@ -42,7 +42,7 @@ app.use(session({
         saveUninitialized: true
     })
 );
-
+app.use(flash());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -74,7 +74,7 @@ app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
 app.use(passport.session());
-app.use(flash());
+
 
 app.use('/', indexRouter);
 app.use('/login',loginRouter);

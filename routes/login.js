@@ -8,6 +8,15 @@ const dbConnection = require('../db/db');
 const passport = require('../config/passport');
 const passportJwt = require('../config/passport_jwt');
 
+router.post('/', (request, response)=> {
+    const reLoginFlash = request.flash();
+    if (reLoginFlash.error) {
+       response.json({
+           message : reLoginFlash.error
+       })
+    }
+});
+
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
 router.post('/members', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
@@ -67,7 +76,9 @@ router.post('/stores', passport.authenticate('local-login',
 
 
 router.get('/success', (request, response) => {
-    response.json()
+    response.json({
+        "message" : "로그인 성공!"
+    })
 })
 
 // failureFlash: passport가 strategy verify callback에 의해 정의된 에러 메시지를 flash하게 하는 옵션.

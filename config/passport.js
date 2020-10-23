@@ -72,6 +72,7 @@ passport.use('local-login', new LocalStrategy({
 
             //The simplest form of .query() is .query(sqlString, callback)
             // The second form .query(sqlString, values, callback) comes when using
+            //3rd parameter of done is flash object
             const sql = 'SELECT id, name, phone, pw FROM STORE WHERE id=?';
             dbConnection().execute(sql, [id], (error, rows) => {
                 if (error) {
