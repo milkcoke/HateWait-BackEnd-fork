@@ -12,11 +12,11 @@ router.post('/', (request, response)=> {
     console.error(reLoginFlash.error);
 
     if (reLoginFlash.error) {
-       response.json({
+       return response.json({
            message : reLoginFlash.error
        })
     } else {
-        response.json({
+        return response.json({
             message : '재로그인 페이지입니다.'
         })
     }
@@ -28,7 +28,7 @@ router.post('/members', passport.authenticate('local-login', {successRedirect : 
     function(request, response) {
     //로그인 이후 메인 페이지로 이동.
         console.log('??에에에엥');
-    response.json({
+    return response.json({
         message : 'login-trying is completed!'});
     });
 
@@ -74,14 +74,14 @@ router.post('/stores', passport.authenticate('local-login',
     {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
         //로그인 이후 메인 페이지로 이동.
-        response.json({
+        return response.json({
             message : 'login-trying is completed!'
         });
     });
 
 
 router.get('/success', (request, response) => {
-    response.json({
+    return response.json({
         "message" : "로그인 성공!"
     })
 })
