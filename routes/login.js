@@ -56,7 +56,8 @@ router.post('/members/test', (request, response) => {
 });
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
-router.post('/stores', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
+router.post('/stores', passport.authenticate('local-login',
+    {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
         //로그인 이후 메인 페이지로 이동.
         response.json({

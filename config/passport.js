@@ -7,7 +7,7 @@ const dbConnection = require('../db/db');
 
 // 쿠키 - 세션을 사용하기 위해서 serialize, deserialize 명세가 필수적이다.
 
-// serialize :  login시 DB에서 조회된 customer or store를 어떻게 session에 저장할지 정의하는 부분.
+// serialize :  login시 DB 에서 조회된 customer or store 를 어떻게 session 에 저장할지 정의하는 부분.
 //메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 '성공' 했을때 호출됨
 // done: 예약어 메소드로 null, 유저 정보 객체를 넘긴다.
 passport.serializeUser(function(storeInfo, done) {
@@ -33,14 +33,19 @@ passport.serializeUser(function(storeInfo, done) {
 passport.deserializeUser(function(storeInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
-    let sql = 'SELECT id FROM STORE where id=?'
+    const sql = 'SELECT id, name FROM STORE where id=?'
     console.log('deserialize:' + storeInfo);
     // 현재 세션에 저장된 id와
     dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
         if (error) done(error, false);
         // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
         // id만 붙이는게 나을까?
-        else done(null, rows[0].id);
+        else {
+            done(null, {
+                id: rows[0].id,
+                name: rows[0].name
+            });
+        }
     });
 });
 
@@ -52,34 +57,49 @@ passport.use('local-login', new LocalStrategy({
     usernameField : 'userId',
     passwordField : 'password',
     passReqToCallback : true
-    }, function(request, userId, password, done) {
+    }, function(request, id, pw, done) {
         //암호화를 sql 날리기 전에 무조건 수행.
-    bcrypt.SALT
-        .then(SALT=> {
-            return bcrypt.bcrypt.hash(password, SALT);
-        }).then((hashedPassword) => {
             console.log('Local Strategy Authentication is conducted!');
             //The simplest form of .query() is .query(sqlString, callback)
             // The second form .query(sqlString, values, callback) comes when using
-
-            const sql = 'SELECT id, name, phone FROM STORE WHERE id=? AND pw=?';
-            dbConnection().execute(sql, [id, hashedPassword], (error, rows) => {
+            const sql = 'SELECT id, name, phone, pw FROM STORE WHERE id=?';
+            dbConnection().execute(sql, [id], (error, rows) => {
                 if (error) {
                     throw error;
                     console.error(error + 'query 결과 없다.');
-                    return done(JSON.stringify(error));
-                } else if (rows.length === 0) {
-                    console.log("Can't find any id or password");
-                    return done(null, false, JSON.stringify({
-                        action: 'login',
-                        error_message: 'ID or password is incorrect'
-                    }));
+                    return done(error);
+                } else if (rows[0].length === 0) {
+                    console.log("Can't find store id");
+                    return done(null, false, {
+                        message: '해당 사용자를 찾지 못했어요.'
+                    });
                 } else {
-                    //rows is object type
-                    //Casting object -> json
-                    const storeInfo = rows[0];
-                    console.log('passport Login Success!');
-                    return done(null, storeInfo);
+                    // 패스워드 검증
+                    bcrypt.bcrypt.compare(pw, rows[0].pw)
+                    .catch(error => {
+                        return done(null, false, {
+                            message : "비밀번호 검증 오류!"
+                        });
+                    })
+                    .then(result => {
+                        //success
+                        if(result) {
+                            //2nd parameter is saved at server and
+                            //available through request.user property
+                            return done(null, {
+                                id: rows[0].id,
+                                name: rows[0].name
+                            }, {
+                                message : 'Login Success!'
+                            });
+                        } else {
+                            return done(null, false, {
+                                message : '비밀번호가 일치하지 않아요.'
+                            })
+                        }
+
+                    })
+
                 }
                 // else {
                 //     //여기 해석을 내가해야하는데...
@@ -89,7 +109,6 @@ passport.use('local-login', new LocalStrategy({
                 //     return done(null, false);
                 // }
             })
-        })
         .catch(err => {
             console.error(err);
         });
