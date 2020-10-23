@@ -15,8 +15,8 @@ passport.serializeUser(function(storeInfo, done) {
     //done's first parameter: error, not exists error -> null
     // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
     console.log('serialize===============');
-    for(let ele in storeInfo) {
-        console.log(ele);
+    for(let key in storeInfo) {
+        console.log(key.valueOf());
     }
     console.log('serialize===============');
 
@@ -37,13 +37,15 @@ passport.serializeUser(function(storeInfo, done) {
 passport.deserializeUser(function(storeInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
-    const sql = 'SELECT id, name FROM STORE where id=?'
+
     console.log('=====deserialize User=====');
-    for (let ele in storeInfo) {
-        console.log(ele);
+    for (let key in storeInfo) {
+        console.log(key.valueOf());
     }
     console.log('=====deserialize User=====');
     // 현재 세션에 저장된 id와
+
+    const sql = 'SELECT id, name FROM STORE where id=?'
     dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
         if (error) done(error, false);
         // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
@@ -59,7 +61,7 @@ passport.deserializeUser(function(storeInfo, done) {
 
 //usernameField - Optional, defaults to 'username'
 // passwordField - Optional, defaults to 'password'
-// Both fields define the nameof the properties in the POST body that are sent to the server.
+// Both fields define the name of the properties in the POST body that are sent to the server.
 
 passport.use('local-login', new LocalStrategy({
     usernameField : 'id',

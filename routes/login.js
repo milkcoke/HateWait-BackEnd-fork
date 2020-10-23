@@ -61,57 +61,10 @@ router.post('/stores', passport.authenticate('local-login',
     function(request, response) {
         //로그인 이후 메인 페이지로 이동.
         response.json({
-            message : 'login-trying is completed!'});
+            message : 'login-trying is completed!'
+        });
     });
 
-router.post('/stores-jwt', (request, response) => {
-        passportJwt.authenticate('jwt', {session: false}, (error, store)=> {
-        if (error || !store) {
-            return response.status(400).json({
-                message : 'your token is unauthorized',
-                store : store
-            });
-        } else {
-            console.log('request  여기까지 받음 ==== ' + store);
-            request.login(store, {session: false}, (error) => {
-                if (error) return response.json(error);
-            });
-            //token 인증
-            const token = jsonwebtoken.sign(store.toJSON(), 'secret');
-            return response.json({store, token});
-            console.log(store);
-        }
-    })
-});
-
-
-// router.post('/stores-jwt', passportJwt.authenticate('jwt', {session: false}, (error, store)=> {
-//         if (error) throw error;
-//         else console.log(store);
-//     }),
-//     (request, response) => {
-//         response.json(request.store)
-//     });
-
-
-// router.post('/stores-jwt',
-//     passportJwt.authenticate('jwt',
-//     {successRedirect : '/success', failureRedirect : '/login', failureFlash : true},
-//     (error, store) => {
-//         if (error) throw error;
-//         else {
-//             //여기 수정 필요 id 받아서 jsonwebtoken 만들어줘야함.
-//             jsonwebtoken.sign({store}, 'secret');
-//             console.log('After authentication return store info : ' + store);
-//         }
-//     //    request.store = store;
-//     }),
-//     function(request, response) {
-//         //로그인 이후 메인 페이지로 이동.
-//         response.json({
-//             store
-//         });
-//     });
 
 router.get('/success', (request, response) => {
     response.json()
