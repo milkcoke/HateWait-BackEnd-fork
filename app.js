@@ -14,7 +14,6 @@ const registerRouter = require('./routes/register');
 
 const sequelize = require('./models').sequelize;
 const session = require('express-session');
-const passport = require('./config/passport');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
 const flash = require('connect-flash');
 const app = express();

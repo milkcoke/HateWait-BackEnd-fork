@@ -6,7 +6,6 @@ const bcrypt = require('../config/bcrypt_setting');
 const dbConnection = require('../db/db');
 // 삭제 예정 2줄
 const passport = require('../config/passport');
-const passportJwt = require('../config/passport_jwt');
 
 router.post('/', (request, response)=> {
     const reLoginFlash = request.flash();
