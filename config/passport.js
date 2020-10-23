@@ -14,7 +14,11 @@ passport.serializeUser(function(storeInfo, done) {
 
     //done's first parameter: error, not exists error -> null
     // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
-    console.log('serialize: ' + storeInfo);
+    console.log('serialize===============');
+    for(let ele in storeInfo) {
+        console.log(ele);
+    }
+    console.log('serialize===============');
 
     //    user 의 id만 세션에 저장한다.
     //    앞으로의 request 에서는 user.id가 유저를 식별하는 정보가된다.
@@ -34,7 +38,11 @@ passport.deserializeUser(function(storeInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
     const sql = 'SELECT id, name FROM STORE where id=?'
-    console.log('deserialize:' + storeInfo);
+    console.log('=====deserialize User=====');
+    for (let ele in storeInfo) {
+        console.log(ele);
+    }
+    console.log('=====deserialize User=====');
     // 현재 세션에 저장된 id와
     dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
         if (error) done(error, false);
