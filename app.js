@@ -16,6 +16,7 @@ const sequelize = require('./models').sequelize;
 const session = require('express-session');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
 const flash = require('connect-flash');
+const passport = require('./config/passport');
 const app = express();
 
 console.log('==========server started!========');
