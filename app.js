@@ -62,7 +62,7 @@ sequelize.authenticate()
         return sequelize.sync()
     })
     .then(success => {
-        console.log('sequelize success to sychronize defined models to the DB' + success);
+        console.log('sequelize success to synchronize defined models to the DB' + success);
     })
     .catch(error => {
         console.error(error);
