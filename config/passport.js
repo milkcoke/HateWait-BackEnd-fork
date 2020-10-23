@@ -54,8 +54,8 @@ passport.deserializeUser(function(storeInfo, done) {
 // Both fields define the nameof the properties in the POST body that are sent to the server.
 
 passport.use('local-login', new LocalStrategy({
-    usernameField : 'userId',
-    passwordField : 'password',
+    usernameField : 'id',
+    passwordField : 'pw',
     passReqToCallback : true
     }, function(request, id, pw, done) {
         //암호화를 sql 날리기 전에 무조건 수행.
