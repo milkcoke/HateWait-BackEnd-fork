@@ -94,7 +94,7 @@ router.post('/stores/test', (request, response) => {
                 message : "해당 사용자가 존재하지 않습니다."
             });
         } else {
-            bcrypt.bcrypt.compare(memberInfo.pw, rows[0].pw)
+            bcrypt.bcrypt.compare(storeInfo.pw, rows[0].pw)
                 .then(result => {
                     return response.status(200).json({
                         message : "로그인 성공!",
