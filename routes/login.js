@@ -69,6 +69,48 @@ router.post('/members/test', (request, response) => {
 
 });
 
+
+// json request test용
+router.post('/stores/test', (request, response) => {
+        const storeInfo = request.body;
+        console.log('store request start! ================');
+
+        if(!storeInfo.id || !storeInfo.pw) {
+            return response.status(409).json({
+                message : "아이디 비밀번호중 입력하지 않은게 있는데 어찌 시도하셨나요?"
+            });
+        }
+
+    const password_sql = 'SELECT name, pw FROM store where id=?';
+    dbConnection().execute(password_sql, [storeInfo.id], (error, rows)=> {
+        if (error) {
+            response.status(500).json({
+                message : "서버 오류에요"
+            });
+        } else if (!rows[0]) {
+            return response.status(409).json({
+                message : "해당 사용자가 존재하지 않습니다."
+            });
+        } else {
+            bcrypt.bcrypt.compare(memberInfo.pw, rows[0].pw)
+                .then(result => {
+                    return response.status(200).json({
+                        message : "로그인 성공!",
+                        storeName : rows[0].name
+                    });
+                })
+                .catch(error => {
+                    return response.status(409).json({
+                        message : "비밀번호가 옳지 않아요"
+                    })
+                });
+        }
+    });
+
+    });
+
+
+
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', passport.authenticate('local-login',
     {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
@@ -78,6 +120,8 @@ router.post('/stores', passport.authenticate('local-login',
             message : 'login-trying is completed!'
         });
     });
+
+
 
 
 router.get('/success', (request, response) => {
