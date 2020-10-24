@@ -69,7 +69,7 @@ passport.use('local-login', new LocalStrategy({
     passReqToCallback : true
     }, function(request, id, pw, done) {
         //암호화를 sql 날리기 전에 무조건 수행.
-
+            console.log('passport login try start!');
             //The simplest form of .query() is .query(sqlString, callback)
             // The second form .query(sqlString, values, callback) comes when using
             //3rd parameter of done is flash object
