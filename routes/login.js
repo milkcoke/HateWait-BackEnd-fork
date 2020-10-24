@@ -96,14 +96,20 @@ router.post('/stores/test', (request, response) => {
         } else {
             bcrypt.bcrypt.compare(storeInfo.pw, rows[0].pw)
                 .then(result => {
-                    return response.status(200).json({
-                        message : "로그인 성공!",
-                        storeName : rows[0].name
-                    });
+                    if(result) {
+                        return response.status(200).json({
+                            message : "로그인 성공!",
+                            storeName : rows[0].name
+                        });
+                    } else {
+                        return response.status(409).json({
+                            message : "비밀번호가 옳지 않아요"
+                        })
+                    }
                 })
                 .catch(error => {
-                    return response.status(409).json({
-                        message : "비밀번호가 옳지 않아요"
+                    return response.status(500).json({
+                        message: "서버 오류입니다. 개발자놈 예끼이놈"
                     })
                 });
         }
