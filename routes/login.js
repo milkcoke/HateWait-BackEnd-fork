@@ -74,7 +74,9 @@ router.post('/members/test', (request, response) => {
 router.post('/stores/test', (request, response) => {
         const storeInfo = request.body;
         console.log('store request start! ================');
-
+        for(let form in storeInfo.accessKey) {
+            console.log(form.valueOf());
+        }
         if(!storeInfo.id || !storeInfo.pw) {
             return response.status(409).json({
                 message : "아이디 비밀번호중 입력하지 않은게 있는데 어찌 시도하셨나요?"
