@@ -53,7 +53,7 @@ router.post('/member', (request, response) => {
         // const register_member_sql = 'INSERT INTO member SET ?';
         const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?)';
         dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, memberInfo.pw], (error, result)=> {
-            if (error.code == 'ER_DUP_ETNRY') {
+            if (error.code == 'ER_DUP_ENTRY') {
                 console.error(error.message);
                 return response.status(409).json({
                     message : "이미 가입된 손님입니다."
