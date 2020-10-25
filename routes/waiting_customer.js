@@ -109,6 +109,10 @@ router.post('/:id', (request, response)=> {
                         return response.status(500).json({
                             message: "서버 내부 오류입니다."
                         })
+                    } else if (rows.length ===0){
+                        return response.status(409).json({
+                            message: "아이디를 확인해주세요"
+                        });
                     } else {
                         return response.status(200).json({
                             message: rows[0].name
@@ -129,7 +133,7 @@ router.post('/:id', (request, response)=> {
                     })
                 } else if(rows.length === 0) {
                     return response.status(409).json({
-                        message: "id를 확인해주세요."
+                        message: "아이디를 확인해주세요."
                     })
                 } else {
                     const memberPhone = rows[0].phone
