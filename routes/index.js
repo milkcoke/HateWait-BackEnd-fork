@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
     sessionInfo: req.session.passport.storeInfo,
     cookieInfo : req.session._passport.storeInfo
   });
-
+  console.log('session : ' + req.session);
 });
 
 module.exports = router;
