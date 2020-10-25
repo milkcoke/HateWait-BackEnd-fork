@@ -24,7 +24,7 @@ router.get('/:id', (request, response)=> {
             message: "서버 오류입니다."
         });
     } else if (typeof storeId == null) {
-        return response.status(404).render('error', {
+        response.status(404).render('error', {
             message: "잘못된 접근입니다.",
             error : {
                 message: "잘못됐다고 아!",
@@ -32,15 +32,16 @@ router.get('/:id', (request, response)=> {
                 stack: null
             }
         });
-    } else {
+    }
+
         const sql = 'SELECT name, people_number FROM waiting_customer WHERE store_id=?';
         dbConnection().execute(sql, [request.params.id], (error, rows)=> {
             if (error) {
                 return response.status(500).json({
                     message: "서버 오류입니다."
                 });
-            } else if(rows.length <= 0) {
-                return response.status(409).json({
+            } else if(rows.length == 0) {
+                return response.status(200).json({
                     message: "아무런 손님이 없어요",
                     number: 0
                 });
@@ -51,7 +52,6 @@ router.get('/:id', (request, response)=> {
                 })
             }
         });
-    }
 
 
 });
