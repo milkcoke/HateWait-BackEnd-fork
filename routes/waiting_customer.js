@@ -74,7 +74,7 @@ router.post('/:id', (request, response)=> {
                 message: "서버 내부 오류입니다."
             });
         } else {
-            const countSql = 'SELECT COUNT(*) FROM waiting_customer WHERE store_id=?'
+            const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?'
             dbConnection().execute(countSql, [request.params.id], (error, rows) => {
                 if (error) {
                     console.error(error);
@@ -82,9 +82,10 @@ router.post('/:id', (request, response)=> {
                         message: "서버 내부 오류입니다."
                     });
                 } else {
+                    console.log(rows[0].count)
                     return response.status(200).json({
-                        message: `${rows[0]} 번째 회원으로 등록되었습니다!`,
-                        count : rows[0]
+                        message: `${rows[0].turnNumber} 번째 회원으로 등록되었습니다!`,
+                        count : rows[0].turnNumber
                     });
                 }
 
