@@ -5,7 +5,7 @@ const dbConnection = require('../db/db');
 // 삭제 예정 2줄
 const passport = require('../config/passport');
 
-router.post('/', (request, response)=> {
+router.get('/', (request, response)=> {
     const reLoginFlash = request.flash();
     console.log(reLoginFlash);
     console.error(reLoginFlash.error);
@@ -16,7 +16,7 @@ router.post('/', (request, response)=> {
        })
     } else {
         return response.json({
-            message : '재로그인 페이지입니다.'
+            message : '로그인에 실패하셨군요, 재로그인 페이지입니다.'
         })
     }
 });
