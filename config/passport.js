@@ -82,7 +82,7 @@ passport.use('local-login', new LocalStrategy({
                 } else if (!rows[0]) {
                     console.log("Can't find store id");
                     return done(null, false, {
-                        message: '해당 사용자를 찾지 못했어요.'
+                        message: 'id가 존재하지 않습니다.'
                     });
                 } else {
                     // 패스워드 검증
@@ -102,25 +102,16 @@ passport.use('local-login', new LocalStrategy({
                                 id: rows[0].id,
                                 name: rows[0].name
                             }, {
-                                message : 'Login Success!'
+                                message : '로그인 성공'
                             });
                         } else {
                             return done(null, false, {
-                                message : '비밀번호가 일치하지 않아요.'
-                            })
+                                message : '비밀번호가 일치하지 않습니다.'
+                            });
                         }
-
-                    })
-
+                    });
                 }
-                // else {
-                //     //여기 해석을 내가해야하는데...
-                //     console.log('flash 직전');
-                //     request.flash('userId', rows.id);
-                //     request.flash('errors', {login : 'id or password is incorrect'});
-                //     return done(null, false);
-                // }
-            })
+            });
     }));
 
 

@@ -6,13 +6,14 @@ const dbConnection = require('../db/db');
 const passport = require('../config/passport');
 
 router.get('/', (request, response)=> {
+    //확인용
     const reLoginFlash = request.flash();
     console.log(reLoginFlash);
-    console.error(reLoginFlash.error);
+    console.error(reLoginFlash.error[0]);
 
     if (reLoginFlash.error) {
        return response.json({
-           message : reLoginFlash.error
+           message : reLoginFlash.error[0]
        })
     } else {
         return response.json({
@@ -23,6 +24,8 @@ router.get('/', (request, response)=> {
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
+// failureFlash: passport 가 strategy verify callbac k에 의해 정의된 에러 메시지를 flash 하게 하는 옵션.
+// 오류의 원인을 출력해줄 수 있게한다.
 router.post('/members', passport.authenticate('local-login', {successRedirect : '/success', failureRedirect : '/login', failureFlash : true}),
     function(request, response) {
     //로그인 이후 메인 페이지로 이동.
@@ -146,7 +149,6 @@ router.get('/success', (request, response) => {
     })
 })
 
-// failureFlash: passport가 strategy verify callback에 의해 정의된 에러 메시지를 flash하게 하는 옵션.
-// 오류의 원인을 출력해줄 수 있게한다.
+
 
 module.exports = router;
