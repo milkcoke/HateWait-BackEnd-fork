@@ -207,6 +207,9 @@ router.post('/:id', (request, response)=> {
             });
         default:
             console.log('이상하다 여기까지 코드오면 안되는데?');
+            return response.status(520).json({
+                message: "알 수 없는 오류입니다. 개발자를 욕해주세요"
+            });
             break;
     }
 
