@@ -90,7 +90,7 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-app.use('/waiting_customers', waitingCustomerRouter);
+app.use('/waiting-customers', waitingCustomerRouter);
 
 app.use(function(request, response, next) {
   // isAuthenticated : 현재 로그인 되어있는지 true, false
