@@ -52,8 +52,39 @@ router.get('/:id', (request, response)=> {
                 })
             }
         });
+});
 
+router.post('/:id', (request, response)=> {
+    const customerInfo = request.body;
 
+    console.log(customerInfo);
+    for([key,value] of Object.entries(customerInfo)) {
+        console.log(`${key} : ${value}`);
+    }
+
+    const sql = 'INSERT INTO store VALUES(?, ?, ?, ?, ?)'
+    dbConnection().execute(sql, [customerInfo.phone, request.params.id, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, rows)=> {
+        if (error) {
+            return response.status(500).json({
+                message: "서버 내부 오류입니다."
+            });
+        } else {
+            const countSql = 'SELECT COUNT(*) FROM waiting_customer WHERE store_id=?'
+            dbConnection().execute(sql, [request.params.id], (error, rows) => {
+                if (error) {
+                    return response.status(500).json({
+                        message: "서버 내부 오류입니다."
+                    });
+                } else {
+                    return response.status(200).json({
+                        message: `${rows[0]} 번째 회원으로 등록되었습니다!`,
+                        count : rows[0]
+                    });
+                }
+
+            });
+        }
+    });
 });
 
 module.exports = router;
