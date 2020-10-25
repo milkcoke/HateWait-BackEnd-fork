@@ -19,7 +19,7 @@ passport.serializeUser(function(storeInfo, done) {
     console.log('serialize===============');
     //Object.entries(obj) : return [key,value] array
     //don't guarantee key ordering
-    for(const [key,value] in Object.entries(storeInfo)) {
+    for(const [key,value] of Object.entries(storeInfo)) {
         console.log(`${key} : ${value}`);
     }
     console.log('serialize===============');
@@ -43,7 +43,7 @@ passport.deserializeUser(function(storeInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
     console.log('=====deserialize User=====');
-    for(const [key,value] in Object.entries(storeInfo)) {
+    for(const [key,value] of Object.entries(storeInfo)) {
         console.log(`${key} : ${value}`);
     }
     console.log('=====deserialize User=====');
