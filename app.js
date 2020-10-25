@@ -35,11 +35,18 @@ app.use(express.json());
 // session 옵션 설정
 // secret : 쿠임의 변조를 방지하기 위한 값, 세션 암호화 키
 // resave : always save session?
-// saveUninitialized: before save session, uninitialized state save
+// httpOnly: javascript 로 cookie 접근 방지 옵션
+// true일 경우 (클라이언트가 쿠키값을 직접 볼 수 없음)
+// secure: https 프로토콜만 허용하는지 여부
+// saveUninitialized: before save session, uninitialized state save/
 app.use(session({
         secret : '$%HATEWAIT$%',
         resave : false,
-        saveUninitialized: true
+        saveUninitialized: true,
+        cookie: {
+            httpOnly: false,
+            secure: false
+        }
     })
 );
 app.use(flash());

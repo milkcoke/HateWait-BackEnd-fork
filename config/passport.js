@@ -11,18 +11,23 @@ const dbConnection = require('../db/db');
 //메소드를 호출하면서 등록한 콜백 함수는 사용자 인증이 '성공' 했을때 호출됨
 // done: 예약어 메소드로 null, 유저 정보 객체를 넘긴다.
 passport.serializeUser(function(storeInfo, done) {
-
+    // login 요청이 들어오면 실행됨.
+    // Server 에 id, name, session-cookie 가 저장됨.
+    // cookie 는 client에게 송신함.
     //done's first parameter: error, not exists error -> null
-    // 사용자 인증이 성공적일 때만 호출되므로 error는 당연히 null로 넘긴다.
+    // 사용자 인증이 성공적일 때만 호출되므로 error 는 당연히 null 로 넘긴다.
     console.log('serialize===============');
-    for(let key in storeInfo) {
-        console.log(key.valueOf());
+    //Object.entries(obj) : return [key,value] array
+    //don't guarantee key ordering
+    for(const [key,value] in Object.entries(storeInfo)) {
+        console.log(`${key} : ${value}`);
     }
     console.log('serialize===============');
 
-    //    user 의 id만 세션에 저장한다.
-    //    앞으로의 request 에서는 user.id가 유저를 식별하는 정보가된다.
+    //    store 의 id만 세션에 저장한다.
+    //    앞으로의 request 에서는 id가 store 를 식별하는 정보가된다.
     //    request.user 에 저장된다.
+    console.log(storeInfo);
     done(null, storeInfo);
     //second parameter is passed to deserialize method's first argument
 
@@ -37,10 +42,9 @@ passport.serializeUser(function(storeInfo, done) {
 passport.deserializeUser(function(storeInfo, done) {
     // userId는 serialize 에서 저장해뒀던 세션 정보로 부터 넘어온 것.
 
-
     console.log('=====deserialize User=====');
-    for (let key in storeInfo) {
-        console.log(key.valueOf());
+    for(const [key,value] in Object.entries(storeInfo)) {
+        console.log(`${key} : ${value}`);
     }
     console.log('=====deserialize User=====');
     // 현재 세션에 저장된 id와
@@ -48,9 +52,10 @@ passport.deserializeUser(function(storeInfo, done) {
     const sql = 'SELECT id, name FROM STORE where id=?'
     dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
         if (error) done(error, false);
-        // 여기 done 에서 HTTP request에 req.memberId 를 붙여서 보냄.
+        // 여기 done 에서 HTTP request 에 req.storeId, storeName 를 붙여서 보냄.
         // id만 붙이는게 나을까?
         else {
+            // 여기서 날린 2nd argument 는 request.user 객체에 저장됨.
             done(null, {
                 id: rows[0].id,
                 name: rows[0].name
