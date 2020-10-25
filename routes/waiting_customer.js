@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
 
+// 이거 sync function인데 왜 return을 못받는거 같냐 아
 function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
     dbConnection().execute(sql, [storeId], (error, rows) => {
@@ -21,6 +22,7 @@ router.get('/:id', (request, response)=> {
      const storeId = checkStoreId(request.params.id);
      console.log('아아아아');
     if (typeof storeId instanceof Error) {
+        console.error(storeId);
         console.log('아이디 체크중 서버오류');
         return response.status(500).json({
             message: "서버 오류입니다."
@@ -40,6 +42,7 @@ router.get('/:id', (request, response)=> {
         const sql = 'SELECT name, people_number FROM waiting_customer WHERE store_id=?';
         dbConnection().execute(sql, [request.params.id], (error, rows)=> {
             if (error) {
+                console.error(error);
                 return response.status(500).json({
                     message: "서버 오류입니다."
                 });
@@ -61,20 +64,20 @@ router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
 
     console.log(customerInfo);
-    for([key,value] of Object.entries(customerInfo)) {
-        console.log(`${key} : ${value}`);
-    }
+    console.log(request.params.id);
 
     const sql = 'INSERT INTO store VALUES(?, ?, ?, ?, ?)'
     dbConnection().execute(sql, [customerInfo.phone, request.params.id, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, rows)=> {
         if (error) {
+            console.error(error);
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
             });
         } else {
             const countSql = 'SELECT COUNT(*) FROM waiting_customer WHERE store_id=?'
-            dbConnection().execute(sql, [request.params.id], (error, rows) => {
+            dbConnection().execute(countSql, [request.params.id], (error, rows) => {
                 if (error) {
+                    console.error(error);
                     return response.status(500).json({
                         message: "서버 내부 오류입니다."
                     });
@@ -89,5 +92,23 @@ router.post('/:id', (request, response)=> {
         }
     });
 });
+
+router.delete('/:id', (request, response) => {
+    const waitingCustomerPhone = request.body;
+    const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=?';
+    dbConnection().execute(sql, [request.params.id, waitingCustomerPhone], (error, rows) => {
+        if (error) {
+            console.error(error);
+            return response.status(500).json({
+                message: "서버 내부 오류입니다."
+            });
+        } else {
+            return response.status(200).json({
+                message: "대기열에서 삭제 성공!"
+            });
+        }
+    });
+
+})
 
 module.exports = router;
