@@ -60,7 +60,6 @@ router.get('/:id', (request, response)=> {
             }
         });
     }
-
         const sql = 'SELECT name, people_number FROM waiting_customer WHERE store_id=?';
         dbConnection().execute(sql, [request.params.id], (error, rows)=> {
             if (error) {
