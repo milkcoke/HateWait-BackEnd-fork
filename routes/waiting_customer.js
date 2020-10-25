@@ -18,19 +18,20 @@ function checkStoreId(storeId) {
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 router.get('/:id', (request, response)=> {
     // request.params.id
-     const storeId = checkStoreId(request.params.id)
+     const storeId = checkStoreId(request.params.id);
     if (typeof storeId == error) {
         return response.status(500).json({
             message: "서버 오류입니다."
         });
     } else if (typeof storeId == null) {
         return response.status(404).render('error', {
+            message: "잘못된 접근입니다.",
             error : {
+                message: "잘못됐다고 아!",
                 status: 404,
-                message: "잘못된 접근입니다.",
                 stack: null
             }
-        })
+        });
     }
 
     const sql = 'SELECT name, people_number FROM waiting_customer WHERE store_id=?';
