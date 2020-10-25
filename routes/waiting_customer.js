@@ -6,7 +6,7 @@ function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
     dbConnection().execute(sql, [storeId], (error, rows) => {
         if(error) {
-            throw error;
+            return error;
         } else if(rows[0].length == 0) {
             return null;
         } else {
@@ -19,7 +19,7 @@ function checkStoreId(storeId) {
 router.get('/:id', (request, response)=> {
     // request.params.id
      const storeId = checkStoreId(request.params.id);
-    if (typeof storeId == error) {
+    if (typeof storeId instanceof Error) {
         return response.status(500).json({
             message: "서버 오류입니다."
         });
