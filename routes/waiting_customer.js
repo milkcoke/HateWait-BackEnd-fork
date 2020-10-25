@@ -82,7 +82,7 @@ router.post('/:id', (request, response)=> {
                         message: "서버 내부 오류입니다."
                     });
                 } else {
-                    console.log(rows[0].count)
+                    console.log(rows[0].turnNumber);
                     return response.status(200).json({
                         message: `${rows[0].turnNumber} 번째 회원으로 등록되었습니다!`,
                         count : rows[0].turnNumber
