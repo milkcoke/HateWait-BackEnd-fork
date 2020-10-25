@@ -68,25 +68,21 @@ router.post('/:id', (request, response)=> {
 
     const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?)';
     dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
-        if (error) {
+        if (error.code == 'ER_DUP_ENTRY') {
+            console.error(error.message)
+            return response.status(409).json({
+                message: "이미 대기열에 등록된 회원입니다."
+            });
+        } else if(error) {
             console.error(error);
             return response.status(500).json({
-                message: "서버 내부 오류입니다."
+                message: "내부 서버 오류입니다."
             });
         } else {
             const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?'
             dbConnection().execute(countSql, [request.params.id], (error, rows) => {
                 // ER_DUP_ENTRY : PRIMARY CONSTRAINT 에러 , 여기선 이미 등록된 전화번호
-                if (error.code == 'ER_DUP_ENTRY') {
-                    console.log(error.errno);
-                    console.log('error code' + error.code);
-                    console.error(error.message)
-                    return response.status(409).json({
-                        message: "이미 대기열에 등록된 회원입니다."
-                    });
-                } else if(error) {
-                    console.log(error.errno);
-                    console.log('error code' + error.code);
+                if(error) {
                     console.error(error);
                     return response.status(500).json({
                         message: "내부 서버 오류입니다."
