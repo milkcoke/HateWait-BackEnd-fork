@@ -5,30 +5,34 @@ const dbConnection = require('../db/db');
 // 이거 sync function인데 왜 return을 못받는거 같냐 아
 function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
+    let result = null;
     dbConnection().execute(sql, [storeId], (error, rows) => {
         if(error) {
-            return error;
+            result = error;
         } else if(rows.length === 0) {
-            return null;
+            result = null;
         } else {
-            return storeId;
+            result = storeId;
         }
     });
+    return result;
 }
 
 function checkMemberId(memberId) {
     const sql = 'SELECT id FROM member WHERE id=?';
+    let result = null;
     dbConnection().execute(sql, [memberId], (error, rows) => {
         if(error) {
-            return error;
+            result = error;
         } else if(rows.length === 0) {
             console.log(rows);
             console.log(rows.length);
-            return null;
+            result = null;
         } else {
-            return memberId;
+            result = rows[0].name;
         }
     });
+    return result;
 }
 
 

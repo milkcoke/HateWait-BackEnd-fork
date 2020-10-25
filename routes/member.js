@@ -67,8 +67,8 @@ router.post('/', (request, response) => {
                 message: rows[0].name
             });
         }
-    })
-})
+    });
+});
 router.patch('/:id', (requeset, response) => {
 
 })
