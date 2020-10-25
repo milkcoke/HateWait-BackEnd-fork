@@ -64,10 +64,10 @@ router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
 
     console.log(customerInfo);
-    console.log(request.params.id);
+    const storeId = request.params.id;
 
-    const sql = 'INSERT INTO store VALUES(?, ?, ?, ?, ?)'
-    dbConnection().execute(sql, [customerInfo.phone, request.params.id, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, rows)=> {
+    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?)';
+    dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, rows)=> {
         if (error) {
             console.error(error);
             return response.status(500).json({
@@ -94,15 +94,17 @@ router.post('/:id', (request, response)=> {
 });
 
 router.delete('/:id', (request, response) => {
-    const waitingCustomerPhone = request.body;
+    const waitingCustomerPhone = request.body.phone;
+    const storeId = request.params.id;
     const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=?';
-    dbConnection().execute(sql, [request.params.id, waitingCustomerPhone], (error, rows) => {
+    dbConnection().execute(sql, [storeId, waitingCustomerPhone], (error, rows) => {
         if (error) {
             console.error(error);
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
             });
         } else {
+            console.log(rows);
             return response.status(200).json({
                 message: "대기열에서 삭제 성공!"
             });
