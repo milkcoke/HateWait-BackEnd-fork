@@ -16,6 +16,20 @@ function checkStoreId(storeId) {
     });
 }
 
+function checkMemberId(memberId) {
+    const sql = 'SELECT id FROM member WHERE id=?';
+    dbConnection().execute(sql, [memberId], (error, rows) => {
+        if(error) {
+            return error;
+        } else if(rows.length === 0) {
+            return null;
+        } else {
+            return memberId;
+        }
+    });
+}
+
+
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 router.get('/:id', (request, response)=> {
     // request.params.id
@@ -27,7 +41,8 @@ router.get('/:id', (request, response)=> {
         return response.status(500).json({
             message: "서버 오류입니다."
         });
-    } else if (typeof storeId == null) {
+    }
+    if (typeof storeId == null) {
         console.log('오류 파악중 잘못된 접근');
         response.status(404).render('error', {
             message: "잘못된 접근입니다.",
@@ -67,6 +82,23 @@ router.post('/:id', (request, response)=> {
 
     //회원이면 id 정보만 받아옴.
     if (customerInfo.is_member) {
+
+        //회원이 id를 알맞게 입력했는지 검사
+        const memberId = checkMemberId(customerInfo.id);
+        if (typeof memberId instanceof Error) {
+            console.error(memberId);
+            console.log('아이디 체크중 서버오류');
+            return response.status(500).json({
+                message: "서버 오류입니다."
+            });
+        }
+        if (typeof memberId == null) {
+            console.log('오류 파악중 잘못된 접근');
+            return response.status(409).json({
+                message: "아이디를 확인해주세요."
+            })
+        }
+
         // 회원 id로부터 전화번호, 이름 얻어옴
         const memberSql = 'SELECT phone, name FROM member where id=?'
         dbConnection().execute(memberSql, [customerInfo.id], (error, rows)=> {
