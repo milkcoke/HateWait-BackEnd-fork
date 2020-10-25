@@ -29,9 +29,10 @@ function checkMemberId(memberId) {
             console.log(rows.length);
             result = null;
         } else {
-            result = rows[0].name;
+            result = memberId;
         }
     });
+    console.log(`${result} : result`);
     return result;
 }
 
@@ -109,7 +110,7 @@ router.post('/:id', (request, response)=> {
                         return response.status(500).json({
                             message: "서버 내부 오류입니다."
                         })
-                    } else if (rows.length ===0){
+                    } else if (rows.length === 0){
                         return response.status(409).json({
                             message: "아이디를 확인해주세요"
                         });
