@@ -32,7 +32,7 @@ function checkMemberId(memberId) {
             result = memberId;
         }
     });
-    console.log(`result: ${result} : `);
+    console.log(`result: ${result}`);
     return result;
 }
 
@@ -91,6 +91,7 @@ router.post('/:id', (request, response)=> {
         case null :
             //회원이 id를 알맞게 입력했는지 검사
             const memberId = checkMemberId(customerInfo.id);
+            console.log(customerInfo.id);
             console.log(`memberId : ${memberId}`);
             if (typeof memberId instanceof Error) {
                 console.error(memberId);
