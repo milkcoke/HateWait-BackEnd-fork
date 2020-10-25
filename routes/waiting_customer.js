@@ -42,7 +42,6 @@ function checkMemberId(memberId) {
     });
     console.log(`result: ${result}`);
     return result;
-    // return result;
 }
 
 

@@ -8,20 +8,20 @@ const settings = require('./settings.js');
 
 module.exports = function handleDisconnect() {
     const dbConnection = mysql.createConnection(settings);
-    dbConnection.connect(function(err){
-        if (err) {
-            throw err;
+    dbConnection.connect(function(errror){
+        if (errror) {
+            console.error(errror.message);
             setTimeout(handleDisconnect, 2000);
         } else {
             console.log("MySQL Database is Connected!");
         }
     });
-    dbConnection.on('error', function(err) {
+    dbConnection.on('error', function(errror) {
         // console.error('Database Error :', err);
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        if (errror.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
-            throw err;
+            throw errror;
         }
     });
 

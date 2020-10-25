@@ -44,24 +44,25 @@ router.post('/members/test', (request, response) => {
     }
 
     const password_sql = 'SELECT name, pw FROM member where id=?';
-    dbConnection().execute(password_sql, [memberInfo.id], (error, row)=> {
+    dbConnection().execute(password_sql, [memberInfo.id], (error, rows)=> {
         if (error) {
+            console.error(error);
             response.status(500).json({
                 message : "서버 오류에요"
             });
-        } else if (!row[0]) {
+        } else if (rows.length === 0) {
             return response.status(409).json({
                 message : "해당 사용자가 존재하지 않습니다."
             });
         } else {
             //비밀번호 값 대조, 로그인 시도
-            bcrypt.compare(memberInfo.pw, row[0].pw)
+            bcrypt.compare(memberInfo.pw, rows[0].pw)
                 .then(result => {
                     //compare method return true/false
                     if(result) {
                         return response.status(200).json({
                             message : "로그인 성공!",
-                            member : row[0].name
+                            member : rows[0].name
                         });
                     } else {
                         return response.status(409).json({
@@ -97,10 +98,11 @@ router.post('/stores/test', (request, response) => {
     const password_sql = 'SELECT name, pw FROM store where id=?';
     dbConnection().execute(password_sql, [storeInfo.id], (error, rows)=> {
         if (error) {
+            console.error(error);
             response.status(500).json({
                 message : "서버 오류에요"
             });
-        } else if (!rows[0]) {
+        } else if (rows.length === 0) {
             return response.status(409).json({
                 message : "해당 사용자가 존재하지 않습니다."
             });
@@ -120,6 +122,7 @@ router.post('/stores/test', (request, response) => {
                     }
                 })
                 .catch(error => {
+                    console.error(error);
                     return response.status(500).json({
                         message: "서버 오류입니다. 개발자놈 예끼이놈"
                     })

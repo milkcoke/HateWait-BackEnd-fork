@@ -84,7 +84,7 @@ passport.use('local-login', new LocalStrategy({
                     throw error;
                     console.error(error + 'query 결과 없다.');
                     return done(error);
-                } else if (!rows[0]) {
+                } else if (rows.length === 0) {
                     console.log("Can't find store id");
                     return done(null, false, {
                         message: 'id가 존재하지 않습니다.'
