@@ -48,6 +48,27 @@ router.get('/:id', (request, response) => {
     //     });
 });
 
+// in Tablet, mebmer id check, return member Name
+router.post('/', (request, response) => {
+    const memberId = request.body.id;
+    const sql = 'SELECT name FROM member where id=?';
+    dbConnection().execute(sql, [memberId], (error, rows) => {
+        if (error) {
+           console.error(error);
+           return response.status(500).json({
+               message: "서버 내부 오류입니다."
+           });
+        } else if(rows.length === 0) {
+           return response.status(409).json({
+               message: "아이디를 확인해주세요."
+           })
+        } else {
+            return response.status(200).json({
+                message: rows[0].name
+            });
+        }
+    })
+})
 router.patch('/:id', (requeset, response) => {
 
 })
