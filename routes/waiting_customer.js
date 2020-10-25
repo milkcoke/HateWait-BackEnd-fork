@@ -22,6 +22,8 @@ function checkMemberId(memberId) {
         if(error) {
             return error;
         } else if(rows.length === 0) {
+            console.log(rows);
+            console.log(rows.length);
             return null;
         } else {
             return memberId;
@@ -98,17 +100,17 @@ router.post('/:id', (request, response)=> {
                 })
             } else {
                 const memberNameSql = 'SELECT name FROM member id=?';
-                dbConnection().execute(memberNameSql, memberId , (error, rows) => {
+                dbConnection().execute(memberNameSql, [memberId] , (error, rows) => {
                     if(error) {
                         return response.status(500).json({
                             message: "서버 내부 오류입니다."
                         })
                     } else {
                         return response.status(200).json({
-                            name: rows[0].name
+                            message: rows[0].name
                         })
                     }
-                })
+                });
             }
             break;
 
