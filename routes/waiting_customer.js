@@ -27,7 +27,8 @@ router.get('/:id', (request, response)=> {
         return response.status(404).render('error', {
             error : {
                 status: 404,
-                message: "잘못된 접근입니다."
+                message: "잘못된 접근입니다.",
+                stack: null
             }
         })
     }
