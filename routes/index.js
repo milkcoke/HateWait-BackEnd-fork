@@ -6,10 +6,7 @@ const router = express.Router();
 router.get('/', function(req, res, next) {
   console.log('session : ' + req.session);
   console.log('session info: ' + req.session._passport);
-  //session.passport는 없음.
-  if (req.session._passport.user) {
-    console.log('session info2: ' + req.session._passport.user);
-  }
+  //session.passport, req.session._passport.user 는 없음.
 
   // console.log('session info: ' + req.session._passport.id);
   // console.log('session info: ' + req.session._passport.name);

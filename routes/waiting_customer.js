@@ -7,7 +7,7 @@ function checkStoreId(storeId) {
     dbConnection().execute(sql, [storeId], (error, rows) => {
         if(error) {
             return error;
-        } else if(rows[0].length == 0) {
+        } else if(rows[0].length === 0) {
             return null;
         } else {
             return storeId;
@@ -19,11 +19,14 @@ function checkStoreId(storeId) {
 router.get('/:id', (request, response)=> {
     // request.params.id
      const storeId = checkStoreId(request.params.id);
+     console.log('아아아아');
     if (typeof storeId instanceof Error) {
+        console.log('아이디 체크중 서버오류');
         return response.status(500).json({
             message: "서버 오류입니다."
         });
     } else if (typeof storeId == null) {
+        console.log('오류 파악중 잘못된 접근');
         response.status(404).render('error', {
             message: "잘못된 접근입니다.",
             error : {
