@@ -12,7 +12,7 @@ function checkStoreId(storeId) {
         } else if (rows.length === 0) {
             result = null;
         } else {
-            result = storeId;
+            result = rows[0].id;
         }
     });
     return result;
@@ -69,7 +69,7 @@ router.get('/:id', (request, response)=> {
                 return response.status(500).json({
                     message: "서버 오류입니다."
                 });
-            } else if(rows.length == 0) {
+            } else if(rows.length === 0) {
                 return response.status(200).json({
                     message: "아무런 손님이 없어요",
                     number: 0
@@ -101,7 +101,7 @@ router.post('/:id', (request, response)=> {
                 return response.status(500).json({
                     message: "서버 오류입니다."
                 });
-            } else if (memberId == null) {
+            } else if (memberId === null) {
                 console.log('오류 파악중 잘못된 접근');
                 return response.status(409).json({
                     message: "아이디를 확인해주세요."
