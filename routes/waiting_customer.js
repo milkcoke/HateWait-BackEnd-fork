@@ -42,6 +42,8 @@ router.get('/:id', (request, response)=> {
     // request.params.id
      const storeId = checkStoreId(request.params.id);
      console.log('아아아아');
+     console.log(`storeId: ${storeId}`);
+
     if (typeof storeId instanceof Error) {
         console.error(storeId);
         console.log('아이디 체크중 서버오류');
@@ -49,7 +51,7 @@ router.get('/:id', (request, response)=> {
             message: "서버 오류입니다."
         });
     }
-    if (typeof storeId == null) {
+    if (storeId == null) {
         console.log('오류 파악중 잘못된 접근');
         return response.status(404).render('error', {
             message: "잘못된 접근입니다.",
@@ -99,7 +101,7 @@ router.post('/:id', (request, response)=> {
                 return response.status(500).json({
                     message: "서버 오류입니다."
                 });
-            } else if (typeof memberId == null) {
+            } else if (memberId == null) {
                 console.log('오류 파악중 잘못된 접근');
                 return response.status(409).json({
                     message: "아이디를 확인해주세요."
