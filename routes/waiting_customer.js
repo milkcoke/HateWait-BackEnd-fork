@@ -2,38 +2,47 @@ const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
 
-// 이거 sync function인데 왜 return을 못받는거 같냐 아
+// 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
-    let result = null;
-    dbConnection().execute(sql, [storeId], (error, rows) => {
+    // let result = null;
+    const result = dbConnection().execute(sql, [storeId], (error, rows) => {
         if(error) {
-            result = error;
+            // result = error;
+            return error;
         } else if (rows.length === 0) {
-            result = null;
+            // result = null;
+            return null;
         } else {
-            result = rows[0].id;
-        }
-    });
-    return result;
-}
-
-function checkMemberId(memberId) {
-    const sql = 'SELECT id FROM member WHERE id=?';
-    let result = null;
-    dbConnection().execute(sql, [memberId], (error, rows) => {
-        if(error) {
-            result = error;
-        } else if(rows.length === 0) {
-            console.log(rows);
-            console.log(rows.length);
-            result = null;
-        } else {
-            result = memberId;
+            // result = rows[0].id;
+            return storeId;
         }
     });
     console.log(`result: ${result}`);
     return result;
+
+}
+
+function checkMemberId(memberId) {
+    const sql = 'SELECT id FROM member WHERE id=?';
+    // let result = null;
+    const result = dbConnection().execute(sql, [memberId], (error, rows) => {
+        if(error) {
+            // result = error;
+            return error;
+        } else if(rows.length === 0) {
+            console.log(rows);
+            console.log(rows.length);
+            // result = null;
+            return null;
+        } else {
+            // result = memberId;
+            return memberId;
+        }
+    });
+    console.log(`result: ${result}`);
+    return result;
+    // return result;
 }
 
 

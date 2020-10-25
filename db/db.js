@@ -16,7 +16,6 @@ module.exports = function handleDisconnect() {
             console.log("MySQL Database is Connected!");
         }
     });
-
     dbConnection.on('error', function(err) {
         // console.error('Database Error :', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
