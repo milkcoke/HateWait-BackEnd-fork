@@ -8,8 +8,6 @@ router.get('/', function(req, res, next) {
     title: 'HateWait',
     teamNumber: 3,
     teamMember: ['조예린','손영호','문승훈'],
-    sessionInfo: req.session.passport.storeInfo,
-    cookieInfo : req.session._passport.store
   });
   console.log('session : ' + req.session);
   console.log('session info: ' + req.session._passport);
