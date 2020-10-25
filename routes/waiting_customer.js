@@ -8,7 +8,7 @@ function checkStoreId(storeId) {
     dbConnection().execute(sql, [storeId], (error, rows) => {
         if(error) {
             return error;
-        } else if(rows[0].length === 0) {
+        } else if(rows.length === 0) {
             return null;
         } else {
             return storeId;
