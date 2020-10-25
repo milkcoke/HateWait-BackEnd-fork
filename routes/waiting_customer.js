@@ -67,7 +67,7 @@ router.post('/:id', (request, response)=> {
     const storeId = request.params.id;
 
     const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?)';
-    dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, rows)=> {
+    dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
         if (error) {
             console.error(error);
             return response.status(500).json({
@@ -97,14 +97,18 @@ router.delete('/:id', (request, response) => {
     const waitingCustomerPhone = request.body.phone;
     const storeId = request.params.id;
     const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=?';
-    dbConnection().execute(sql, [storeId, waitingCustomerPhone], (error, rows) => {
+    //DML (INSERT, DELETE 는 결과가 한 행으로나옴)
+    dbConnection().execute(sql, [storeId, waitingCustomerPhone], (error, result) => {
         if (error) {
             console.error(error);
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
             });
+        } else if(result.affectedRows === 0) {
+            return response.status(409).json({
+                message: "전화번호나 가게 id를 확인해주세요."
+            })
         } else {
-            console.log(rows);
             return response.status(200).json({
                 message: "대기열에서 삭제 성공!"
             });
