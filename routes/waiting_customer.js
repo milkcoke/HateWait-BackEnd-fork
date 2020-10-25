@@ -51,7 +51,7 @@ router.get('/:id', (request, response)=> {
             message: "서버 오류입니다."
         });
     }
-    if (storeId == null) {
+    if (storeId === null) {
         console.log('오류 파악중 잘못된 접근');
         return response.status(404).render('error', {
             message: "잘못된 접근입니다.",
