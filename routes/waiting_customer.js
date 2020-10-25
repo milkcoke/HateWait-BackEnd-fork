@@ -103,7 +103,7 @@ router.post('/:id', (request, response)=> {
                     message: "아이디를 확인해주세요."
                 })
             } else {
-                const memberNameSql = 'SELECT name FROM member id=?';
+                const memberNameSql = 'SELECT name FROM member WHERE id=?';
                 dbConnection().execute(memberNameSql, [memberId] , (error, rows) => {
                     if(error) {
                         return response.status(500).json({
