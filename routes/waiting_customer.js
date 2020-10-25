@@ -62,22 +62,22 @@ router.get('/:id', (request, response)=> {
 
 router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
-
-    console.log(customerInfo);
     const storeId = request.params.id;
 
     const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?)';
     dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
-        if (error.code == 'ER_DUP_ENTRY') {
-            console.error(error.message)
-            return response.status(409).json({
-                message: "이미 대기열에 등록된 회원입니다."
-            });
-        } else if(error) {
-            console.error(error);
-            return response.status(500).json({
-                message: "내부 서버 오류입니다."
-            });
+        if(error) {
+            if (error.code == 'ER_DUP_ENTRY') {
+                console.error(error.message);
+                return response.status(409).json({
+                    message: "이미 대기열에 등록된 회원입니다."
+                });
+            } else{
+                return response.status(500).json({
+                    message: "내부 서버 오류입니다."
+                });
+            }
+
         } else {
             const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?'
             dbConnection().execute(countSql, [request.params.id], (error, rows) => {

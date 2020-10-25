@@ -53,18 +53,19 @@ router.post('/member', (request, response) => {
         // const register_member_sql = 'INSERT INTO member SET ?';
         const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?)';
         dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, memberInfo.pw], (error, result)=> {
-            if (error.code == 'ER_DUP_ENTRY') {
-                console.error(error.message);
-                return response.status(409).json({
-                    message : "이미 가입된 손님입니다."
-                });
-            } else if(error) {
-                console.error(error);
-                return response.status(500).json({
-                    message : "내부 서버 오류입니다."
-                });
-            }
-            else if (!result) {
+            if(error) {
+                if (error.code == 'ER_DUP_ENTRY') {
+                    console.error(error.message);
+                    return response.status(409).json({
+                        message : "이미 가입된 손님입니다."
+                    });
+                } else {
+                    console.error(error);
+                    return response.status(500).json({
+                        message : "내부 서버 오류입니다."
+                    });
+                }
+            } else if (!result) {
                 return response.status(500).json({
                     message : 'DB 회원정보 삽입 오류입니다.'
                 });
@@ -127,16 +128,18 @@ router.post('/store', (request, response) => {
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         dbConnection().execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=> {
-            if (error.code == 'ER_DUP_ENTRY') {
-                console.error(error.message);
-                return response.status(409).json({
-                    message: "이미 가입된 가게입니다."
-                })
-            } else if(error) {
-                console.error(error);
-                return response.status(500).json({
-                    message : "서버 내부 오류입니다."
-                });
+            if(error) {
+                if (error.code == 'ER_DUP_ENTRY') {
+                    console.error(error.message);
+                    return response.status(409).json({
+                        message: "이미 가입된 가게입니다."
+                    })
+                } else {
+                    console.error(error);
+                    return response.status(500).json({
+                        message : "서버 내부 오류입니다."
+                    });
+                }
             } else if (!result) {
                 console.log(result);
                 return response.status(500).json({
