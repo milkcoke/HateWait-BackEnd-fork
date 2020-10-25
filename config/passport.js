@@ -1,6 +1,6 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
-const bcrypt = require('./bcrypt_setting');
+const bcrypt = require('bcrypt');
 const dbConnection = require('../db/db');
 
 
@@ -86,7 +86,7 @@ passport.use('local-login', new LocalStrategy({
                     });
                 } else {
                     // 패스워드 검증
-                    bcrypt.bcrypt.compare(pw, rows[0].pw)
+                    bcrypt.compare(pw, rows[0].pw)
                     .catch(error => {
                         console.error(error);
                         return done(null, false, {

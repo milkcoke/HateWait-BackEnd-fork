@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const jsonwebtoken = require('jsonwebtoken');
-const bcrypt = require('../config/bcrypt_setting');
+const bcrypt = require('bcrypt');
 const dbConnection = require('../db/db');
 // 삭제 예정 2줄
 const passport = require('../config/passport');
@@ -52,17 +51,26 @@ router.post('/members/test', (request, response) => {
                 message : "해당 사용자가 존재하지 않습니다."
             });
         } else {
-            bcrypt.bcrypt.compare(memberInfo.pw, row[0].pw)
+            //비밀번호 값 대조, 로그인 시도
+            bcrypt.compare(memberInfo.pw, row[0].pw)
                 .then(result => {
-                    return response.status(200).json({
-                        message : "로그인 성공!",
-                        member : row[0].name
-                    });
+                    //compare method return true/false
+                    if(result) {
+                        return response.status(200).json({
+                            message : "로그인 성공!",
+                            member : row[0].name
+                        });
+                    } else {
+                        return response.status(409).json({
+                            message : "비밀번호가 옳지 않아요"
+                        })
+                    }
+
                 })
                 .catch(error => {
-                    return response.status(409).json({
-                        message : "비밀번호가 옳지 않아요"
-                    })
+                        return response.status(500).json({
+                            message : "비밀번호 암호화 오류"
+                        })
                 });
         }
     });
@@ -94,7 +102,7 @@ router.post('/stores/test', (request, response) => {
                 message : "해당 사용자가 존재하지 않습니다."
             });
         } else {
-            bcrypt.bcrypt.compare(storeInfo.pw, rows[0].pw)
+            bcrypt.compare(storeInfo.pw, rows[0].pw)
                 .then(result => {
                     if(result) {
                         return response.status(200).json({

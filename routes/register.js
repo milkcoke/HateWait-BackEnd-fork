@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
-const bcrypt = require('../config/bcrypt_setting');
+const bcrypt = require('bcrypt');
+const bcryptConfig = require('../config/bcrypt_setting');
 
 router.post('/member', (request, response) => {
     const memberInfo = request.body
@@ -25,7 +26,7 @@ router.post('/member', (request, response) => {
         } else if (row[0]) {
             console.log(row[0]);
             return response.status(409).json({
-                message : '이미 존재하는 ID입니다.'
+                message : "이미 존재하는 ID입니다."
             });
         }
     });
@@ -44,8 +45,8 @@ router.post('/member', (request, response) => {
     });
 
     //    비밀번호 암호화
-    bcrypt.SALT.then(SALT=> {
-        return bcrypt.bcrypt.hash(memberInfo.pw, SALT);
+    bcryptConfig.SALT.then(SALT=> {
+        return bcrypt.hash(memberInfo.pw, SALT);
     }).then(hashedPassword => {
         memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
@@ -109,8 +110,8 @@ router.post('/store', (request, response) => {
 
 
 //    비밀번호 암호화
-    bcrypt.SALT.then(SALT=> {
-        return bcrypt.bcrypt.hash(storeInfo.pw, SALT);
+    bcryptConfig.SALT.then(SALT=> {
+        return bcrypt.hash(storeInfo.pw, SALT);
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
