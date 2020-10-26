@@ -50,6 +50,7 @@ router.get('/:id', function(request, response) {
 // ORM 은 SQL Injection 으로 부터 안전한가?
 router.patch('/information', (request, response) => {
     const storeId = request.body.id;
+    console.log(`storeId : ${storeId}`);
     const newStoreInfo = request.body;
     // 새 정보에서 id는 제외시키고 시작함.
     delete newStoreInfo.id;
@@ -64,7 +65,7 @@ router.patch('/information', (request, response) => {
         //올바르지 않은 id로 가게정보 수정을 요청한경우.
         checkId.store(storeId)
             .then(result => {
-                if ( result === null) {
+                if (result === null) {
                     return response.status(400).json({
                         message: "비정상적인 요청입니다."
                     });
@@ -81,7 +82,8 @@ router.patch('/information', (request, response) => {
     //오로지 하나의 key-value 쌍만 body 로 날아옴.
     const targetKey = Object.keys(newStoreInfo)[0];
     let targetValue = newStoreInfo[targetKey];
-
+    console.log(`targetKey: ${targetKey}, targetValue : ${targetValue}`);
+    console.log(couponInformationModel);
 
     storeModel.findOne({
         where : {id: storeId}
