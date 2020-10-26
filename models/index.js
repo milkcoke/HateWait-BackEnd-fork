@@ -3,7 +3,6 @@ const path = require('path');
 const Sequelize = require('sequelize');
 
 const config = require('../config/sequelize_setting');
-
 const db = {};
 
 //timestamp : true 일 경우 createAt, updateAt, deleteAt 칼럼이 자동생성됨
@@ -20,17 +19,18 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 const initiatedModelNames = require('./init-models').initModels(sequelize);
 
-for(let [name, value] in Object.entries(initiatedModelNames)) {
+for(let [name, value] of Object.entries(initiatedModelNames)) {
     db[name] = value;
 }
 
 console.log('first db console : ' + db);
 
-// Object.keys(db).forEach( modelName => {
-//     if (db[modelName].associate in db[modelName]) {
-//         db[modelName].associate(db);
-//     }
-// });
+Object.keys(db).forEach( modelName => {
+    console.log(`modelName : ${modelName}`);
+    if (db[modelName].associate in db[modelName]) {
+        db[modelName].associate(db);
+    }
+});
 console.log('second db console : ' + db);
 // fs
 //     .readdirSync(__dirname)
@@ -47,13 +47,6 @@ console.log('second db console : ' + db);
 //     });
 
 
-
-// Object.keys(db).forEach(modelName => {
-//     console.log('model name : ' + modelName)
-//     if ("associate" in db[modelName]) {
-//         db[modelName].associate(db);
-//     }
-// });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
