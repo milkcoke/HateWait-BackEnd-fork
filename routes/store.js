@@ -4,6 +4,15 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
+router.get('/all', (request, response) => {
+    storeModel.findAll({
+
+    }).then(result => {
+        return response.status(200).json(result);
+    }).catch(error => {
+        console.error(error);
+    })
+});
 
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
