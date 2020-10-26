@@ -27,7 +27,7 @@ console.log('first db console : ' + db);
 
 Object.keys(db).forEach( modelName => {
     console.log(`modelName : ${modelName}`);
-    if (db[modelName].associate in db[modelName]) {
+    if (db[modelName].associate) {
         db[modelName].associate(db);
     }
 });
