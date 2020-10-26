@@ -81,7 +81,10 @@ router.patch('/information', (request, response) => {
                 });
             }
         })
-        .then(() => {
+        .then((result) => {
+            //null 이면 끝내자.
+            if(!result) return;
+            console.log(`result : ${result}`);
             //오로지 하나의 key-value 쌍만 body 로 날아옴.
             const targetKey = Object.keys(newStoreInfo)[0];
             let targetValue = newStoreInfo[targetKey];
@@ -149,16 +152,10 @@ router.patch('/information', (request, response) => {
                     }, {
                         // fields : [targetKey],
                         limit : 1
-                    })
-                    .then(result=> {
-                        console.log('update result : ' + result);
-                    }).catch(error=> {
-                        console.error(error);
                     });
-
                 })
                 .then(result => {
-                    console.log('update promise : ' + result);
+                    console.log('update promise : ' + result[0]);
                     return response.status(200).json({
                         message: "수정 완료!"
                     });
