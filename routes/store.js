@@ -4,6 +4,7 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
+
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
     dbConnection().execute(sql, (error, rows) => {
@@ -77,6 +78,7 @@ router.patch('/:id', (request, response) => {
                 message: "서버 내부 오류입니다."
             })
         });
-
+        console.log(Models);
+        console.log(storeModel)
 });
 module.exports = router;
