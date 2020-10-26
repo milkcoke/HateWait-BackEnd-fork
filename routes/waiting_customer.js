@@ -32,7 +32,7 @@ router.get('/:id', (request, response)=> {
                     }
                 });
             } else {
-                const sql = 'SELECT name, people_number FROM waiting_customer WHERE store_id=?';
+                const sql = 'SELECT phone, name, people_number FROM waiting_customer WHERE store_id=?';
                 dbConnection().execute(sql, [storeId], (error, rows)=> {
                     if (error) {
                         console.error(error);
