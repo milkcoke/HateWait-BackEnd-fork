@@ -62,13 +62,14 @@ router.patch('/:id', (request, response) => {
         .then(store=> {
             console.log(`store : ${store}`);
             return store.update({
-                targetValue
+                targetKey : targetValue
             }, {
-                fields : [targetKey],
+                where : {id: storeId},
+                fields : targetKey,
                 limit : 1
             });
         })
-        .then(result => {
+        .then((result) => {
             console.log(`result : ${result}`);
             return response.status(200).json({
                 message: "수정 완료"
