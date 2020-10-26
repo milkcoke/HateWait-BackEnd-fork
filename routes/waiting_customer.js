@@ -41,8 +41,7 @@ router.get('/:id', (request, response)=> {
                         });
                     } else if(rows.length === 0) {
                         return response.status(200).json({
-                            message: "아무런 손님이 없어요",
-                            number: 0
+                            message: "지금은 손님이 없어요",
                         });
                     } else {
                         return response.status(200).json({
