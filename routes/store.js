@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
-const storeModel = require('../models/store');
+const Models = require('../models');
+const storeModel = Models().store
 
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
@@ -53,6 +54,7 @@ router.patch('/:id', (request, response) => {
     const targetKey = Object.keys(targetObject)[0];
     const targetValue = targetObject[targetKey];
     console.log(`targetKey : ${targetKey} , targetValue: ${targetValue}`);
+
     storeModel().findOne({
         where : {id: storeId}
     })
