@@ -83,7 +83,7 @@ router.patch('/information', (request, response) => {
         })
         .then((result) => {
             //null 이면 끝내자.
-            if(!result) return;
+            if(result != 'OK') return;
             console.log(`result : ${result}`);
             //오로지 하나의 key-value 쌍만 body 로 날아옴.
             const targetKey = Object.keys(newStoreInfo)[0];
