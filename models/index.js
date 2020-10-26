@@ -11,6 +11,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     dialect : config.dialect,
     port : config.port,
     host : config.host,
+    operatorsAliases: config.operatorsAliases,
     define : {
     charset : config.charset,
     timestamps : config.timestamps

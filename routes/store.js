@@ -149,6 +149,11 @@ router.patch('/information', (request, response) => {
                     }, {
                         // fields : [targetKey],
                         limit : 1
+                    })
+                    .then(result=> {
+                        console.log('update result : ' + result);
+                    }).catch(error=> {
+                        console.error(error);
                     });
 
                 })
