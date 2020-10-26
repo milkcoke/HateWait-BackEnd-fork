@@ -4,8 +4,6 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
-// console.log(Models);
-console.log(storeModel);
 
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
@@ -57,6 +55,11 @@ router.patch('/:id', (request, response) => {
     const targetKey = Object.keys(targetObject)[0];
     const targetValue = targetObject[targetKey];
     console.log(`targetKey : ${targetKey} , targetValue: ${targetValue}`);
+
+    // console.log(Models);
+    console.log('===' + storeModel);
+
+
 
     storeModel.findOne({
         where : {id: storeId}
