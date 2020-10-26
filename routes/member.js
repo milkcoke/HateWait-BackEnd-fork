@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
+const checkId = require('../db/check_id').member;
 const memberModel = require('../models/index').member;
 
 router.get('/', function(req, res) {
@@ -69,7 +70,7 @@ router.post('/', (request, response) => {
         }
     });
 });
-router.patch('/:id', (requeset, response) => {
+router.patch('/:id', (request, response) => {
 
 })
 
