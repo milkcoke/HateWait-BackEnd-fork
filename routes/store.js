@@ -4,7 +4,11 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
-
+console.log(Models);
+console.log(storeModel);
+for(const [key, value] of Models) {
+    console.log(`${key} : ${value}`);
+}
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
     dbConnection().execute(sql, (error, rows) => {
@@ -79,6 +83,6 @@ router.patch('/:id', (request, response) => {
             })
         });
         console.log(Models);
-        console.log(storeModel)
+        console.log(storeModel);
 });
 module.exports = router;
