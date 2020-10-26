@@ -48,7 +48,7 @@ router.get('/:id', function(request, response) {
 
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
-router.patch('/:id', (request, response) => {
+router.patch('/information', (request, response) => {
     const storeId = request.body.id;
     const newStoreInfo = request.body;
     // 새 정보에서 id는 제외시키고 시작함.
@@ -63,13 +63,19 @@ router.patch('/:id', (request, response) => {
     } else {
         //올바르지 않은 id로 가게정보 수정을 요청한경우.
         checkId.store(storeId)
-            .then( result=> {
+            .then(result => {
                 if ( result === null) {
                     return response.status(400).json({
                         message: "비정상적인 요청입니다."
-                    })
+                    });
                 }
             })
+            .catch(error => {
+                console.error(error);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다."
+                })
+            });
     }
 
     //오로지 하나의 key-value 쌍만 body 로 날아옴.
@@ -96,8 +102,8 @@ router.patch('/:id', (request, response) => {
                             console.error(error);
                             return response.status(500).json({
                                 message : "비밀번호 암호화 오류입니다. 다시 시도해주세요"
-                            })
-                        })
+                            });
+                        });
                     break;
 
                 case 'coupon_enable' :
@@ -142,7 +148,7 @@ router.patch('/:id', (request, response) => {
             });
 
         })
-        .then((result) => {
+        .then(result => {
             console.log(result);
             return response.status(200).json({
                 message: "수정 완료!"
@@ -152,7 +158,7 @@ router.patch('/:id', (request, response) => {
             console.error(error);
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
-            })
+            });
         });
 });
 module.exports = router;
