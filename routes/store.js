@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
 const Models = require('../models');
-const storeModel = Models.store;
+const storeModel = Models['store'];
 
 
 router.get('/', function(request, response) {
@@ -58,7 +58,6 @@ router.patch('/:id', (request, response) => {
 
     // console.log(Models);
     console.log('===' + storeModel);
-
 
 
     storeModel.findOne({
