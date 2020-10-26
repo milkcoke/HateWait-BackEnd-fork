@@ -65,7 +65,7 @@ router.patch('/:id', (request, response) => {
                 targetKey : targetValue
             }, {
                 where : {id: storeId},
-                fields : targetKey,
+                fields : [targetKey],
                 limit : 1
             });
         })
