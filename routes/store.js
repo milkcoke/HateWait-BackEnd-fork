@@ -56,17 +56,16 @@ router.patch('/:id', (request, response) => {
     const targetValue = targetObject[targetKey];
     console.log(`targetKey : ${targetKey} , targetValue: ${targetValue}`);
 
-    // console.log(Models);
-    console.log('===' + storeModel);
-
-
     storeModel.findOne({
         where : {id: storeId}
     })
         .then(store=> {
             console.log(`store : ${store}`);
             return store.update({
-                targetKey : targetValue
+                targetValue
+            }, {
+                fields : [targetKey],
+                limit : 1
             });
         })
         .then(result => {
