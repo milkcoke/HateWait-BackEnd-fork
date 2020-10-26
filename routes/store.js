@@ -63,7 +63,14 @@ router.patch('/information', (request, response) => {
        });
     } else {
         //올바르지 않은 id로 가게정보 수정을 요청한경우.
+        //여기가 비동기라 아래가 실행되는게 문제임.
         checkId.store(storeId)
+            .catch(error => {
+                console.error(error);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다."
+                });
+            })
             .then(result => {
                 if (result === null) {
                     return response.status(400).json({
@@ -71,12 +78,6 @@ router.patch('/information', (request, response) => {
                     });
                 }
             })
-            .catch(error => {
-                console.error(error);
-                return response.status(500).json({
-                    message: "서버 내부 오류입니다."
-                })
-            });
     }
 
     //오로지 하나의 key-value 쌍만 body 로 날아옴.
@@ -145,7 +146,7 @@ router.patch('/information', (request, response) => {
             return store.update({
                 targetKey : targetValue
             }, {
-                fields : [targetKey],
+                // fields : [targetKey],
                 limit : 1
             });
 
