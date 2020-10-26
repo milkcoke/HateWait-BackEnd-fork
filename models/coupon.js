@@ -32,8 +32,10 @@ class coupon extends Sequelize.Model {
         key: 'id'
       }
     },
+    //you can only use CURRENT_TIMESTAMP as the default value for a TIMESTAMP field.
+    //bellow 5.5 version
     issue_date: {
-      type: DataTypes.DATE,
+      type: DataTypes.NOW(),
       allowNull: false,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
