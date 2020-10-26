@@ -33,7 +33,9 @@ class coupon extends Sequelize.Model {
       }
     },
     //you can only use CURRENT_TIMESTAMP as the default value for a TIMESTAMP field.
-    //bellow 5.5 version
+    //bellow 5.5 version so use 'TIMESTAMP'
+    // ORM sequelize Datatype document https://ellapresso.tistory.com/61
+    //https://sequelize.readthedocs.io/en/latest/docs/models-definition/#definition
     issue_date: {
       type: 'TIMESTAMP',
       allowNull: false,

@@ -7,6 +7,7 @@ const checkId = require('../db/check_id');
 
 
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
+//대기열 조회
 router.get('/:id', (request, response)=> {
     // request.params.id
      const storeId = request.params.id;
@@ -53,6 +54,8 @@ router.get('/:id', (request, response)=> {
             }
         });
 });
+
+//대기열 등록
 router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
@@ -160,6 +163,7 @@ router.post('/:id', (request, response)=> {
 
 });
 
+//대기열 삭제
 router.delete('/:id', (request, response) => {
     const waitingCustomerPhone = request.body.phone;
     const storeId = request.params.id;
