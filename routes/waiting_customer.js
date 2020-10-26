@@ -75,6 +75,7 @@ router.post('/:id', (request, response)=> {
                         message: "아이디를 확인해주세요."
                     })
                 } else {
+
                     const memberPhone = rows[0].phone
                     const memberName = rows[0].name
                     dbConnection().execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
@@ -108,7 +109,6 @@ router.post('/:id', (request, response)=> {
                                         count : rows[0].turnNumber
                                     });
                                 }
-
                             });
                         }
                     });

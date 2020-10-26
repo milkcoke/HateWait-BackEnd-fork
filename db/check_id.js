@@ -1,5 +1,7 @@
 const dbConnection = require('./db');
 
+//async-await is not appropriate without parameter 'callback function'
+//so use Promise object.
 function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
     return new Promise((resolve, reject) => {
