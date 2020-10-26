@@ -64,11 +64,13 @@ router.patch('/:id', (request, response) => {
         where : {id: storeId}
     })
         .then(store=> {
+            console.log(`store : ${store}`);
             return store.update({
                 targetKey : targetValue
             });
         })
         .then(result => {
+            console.log(`result : ${result}`);
             return response.status(200).json({
                 message: "수정 완료"
             })
