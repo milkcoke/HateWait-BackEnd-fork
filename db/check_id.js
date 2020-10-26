@@ -6,7 +6,7 @@ async function checkStoreId(storeId) {
     let result = null;
     // 나 이거왜 리턴안하는지 알았다.
     // callback 함수 내에서 리턴한거라서그럼. -> Promise 로 바꿀 수 도 있음.
-    await dbConnection().execute(sql, [storeId], (error, rows) => {
+    await dbConnection().execute(sql, [storeId], await function (error, rows) {
         if(error) {
             // result = error;
             throw error;
@@ -26,7 +26,7 @@ async function checkStoreId(storeId) {
 async function checkMemberId(memberId) {
     const sql = 'SELECT id FROM member WHERE id=?';
     let result = null;
-    await dbConnection().execute(sql, [memberId], (error, rows) => {
+    await dbConnection().execute(sql, [memberId], await function(error, rows) {
         if(error) {
             // result = error;
             throw error;
