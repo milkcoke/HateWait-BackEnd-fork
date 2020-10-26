@@ -21,6 +21,7 @@ router.get('/:id', (request, response)=> {
              console.log(`resultId : ${resultId}`);
             if (resultId === null) {
                 //요청한 storeId가 가입된 아이디가 아닌경우.
+                //json response 도 필요함.
                 return response.status(404).render('error', {
                     message: "요청하신 페이지를 찾을 수 없습니다.",
                     error : {
