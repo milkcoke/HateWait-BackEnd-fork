@@ -26,6 +26,11 @@ class member extends Sequelize.Model {
       type: DataTypes.STRING(40),
       allowNull: false
     },
+    no_show: {
+      type: DataTypes.INTEGER(2).UNSIGNED,
+      allowNull : false,
+      defaultValue : 0
+    },
     pw: {
       type: DataTypes.STRING(127),
       allowNull: false
