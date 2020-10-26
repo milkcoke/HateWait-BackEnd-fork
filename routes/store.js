@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
 const Models = require('../models');
-const storeModel = Models['store'];
+const storeModel = Models.store;
 
 
 router.get('/', function(request, response) {
@@ -64,14 +64,11 @@ router.patch('/:id', (request, response) => {
         where : {id: storeId}
     })
         .then(store=> {
-            console.log('orm store ' + store);
-            console.log(`then store : ${store}`);
             return store.update({
                 targetKey : targetValue
             });
         })
         .then(result => {
-            console.log('orm result ' + result);
             return response.status(200).json({
                 message: "수정 완료"
             })
