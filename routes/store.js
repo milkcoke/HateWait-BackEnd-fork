@@ -4,11 +4,9 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
-console.log(Models);
+// console.log(Models);
 console.log(storeModel);
-for(const [key, value] of Models) {
-    console.log(`${key} : ${value}`);
-}
+
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
     dbConnection().execute(sql, (error, rows) => {
@@ -60,7 +58,7 @@ router.patch('/:id', (request, response) => {
     const targetValue = targetObject[targetKey];
     console.log(`targetKey : ${targetKey} , targetValue: ${targetValue}`);
 
-    storeModel().findOne({
+    storeModel.findOne({
         where : {id: storeId}
     })
         .then(store=> {
@@ -82,7 +80,5 @@ router.patch('/:id', (request, response) => {
                 message: "서버 내부 오류입니다."
             })
         });
-        console.log(Models);
-        console.log(storeModel);
 });
 module.exports = router;
