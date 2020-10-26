@@ -4,15 +4,6 @@ const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
 
-router.get('/all', (request, response) => {
-    storeModel.findAll({
-
-    }).then(result => {
-        return response.status(200).json(result);
-    }).catch(error => {
-        console.error(error);
-    })
-});
 
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
@@ -70,6 +61,9 @@ router.patch('/:id', (request, response) => {
     })
         .then(store=> {
             console.log(`store : ${store.get({plain : true})}`);
+            for(const [key, value] of store.get({plain: true})) {
+                console.log(key, value);
+            }
             return store.update({
                 targetKey : targetValue
             }, {
@@ -79,6 +73,10 @@ router.patch('/:id', (request, response) => {
         })
         .then((result) => {
             console.log(`result : ${result.get({plain : true})}`);
+            for(const [key, value] of result.get({plain: true})) {
+                console.log(key, value);
+            }
+
             return response.status(200).json({
                 message: "수정 완료"
             })
