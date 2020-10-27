@@ -32,7 +32,7 @@ router.get('/:id', (request, response)=> {
                     }
                 });
             } else {
-                const sql = 'SELECT phone, name, people_number FROM waiting_customer WHERE store_id=?';
+                const sql = 'SELECT phone, name, people_number, is_called FROM waiting_customer WHERE store_id=?';
                 dbConnection().execute(sql, [storeId], (error, rows)=> {
                     if (error) {
                         console.error(error);
@@ -41,7 +41,7 @@ router.get('/:id', (request, response)=> {
                         });
                     } else if(rows.length === 0) {
                         return response.status(200).json({
-                            message: "지금은 손님이 없어요",
+                            message: "지금은 손님이 없어요"
                         });
                     } else {
                         return response.status(200).json({

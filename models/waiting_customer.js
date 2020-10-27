@@ -30,6 +30,11 @@ class waiting_customer extends Sequelize.Model {
       type: DataTypes.INTEGER(4),
       allowNull: false
     },
+    is_called: {
+      type: DataTypes.INTEGER(1),
+      allowNull: false,
+      defaultValue: false
+    },
     is_member: {
       type: DataTypes.INTEGER(1),
       allowNull: false
