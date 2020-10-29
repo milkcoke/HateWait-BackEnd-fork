@@ -144,8 +144,9 @@ router.post('/member', (request, response) => {
 
     console.log('==========================');
 
-    //Response Code 409 Conflict :This code is used in situations where the user might be able to resolve the conflict and resubmit the request.
-
+    //Response Code 409 Conflict
+    // This code is used in situations where the user might be able to resolve the conflict and resubmit the request.
+    //클라이언트의 요청이 서버의 상태와 충돌이 발생한 경우 (400~405 Code 에 해당하지 않는 애매한 경우에도 사용)
     if (!memberInfo.id || !memberInfo.name || !memberInfo.phone
         || !memberInfo.email || !memberInfo.pw) {
         return response.status(409).json({
