@@ -39,14 +39,6 @@ router.get('/:id', (request, response) => {
             });
         }
     });
-    // memberModel.findAll()
-    //     .then( allMembers => {
-    //         return res.status(200).json(allMembers);
-    //     })
-    //     .catch (error=> {
-    //         console.error(error);
-    //         return res.status(500).json(error);
-    //     });
 });
 
 // in Tablet, mebmer id check, return member Name

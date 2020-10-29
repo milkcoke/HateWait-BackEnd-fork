@@ -4,6 +4,7 @@ const dbConnection = require('../db/db');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
 const checkId = require('../db/check_id');
+const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)
 router.post('/member/id', (request, response) => {
@@ -181,9 +182,15 @@ router.post('/member', (request, response) => {
                     message : 'DB 회원정보 삽입 오류입니다.'
                 });
             } else {
-                return response.status(200).json({
+                // Just send the absolute path.
+                // location : 생성된 resource (회원정보) 를 어디서 확인할 수 있는지 확인할 수 있는 URL
+                // 이 때 location URL 은 반드시 절대경로여야한다.
+                // Reference : https://tools.ietf.org/html/rfc7231#section-7.1.2
+                return response.status(201)
+                    .location(locationUrl.memberURL + memberInfo.id)
+                    .json({
                     message : '회원가입 완료!',
-                    memberName : memberInfo.name
+                    name : memberInfo.name
                 });
             }
         })
@@ -229,8 +236,11 @@ router.post('/store', (request, response) => {
                 message : 'DB 가게정보 삽입 오류입니다.'
                 });
             } else {
-                return response.status(200).json({
-                    message : '회원가입 완료!'
+                return response.status(201)
+                    .location(locationUrl.storeURL + storeInfo.id)
+                    .json({
+                    message : '회원가입 완료!',
+                    name : storeInfo.name
                 });
             }
         })

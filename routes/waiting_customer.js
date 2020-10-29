@@ -3,7 +3,7 @@ const router = express.Router();
 const dbConnection = require('../db/db');
 const checkId = require('../db/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
-
+const locationUrl = require('../config/url_setting');
 
 
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
@@ -23,13 +23,16 @@ router.get('/:id', (request, response)=> {
             if (resultId === null) {
                 //요청한 storeId가 가입된 아이디가 아닌경우.
                 //json response 도 필요함.
-                return response.status(404).render('error', {
-                    message: "요청하신 페이지를 찾을 수 없습니다.",
-                    error : {
-                        message: "헤잇웨잇에 가입된 가게가 아닙니다.",
-                        status: 404,
-                        stack: null
-                    }
+                // return response.status(404).render('error', {
+                //     message: "요청하신 페이지를 찾을 수 없습니다.",
+                //     error : {
+                //         message: "헤잇웨잇에 가입된 가게가 아닙니다.",
+                //         status: 404,
+                //         stack: null
+                //     }
+                // });
+                return response.status(404).json({
+                    message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
                 const sql = 'SELECT phone, name, people_number, is_called FROM waiting_customer WHERE store_id=?';
@@ -45,7 +48,6 @@ router.get('/:id', (request, response)=> {
                         });
                     } else {
                         return response.status(200).json({
-                            message: "조회 성공!",
                             waiting_customers: rows
                         })
                     }
@@ -59,7 +61,7 @@ router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?, ?)';
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
@@ -70,7 +72,7 @@ router.post('/:id', (request, response)=> {
                 if(error) {
                     console.error(error);
                     return response.status(500).json({
-                        message: "서버 내부 오류입니다."
+                        message: "서버 오류입니다."
                     })
                 } else if(rows.length === 0) {
                     return response.status(409).json({
@@ -80,7 +82,7 @@ router.post('/:id', (request, response)=> {
 
                     const memberPhone = rows[0].phone
                     const memberName = rows[0].name
-                    dbConnection().execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
+                    dbConnection().execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, null, customerInfo.is_member], (error, result)=> {
                         if(error) {
                             if (error.code == 'ER_DUP_ENTRY') {
                                 console.error(error.message);
@@ -90,7 +92,7 @@ router.post('/:id', (request, response)=> {
                             } else {
                                 console.error(error);
                                 return response.status(500).json({
-                                    message: "내부 서버 오류입니다."
+                                    message: "서버 오류입니다."
                                 });
                             }
                         } else {
@@ -101,12 +103,13 @@ router.post('/:id', (request, response)=> {
                                 if(error) {
                                     console.error(error);
                                     return response.status(500).json({
-                                        message: "내부 서버 오류입니다."
+                                        message: "서버 오류입니다."
                                     });
                                 } else {
                                     console.log(rows[0].turnNumber);
-                                    return response.status(200).json({
-                                        message: `${rows[0].turnNumber} 번째 회원으로 등록되었습니다!`,
+                                    return response.status(201)
+                                        .location(locationUrl.waitingCustomerURL + customerInfo.id)
+                                        .json({
                                         name: memberName,
                                         count : rows[0].turnNumber
                                     });
@@ -143,7 +146,6 @@ router.post('/:id', (request, response)=> {
                         } else {
                             console.log(rows[0].turnNumber);
                             return response.status(200).json({
-                                message: `${rows[0].turnNumber} 번째 회원으로 등록되었습니다!`,
                                 name: customerInfo.name,
                                 count : rows[0].turnNumber
                             });
@@ -172,11 +174,11 @@ router.delete('/:id', (request, response) => {
         if (error) {
             console.error(error);
             return response.status(500).json({
-                message: "서버 내부 오류입니다."
+                message: "서버 오류입니다."
             });
         } else if(result.affectedRows === 0) {
             return response.status(409).json({
-                message: "전화번호나 가게 id를 확인해주세요."
+                message: "전화번호나 가게 아이디를 확인해주세요."
             })
         } else {
             return response.status(200).json({
