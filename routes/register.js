@@ -163,8 +163,8 @@ router.post('/member', (request, response) => {
         memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         // const register_member_sql = 'INSERT INTO member SET ?';
-        const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?)';
-        dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, memberInfo.pw], (error, result)=> {
+        const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?, ?)';
+        dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=> {
             if(error) {
                 if (error.code == 'ER_DUP_ENTRY') {
                     console.error(error.message);
