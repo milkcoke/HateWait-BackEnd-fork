@@ -3,6 +3,141 @@ const router = express.Router();
 const dbConnection = require('../db/db');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
+const checkId = require('../db/check_id');
+
+//id 중복체크 (member / store)
+router.post('/member/id', (request, response) => {
+    if (!request.hasOwnProperty(id)) {
+        //id key를 갖지 않은경우
+        return response.status(400).json({
+            message: "비정상적인 요청입니다."
+        });
+    //    id가 null or "" (공백)으로 온 경우
+    } else if (!request.id) {
+        return response.status(409).json({
+            message: "아이디를 입력해주세요"
+        });
+    } else {
+        checkId.member(request.id)
+            .then(resultId=>{
+                // 쿼리 결과상 나오지 않은 사용 가능한 아이디.
+                if(resultId === null) {
+                    return response.status(200).json({
+                        message : "사용 가능한 아이디입니다."
+                    });
+                } else {
+                    //쿼리 결과가 존재하는 이미 가입된 아이디.
+                    return response.status(409).json({
+                        message : "이미 가입된 아이디입니다."
+                    });
+                }
+            })
+            .catch(error=>{
+                console.error(error.message);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다. 다시 요청해주세요."
+                });
+            });
+    }
+});
+
+
+router.post('/store/id', (request, response) => {
+    if (!request.hasOwnProperty(id)) {
+        return response.status(400).json({
+            message: "비정상적인 요청입니다."
+        });
+        //    id가 null or "" (공백)으로 온 경우
+    } else if (!request.id) {
+        return response.status(409).json({
+            message: "아이디를 입력해주세요"
+        });
+    } else {
+        checkId.store(request.id)
+            .then(resultId=>{
+                if(resultId === null) {
+                    return response.status(200).json({
+                        message : "사용 가능한 아이디입니다."
+                    });
+                } else {
+                    return response.status(409).json({
+                        message : "이미 가입된 아이디입니다."
+                    });
+                }
+            })
+            .catch(error=>{
+                console.error(error.message);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다. 다시 요청해주세요."
+                });
+            });
+    }
+});
+
+// 전화번호 중복체크 (member/store)
+router.post('/member/phone', (request, response) => {
+    if (!request.hasOwnProperty(phone)) {
+        return response.status(400).json({
+            message: "비정상적인 요청입니다."
+        });
+    } else if (!request.phone) {
+        return response.status(409).json({
+            message: "전화번호를 입력해주세요"
+        });
+    } else {
+        checkId.store(request.phone)
+            .then(requestPhone=>{
+                if(requestPhone === null) {
+                    return response.status(200).json({
+                        message : "사용 가능한 전화번호입니다."
+                    });
+                } else {
+                    return response.status(409).json({
+                        message : "이미 사용중인 전화번호입니다."
+                    });
+                }
+            })
+            .catch(error=>{
+                console.error(error.message);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다. 다시 요청해주세요."
+                });
+            });
+    }
+});
+
+
+router.post('/store/phone', (request, response) => {
+    if (!request.hasOwnProperty(phone)) {
+        return response.status(400).json({
+            message: "비정상적인 요청입니다."
+        });
+    } else if (!request.phone) {
+        return response.status(409).json({
+            message: "전화번호를 입력해주세요"
+        });
+    } else {
+        checkId.store(request.phone)
+            .then(requestPhone=>{
+                if(requestPhone === null) {
+                    return response.status(200).json({
+                        message : "사용 가능한 전화번호입니다."
+                    });
+                } else {
+                    return response.status(409).json({
+                        message : "이미 사용중인 전화번호입니다."
+                    });
+                }
+            })
+            .catch(error=>{
+                console.error(error.message);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다. 다시 요청해주세요."
+                });
+            });
+    }
+});
+
 
 router.post('/member', (request, response) => {
     const memberInfo = request.body
@@ -18,31 +153,6 @@ router.post('/member', (request, response) => {
         });
     }
 
-    // 중복 회원가입 방지
-    const check_id_sql = 'SELECT id FROM member WHERE id=?';
-    dbConnection().query(check_id_sql, [memberInfo.id], (error, row) => {
-        if(error) {
-            return response.status(500).json(error);
-        } else if (row[0]) {
-            console.log(row[0]);
-            return response.status(409).json({
-                message : "이미 존재하는 ID입니다."
-            });
-        }
-    });
-
-    //    phone 중복성 검사
-    const check_phone_sql = 'SELECT phone FROM member WHERE phone=?';
-    dbConnection().query(check_phone_sql, [memberInfo.phone], (error, row) => {
-        if (error) {
-            return response.status(500).json(error);
-        } else if (row[0]) {
-            console.log(row[0]);
-            return response.status(409).json({
-                message : '이미 가입된 전화번호입니다.'
-            })
-        }
-    });
 
     //    비밀번호 암호화
     bcryptConfig.SALT.then(SALT=> {
@@ -72,7 +182,7 @@ router.post('/member', (request, response) => {
             } else {
                 return response.status(200).json({
                     message : '회원가입 완료!',
-                    memberName : memberInfo.name + "님 회원가입 축하해요!"
+                    memberName : memberInfo.name
                 });
             }
         })
@@ -98,27 +208,6 @@ router.post('/store', (request, response) => {
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
-//    id 중복성 검사
-    const check_id_sql = 'SELECT id FROM store WHERE id=?';
-    dbConnection().execute(check_id_sql, [storeInfo.id], (error, row) => {
-        if (error) return response.status(500).json(error);
-        else if (row[0]) {
-            return response.status(409).json({
-                message : '이미 존재하는 ID입니다.'
-            });
-        }
-    });
-//    phone 중복성 검사
-    const check_phone_sql = 'SELECT phone FROM store WHERE phone=?';
-    dbConnection().execute(check_phone_sql, [storeInfo.phone], (error, row) => {
-        if (error) return response.status(500).json(error);
-        else if (row[0]) {
-            return response.status(409).json({
-                message : '이미 가입된 전화번호입니다.'
-            })
-        }
-    });
-
 
 //    비밀번호 암호화
     bcryptConfig.SALT.then(SALT=> {
@@ -129,17 +218,10 @@ router.post('/store', (request, response) => {
         const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         dbConnection().execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=> {
             if(error) {
-                if (error.code == 'ER_DUP_ENTRY') {
-                    console.error(error.message);
-                    return response.status(409).json({
-                        message: "이미 가입된 가게입니다."
-                    })
-                } else {
                     console.error(error);
                     return response.status(500).json({
                         message : "서버 내부 오류입니다."
                     });
-                }
             } else if (!result) {
                 console.log(result);
                 return response.status(500).json({

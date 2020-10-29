@@ -53,6 +53,7 @@ router.patch('/:id', (request, response) => {
     const targetKey = Object.keys(targetObject)[0];
     const targetValue = targetObject[targetKey];
     console.log(`targetKey : ${targetKey} , targetValue: ${targetValue}`);
+
     storeModel().findOne({
         where : {id: storeId}
     })
@@ -75,6 +76,6 @@ router.patch('/:id', (request, response) => {
                 message: "서버 내부 오류입니다."
             })
         });
-
+        console.log('end orm model query');
 });
 module.exports = router;
