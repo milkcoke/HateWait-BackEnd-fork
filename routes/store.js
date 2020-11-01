@@ -189,14 +189,13 @@ router.patch('/test-find', (request, response)=> {
             console.error(error);
         })
         .then(targetStore=>{
-            console.log(`result : ${targetStore}`);
             targetStore.update({
                 targetKey : targetValue
             }, {
+                where: {id: storeId},
                 fields: [targetKey],
                 limit: 1
             }).then(result=>{
-                console.log(result);
                 return response.status(200).json(result);
             }).catch(error=>{
                 console.error(error);
