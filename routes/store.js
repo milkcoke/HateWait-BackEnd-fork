@@ -97,7 +97,6 @@ router.patch('/information', (request, response) => {
                 where : {id: storeId}
             })
                 .then(store => {
-                    console.log(store);
                     switch (targetKey) {
                         case 'pw':
                             bcryptSetting.SALT
@@ -107,7 +106,6 @@ router.patch('/information', (request, response) => {
                                 .then(newHashedPassword => {
                                     //    store password (orm)
                                     targetValue = newHashedPassword
-                                    console.log(`targetHash: ${newHashedPassword}`);
                                 })
                                 .catch( error=> {
                                     console.error(error);
@@ -174,4 +172,39 @@ router.patch('/information', (request, response) => {
 
 
 });
+
+
+//test용
+router.get('/test-find', (request, response)=> {
+    const storeId = request.body.id;
+    delete request.body.id;
+    const targetKey = Object.keys(request.body)[0];
+    const targetValue = request.body[targetKey];
+    console.log(targetKey, targetValue);
+
+    storeModel.findOne({
+        where : {id: storeId}
+    })
+        .catch(error=>{
+            console.error(error);
+        })
+        .then(targetStore=>{
+            console.log(`result : ${targetStore}`);
+            targetStore.update({
+                targetKey : targetValue
+            }, {
+                fields: [targetKey],
+                limit: 1
+            }).then(result=>{
+                console.log(result);
+                return response.status(200).json(result);
+            }).catch(error=>{
+                console.error(error);
+                return response.status(500).json(error);
+            })
+        })
+    
+    
+
+})
 module.exports = router;
