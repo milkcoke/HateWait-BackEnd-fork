@@ -193,7 +193,6 @@ router.patch('/test-find', (request, response)=> {
                 targetKey : targetValue
             }, {
                 where: {id: storeId},
-                fields: [targetKey],
                 limit: 1
             }).then(result=>{
                 return response.status(200).json(result);
