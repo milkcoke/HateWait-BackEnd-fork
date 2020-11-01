@@ -190,9 +190,10 @@ router.patch('/test-find', (request, response)=> {
         })
         .then(targetStore=>{
             storeModel.update({
-                targetKey : targetValue
+                pw : 'coco'
             }, {
                 where: {id: storeId},
+                fields: [targetKey],
                 limit: 1
             }).then(result=>{
                 return response.status(200).json(result);
