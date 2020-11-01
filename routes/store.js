@@ -192,6 +192,7 @@ router.patch('/test-find', (request, response)=> {
         .then(targetStore=>{
             targetStore.update({
                 // targetKey : targetValue << 이거 왜안됨 ㄹㅇ 진짜 이해안되네 ㅋㅋㅋㅋㅋㅋㅋㅋ
+                // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
                 [targetKey] : targetValue
             }, {
                 fields: [targetKey],
