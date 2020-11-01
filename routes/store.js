@@ -180,6 +180,7 @@ router.patch('/test-find', (request, response)=> {
     delete request.body.id;
     const targetKey = Object.keys(request.body)[0];
     const targetValue = request.body[targetKey];
+    console.log(typeof targetValue);
     console.log(targetKey, targetValue);
 
     storeModel.findOne({
@@ -190,7 +191,7 @@ router.patch('/test-find', (request, response)=> {
         })
         .then(targetStore=>{
             storeModel.update({
-                pw : 'coco'
+                pw : targetValue
             }, {
                 where: {id: storeId},
                 fields: [targetKey],
