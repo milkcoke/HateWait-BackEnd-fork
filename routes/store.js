@@ -97,6 +97,7 @@ router.patch('/information', (request, response) => {
                 where : {id: storeId}
             })
                 .then(store => {
+                    console.log(store);
                     switch (targetKey) {
                         case 'pw':
                             bcryptSetting.SALT
@@ -106,6 +107,7 @@ router.patch('/information', (request, response) => {
                                 .then(newHashedPassword => {
                                     //    store password (orm)
                                     targetValue = newHashedPassword
+                                    console.log(`targetHash: ${newHashedPassword}`);
                                 })
                                 .catch( error=> {
                                     console.error(error);
@@ -157,7 +159,7 @@ router.patch('/information', (request, response) => {
                     });
                 })
                 .then(result => {
-                    console.log('update promise : ' + result);
+                    console.dir(result);
                     return response.status(200).json({
                         message: "수정 완료!"
                     });

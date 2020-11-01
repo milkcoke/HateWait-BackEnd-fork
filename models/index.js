@@ -25,7 +25,6 @@ for(let [name, value] of Object.entries(initiatedModelNames)) {
 }
 
 Object.keys(db).forEach( modelName => {
-    console.log(`modelName : ${modelName}`);
     if (db[modelName].associate) {
         db[modelName].associate(db);
     }
