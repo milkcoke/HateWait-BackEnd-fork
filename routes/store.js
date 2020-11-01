@@ -191,9 +191,9 @@ router.patch('/test-find', (request, response)=> {
         })
         .then(targetStore=>{
             targetStore.update({
-                pw : targetValue
+                // targetKey : targetValue << 이거 왜안됨 ㄹㅇ 진짜 이해안되네 ㅋㅋㅋㅋㅋㅋㅋㅋ
+                [targetKey] : targetValue
             }, {
-                // where: {id: storeId},
                 fields: [targetKey],
                 limit: 1
             }).then(result=>{
