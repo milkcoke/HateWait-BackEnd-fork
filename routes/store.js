@@ -175,7 +175,7 @@ router.patch('/information', (request, response) => {
 
 
 //test용
-router.get('/test-find', (request, response)=> {
+router.patch('/test-find', (request, response)=> {
     const storeId = request.body.id;
     delete request.body.id;
     const targetKey = Object.keys(request.body)[0];
