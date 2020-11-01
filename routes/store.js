@@ -189,7 +189,7 @@ router.patch('/test-find', (request, response)=> {
             console.error(error);
         })
         .then(targetStore=>{
-            targetStore.update({
+            storeModel.update({
                 targetKey : targetValue
             }, {
                 where: {id: storeId},
