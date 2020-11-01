@@ -107,7 +107,7 @@ router.patch('/information', (request, response) => {
                                     //    store password (orm)
                                     targetValue = newHashedPassword
                                 })
-                                .catch( error=> {
+                                .catch(error => {
                                     console.error(error);
                                     return response.status(500).json({
                                         message : "비밀번호 암호화 오류입니다. 다시 시도해주세요"
@@ -123,18 +123,18 @@ router.patch('/information', (request, response) => {
                                 //쿠폰사용 O 추가 정보 수정필요
                                 //    store_id, benefit_description, maximum_stamp, validity_period_days, remark
                                 couponInformationModel.update({
-                                    store_id : storeId,
+                                    //여기서의 store는 findOne 에서 검색 결과로 나온애.
+                                    store_id : store.id,
                                     benefit_description : newStoreInfo.benefit_description,
                                     maximum_stamp : newStoreInfo.maximum_stamp,
                                     validity_period_days : newStoreInfo.validity_period_days,
                                     remark: newStoreInfo.remark
                                 }, {
                                     limit : 1
-                                }).then(result => {
-                                    console.log('coupon info : ' + result);
+                                }).then(() => {
                                     console.log('쿠폰 정보 수정 완료!');
                                 }).catch(error => {
-                                    console.error(error);
+                                    console.error(error.message);
                                     return response.status(500).json({
                                         message : "서버 내부, 쿠폰 정보 수정 오류"
                                     });
@@ -149,15 +149,18 @@ router.patch('/information', (request, response) => {
                     }
 
                     // 가게 정보 어떤 항목이든 결국 항목 갯수는 1개, 업데이트!
+                    // targetKey : targetValue << 이거 안됨. 'key' 가 계산되지 않음.
+                 //   해결 방법은 use bucket '[]'
+                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names
+                 //   비밀번호 변경시 sync 함수사용과 return 복붙 왜의 좋은 방법이 없을까 다음 코드 중복 없이 한번에 깔끔하게.
                     return store.update({
-                        targetKey : targetValue
+                        [targetKey] : targetValue
                     }, {
                         fields : [targetKey],
                         limit : 1
                     });
                 })
                 .then(result => {
-                    console.dir(result);
                     return response.status(200).json({
                         message: "수정 완료!"
                     });
@@ -175,37 +178,35 @@ router.patch('/information', (request, response) => {
 
 
 //test용
-router.patch('/test-find', (request, response)=> {
-    const storeId = request.body.id;
-    delete request.body.id;
-    const targetKey = Object.keys(request.body)[0];
-    const targetValue = request.body[targetKey];
-    console.log(typeof targetKey, typeof targetValue);
-    console.log(targetKey, targetValue);
-
-    storeModel.findOne({
-        where : {id: storeId}
-    })
-        .catch(error=>{
-            console.error(error);
-        })
-        .then(targetStore=>{
-            targetStore.update({
-                // targetKey : targetValue << 이거 왜안됨 ㄹㅇ 진짜 이해안되네 ㅋㅋㅋㅋㅋㅋㅋㅋ
-                // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
-                [targetKey] : targetValue
-            }, {
-                fields: [targetKey],
-                limit: 1
-            }).then(result=>{
-                return response.status(200).json(result);
-            }).catch(error=>{
-                console.error(error);
-                return response.status(500).json(error);
-            })
-        })
-    
-    
-
-})
+// router.patch('/test-find', (request, response)=> {
+//     const storeId = request.body.id;
+//     delete request.body.id;
+//     const targetKey = Object.keys(request.body)[0];
+//     const targetValue = request.body[targetKey];
+//     console.log(typeof targetKey, typeof targetValue);
+//     console.log(targetKey, targetValue);
+//
+//     storeModel.findOne({
+//         where : {id: storeId}
+//     })
+//         .catch(error=>{
+//             console.error(error);
+//         })
+//         .then(targetStore=>{
+//             targetStore.update({
+//                 [targetKey] : targetValue
+//             }, {
+//                 fields: [targetKey],
+//                 limit: 1
+//             }).then(result=>{
+//                 return response.status(200).json(result);
+//             }).catch(error=>{
+//                 console.error(error);
+//                 return response.status(500).json(error);
+//             })
+//         })
+//
+//
+//
+// })
 module.exports = router;
