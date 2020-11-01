@@ -55,10 +55,12 @@ router.patch('/information', (request, response) => {
     // 새 정보에서 id는 제외시키고 시작함.
     delete newStoreInfo.id;
     // id가 비워져있는 요청 예외처리.
-    if (!storeId)
-       return response.status(400).json({
-           message: "비정상적인 요청입니다."
-       });
+    if (!storeId) {
+        return response.status(400).json({
+            message: "비정상적인 요청입니다."
+        });
+    }
+
 
     //올바르지 않은 id로 가게정보 수정을 요청한경우.
     //여기가 비동기라 아래가 실행되는게 문제임.
@@ -150,12 +152,12 @@ router.patch('/information', (request, response) => {
                     return store.update({
                         targetKey : targetValue
                     }, {
-                        // fields : [targetKey],
+                        fields : [targetKey],
                         limit : 1
                     });
                 })
                 .then(result => {
-                    console.log('update promise : ' + result[0]);
+                    console.log('update promise : ' + result);
                     return response.status(200).json({
                         message: "수정 완료!"
                     });
