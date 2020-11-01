@@ -191,7 +191,7 @@ router.patch('/test-find', (request, response)=> {
         })
         .then(targetStore=>{
             storeModel.update({
-                pw : targetValue
+                pw : `${targetValue}`
             }, {
                 where: {id: storeId},
                 fields: [targetKey],
