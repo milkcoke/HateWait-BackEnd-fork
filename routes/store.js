@@ -86,7 +86,6 @@ router.patch('/information', (request, response) => {
         .then((result) => {
             //null 이면 끝내자.
             if(result != 'OK') return;
-            console.log(`result : ${result}`);
             //오로지 하나의 key-value 쌍만 body 로 날아옴.
             const targetKey = Object.keys(newStoreInfo)[0];
             let targetValue = newStoreInfo[targetKey];
@@ -122,16 +121,17 @@ router.patch('/information', (request, response) => {
                             } else {
                                 //쿠폰사용 O 추가 정보 수정필요
                                 //    store_id, benefit_description, maximum_stamp, validity_period_days, remark
-                                couponInformationModel.update({
+                                // upsert: insert or update a single row
+                                // it's like a ON DUPLICATE KEY UPDATE in MySQL
+                                couponInformationModel.upsert({
                                     //여기서의 store는 findOne 에서 검색 결과로 나온애.
                                     store_id : store.id,
                                     benefit_description : newStoreInfo.benefit_description,
                                     maximum_stamp : newStoreInfo.maximum_stamp,
                                     validity_period_days : newStoreInfo.validity_period_days,
                                     remark: newStoreInfo.remark
-                                }, {
-                                    limit : 1
-                                }).then(() => {
+                                }).then((upsertResult) => {
+                                    console.log(`upsertResult : ${upsertResult}`);
                                     console.log('쿠폰 정보 수정 완료!');
                                 }).catch(error => {
                                     console.error(error.message);
@@ -152,7 +152,7 @@ router.patch('/information', (request, response) => {
                     // targetKey : targetValue << 이거 안됨. 'key' 가 계산되지 않음.
                  //   해결 방법은 use bucket '[]'
                  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names
-                 //   비밀번호 변경시 sync 함수사용과 return 복붙 왜의 좋은 방법이 없을까 다음 코드 중복 없이 한번에 깔끔하게.
+                 //   비밀번호 변경시 sync 함수사용과 return 복붙 외의 좋은 방법이 없을까 다음 코드 중복 없이 한번에 깔끔하게.
                     return store.update({
                         [targetKey] : targetValue
                     }, {
