@@ -25,6 +25,14 @@ class visit_log extends Sequelize.Model {
     customer_number: {
       type: DataTypes.INTEGER(4),
       allowNull: false
+    },
+    member_id: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+      references: {
+        model: 'member_id',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
