@@ -19,7 +19,7 @@ router.get('/member/:memberId', (request, response) => {
         'INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id' +
         'INNER JOIN visit_log ON store.id = visit_log.store_id' +
         'INNER JOIN member ON member.id = visit_log.member_id' +
-        'WHERE member.id=?' +
+        'WHERE store.coupon_enable = true AND member.id=?' +
         'ORDER BY visit_time DESC';
 
     dbConnection().execute(sql, [memberId], (error, rows) => {
@@ -85,15 +85,13 @@ router.get('/memeber/:memeberId/store/:storeName', (request, response) => {
                 message : '가게 이름이 바뀌었거나 더 이상 쿠폰 혜택을 제공하지 않습니다.'
             })
         } else {
-            console.log(store.id)
+            console.log(store.id);
             return store.id;
         }
     }).then( storeId=> {
-        if(!storeId) {
-            console.error('가게 없다 야발');
-            return;
-        }
-        const sql = 'SELECT issue_date, expiration_date, used_date FROM coupon WHERE member_id=? AND store_id=?';
+        console.log(`storeId : ${storeId}`);
+        //나중에 발행된 순서대로 위에옴.
+        const sql = 'SELECT issue_date, expiration_date, used_date FROM coupon WHERE member_id=? AND store_id=? ORDER BY issue_date DESC';
         dbConnection().execute(sql, [request.params.memberId, storeId], (error, rows)=> {
             if (error) {
                 console.error(error.message);
