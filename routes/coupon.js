@@ -3,10 +3,6 @@ const router = express.Router();
 const dbConnection = require('../db/db');
 const Models = require('../models');
 const storeModel = Models.store;
-const couponModel = Models.coupon;
-const stampModel = Models.stamp;
-const couponInformationModel = Models.coupon_information;
-
 
 // 앱에서만 사용 (손님 회원 쿠폰&스탬프 보유 현황 확인)
 //return info : 가게명, 쿠폰 발급 기준 스탬프수, 스탬프수
@@ -14,13 +10,12 @@ router.get('/member/:memberId', (request, response) => {
     const memberId = request.params.memberId;
     const sql = 'SELECT store.name as store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp, ' +
         '(SELECT COUNT(*) FROM coupon WHERE store_id = store.id) AS coupon_count ' +
-        'visit_log.visit_time as visit_time' +
         'FROM stamp INNER JOIN store ON stamp.store_id = store.id' +
         'INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id' +
         'INNER JOIN visit_log ON store.id = visit_log.store_id' +
         'INNER JOIN member ON member.id = visit_log.member_id' +
         'WHERE store.coupon_enable = true AND member.id=?' +
-        'ORDER BY visit_time DESC';
+        'ORDER BY visit_log.visit_time DESC';
 
     dbConnection().execute(sql, [memberId], (error, rows) => {
         if (error) {
