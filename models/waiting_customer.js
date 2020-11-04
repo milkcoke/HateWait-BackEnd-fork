@@ -30,8 +30,8 @@ class waiting_customer extends Sequelize.Model {
       type: DataTypes.INTEGER(4),
       allowNull: false
     },
-    is_called: {
-      type: DataTypes.INTEGER(1),
+    called_time: {
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: false
     },

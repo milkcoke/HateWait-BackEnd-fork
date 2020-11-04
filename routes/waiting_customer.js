@@ -4,7 +4,7 @@ const dbConnection = require('../db/db');
 const checkId = require('../db/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');
-
+const waitingCustomerModel = require('../models').waiting_customer;
 
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 //대기열 조회
@@ -122,7 +122,7 @@ router.post('/:id', (request, response)=> {
             break;
         //    비회원인 경우
         case false:
-            dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
+            dbConnection().execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, null, customerInfo.is_member], (error, result)=> {
                 if(error) {
                     if (error.code == 'ER_DUP_ENTRY') {
                         console.error(error.message);
@@ -163,12 +163,66 @@ router.post('/:id', (request, response)=> {
     }
 
 });
+// 가게에서  손님 호출.
+router.patch('/:storeId', (request, response)=> {
+    //phone (전화번호) 만 받으면 됨.
+    if (!request.body.phone) {
+        return response.status(400).json({
+            message: "잘못된 요청입니다."
+        });
+    }
 
+    const sql = 'UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1';
+    dbConnection().execute(sql, request.body.phone, (error, result)=> {
+        if (error) {
+           console.error(error);
+           return response.status(500).json({
+               message: "서버 내부 오류입니다."
+           });
+        } else if(result.affectedRows === 0) {
+            //이럴 확률은 거의 없긴함.
+            return response.status(409).json({
+                message: "전화번호나 가게 아이디를 확인해주세요."
+            })
+        } else {
+            return response.status(200).json({
+                message: "손님 호출 완료!"
+            });
+        }
+    });
+
+})
 //대기열 삭제
+// 2가지 분기 (회원 vs 비회원)
+// 비회원 -> 그냥 삭제 바로해보리기
+// 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
 router.delete('/:id', (request, response) => {
-    const waitingCustomerPhone = request.body.phone;
+    if(!request.body.phone) {
+        return response.status(400).json({
+            message: "잘못된 요청입니다."
+        });
+    }
+
+    waitingCustomerModel.findOne({
+            where : {phone: request.body.phone}
+        })
+    .then(waitingCustomer => {
+        if (!waitingCustomer.is_member || !waitingCustomer.called_time) {
+            return waitingCustomer.destroy
+        } else {
+        //    여기에 No_Show vs 정상 가게 이용 구분.
+        }
+    })
+    .then( destroyResult=> {
+        console.log(destroyResult);
+        return response.status(200).json({
+            message: "대기열에서 삭제 완료!"
+        });
+    })
+
+
     const storeId = request.params.id;
-    const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=?';
+    const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=? LIMIT 1';
     //DML (INSERT, DELETE 는 결과가 한 행으로나옴)
     dbConnection().execute(sql, [storeId, waitingCustomerPhone], (error, result) => {
         if (error) {

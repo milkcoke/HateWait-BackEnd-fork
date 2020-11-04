@@ -23,7 +23,7 @@ class visit_log extends Sequelize.Model {
       }
     },
     customer_number: {
-      type: DataTypes.INTEGER(4),
+      type: DataTypes.INTEGER(2).UNSIGNED,
       allowNull: false
     },
     member_id: {
