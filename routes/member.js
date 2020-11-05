@@ -24,7 +24,7 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', (request, response) => {
-    const memberId = request.params.id
+    const memberId = request.params.id;
 
     const sql = 'SELECT id, name, phone, email, no_show FROM MEMBER WHERE id=?';
     dbConnection().execute(sql,[memberId], (error, rows) => {

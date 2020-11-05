@@ -9,14 +9,13 @@ const storeModel = Models.store;
 // //return info : 가게명, 쿠폰 발급 기준 스탬프수, 스탬프수
 router.get('/member/:memberId', (request, response) => {
     const memberId = request.params.memberId;
-    console.log(memberId);
     const sql = 'SELECT store.id AS store_id, store.name AS store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp, ' +
         '(SELECT COUNT(*) FROM coupon WHERE store_id = store.id) AS coupon_count ' +
         'FROM stamp INNER JOIN store ON stamp.store_id = store.id' +
         'INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id' +
         'INNER JOIN visit_log ON store.id = visit_log.store_id' +
         'INNER JOIN member ON member.id = visit_log.member_id' +
-        'WHERE store.coupon_enable = true AND member.id=? ' +
+        'WHERE store.coupon_enable = true AND member.id = ? ' +
         'ORDER BY visit_log.visit_time DESC';
     getPoolConnection(connection=>{
         connection.execute(sql, [memberId], (error, rows) => {
