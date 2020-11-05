@@ -9,7 +9,8 @@ const storeModel = Models.store;
 // //return info : 가게명, 쿠폰 발급 기준 스탬프수, 스탬프수
 router.get('/member/:memberId', (request, response) => {
     const memberId = request.params.memberId;
-    const sql = 'SELECT store.id as store_id, store.name as store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp, ' +
+    console.log(memberId);
+    const sql = 'SELECT store.id AS store_id, store.name AS store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp, ' +
         '(SELECT COUNT(*) FROM coupon WHERE store_id = store.id) AS coupon_count ' +
         'FROM stamp INNER JOIN store ON stamp.store_id = store.id' +
         'INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id' +
