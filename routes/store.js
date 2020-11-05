@@ -35,8 +35,8 @@ router.get('/:id', function(request, response) {
                 message: "서버 데이터베이스 오류입니다."
             });
         } else if(!rows[0]) {
-            response.status(409).json({
-                message: "가게 id를 확인해주세요"
+            response.status(404).json({
+                message: "가게 아이디를 확인해주세요"
             });
         } else {
             response.status(200).json({
@@ -71,7 +71,7 @@ router.patch('/information', (request, response) => {
                 message: "서버 내부 오류입니다."
             });
         })
-        .then(result => {
+        .then(result=>{
             if (result === null) {
                 return response.status(400).json({
                     message: "비정상적인 요청입니다."
@@ -83,7 +83,7 @@ router.patch('/information', (request, response) => {
                 });
             }
         })
-        .then((result) => {
+        .then(result=>{
             //null 이면 끝내자.
             if(result != 'OK') return;
             //오로지 하나의 key-value 쌍만 body 로 날아옴.
@@ -119,6 +119,7 @@ router.patch('/information', (request, response) => {
                             if (!targetValue) {
                                 console.log('store is trying to change coupon_enable!');
                             } else {
+                                const newCouponInfo = newStoreInfo.coupon_information;
                                 //쿠폰사용 O 추가 정보 수정필요
                                 //    store_id, benefit_description, maximum_stamp, validity_period_days, remark
                                 // upsert: insert or update a single row
@@ -126,11 +127,11 @@ router.patch('/information', (request, response) => {
                                 couponInformationModel.upsert({
                                     //여기서의 store는 findOne 에서 검색 결과로 나온애.
                                     store_id : store.id,
-                                    benefit_description : newStoreInfo.benefit_description,
-                                    maximum_stamp : newStoreInfo.maximum_stamp,
-                                    validity_period_days : newStoreInfo.validity_period_days,
-                                    remark: newStoreInfo.remark
-                                }).then((upsertResult) => {
+                                    benefit_description : newCouponInfo.benefit_description,
+                                    maximum_stamp : newCouponInfo.maximum_stamp,
+                                    validity_period_days : newCouponInfo.validity_period_days,
+                                    remark: newCouponInfo.remark
+                                }).then(upsertResult => {
                                     console.log(`upsertResult : ${upsertResult}`);
                                     console.log('쿠폰 정보 수정 완료!');
                                 }).catch(error => {
