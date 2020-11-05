@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dbConnection = require('../db/db');
+// const dbConnection = require('../db/db');
 const getPoolConnection = require('../db/db2');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
@@ -156,7 +156,6 @@ router.post('/member', (request, response) => {
         });
     }
 
-
     //    비밀번호 암호화
     bcryptConfig.SALT.then(SALT=> {
         return bcrypt.hash(memberInfo.pw, SALT);
@@ -165,36 +164,70 @@ router.post('/member', (request, response) => {
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         // const register_member_sql = 'INSERT INTO member SET ?';
         const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?, ?)';
-        dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=> {
-            if(error) {
-                if (error.code == 'ER_DUP_ENTRY') {
-                    console.error(error.message);
-                    return response.status(409).json({
-                        message : "이미 가입된 손님입니다."
+        getPoolConnection(connection=>{
+            connection.execute(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=>{
+                if(error) {
+                    if (error.code == 'ER_DUP_ENTRY') {
+                        console.error(error.message);
+                        return response.status(409).json({
+                            message : "이미 가입된 손님입니다."
+                        });
+                    } else {
+                        console.error(error);
+                        return response.status(500).json({
+                            message : "내부 서버 오류입니다."
+                        });
+                    }
+                } else if (!result) {
+                    return response.status(500).json({
+                        message : 'DB 회원정보 삽입 오류입니다.'
                     });
                 } else {
-                    console.error(error);
-                    return response.status(500).json({
-                        message : "내부 서버 오류입니다."
-                    });
+                    // Just send the absolute path.
+                    // location : 생성된 resource (회원정보) 를 어디서 확인할 수 있는지 확인할 수 있는 URL
+                    // 이 때 location URL 은 반드시 절대경로여야한다.
+                    // Reference : https://tools.ietf.org/html/rfc7231#section-7.1.2
+                    return response.status(201)
+                        .location(locationUrl.memberURL + memberInfo.id)
+                        .json({
+                            message : '회원가입 완료!',
+                            name : memberInfo.name
+                        });
                 }
-            } else if (!result) {
-                return response.status(500).json({
-                    message : 'DB 회원정보 삽입 오류입니다.'
-                });
-            } else {
-                // Just send the absolute path.
-                // location : 생성된 resource (회원정보) 를 어디서 확인할 수 있는지 확인할 수 있는 URL
-                // 이 때 location URL 은 반드시 절대경로여야한다.
-                // Reference : https://tools.ietf.org/html/rfc7231#section-7.1.2
-                return response.status(201)
-                    .location(locationUrl.memberURL + memberInfo.id)
-                    .json({
-                    message : '회원가입 완료!',
-                    name : memberInfo.name
-                });
-            }
+            });
+            //return the poolConnection to Pool
+            connection.release();
         })
+        // dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=> {
+            // if(error) {
+            //     if (error.code == 'ER_DUP_ENTRY') {
+            //         console.error(error.message);
+            //         return response.status(409).json({
+            //             message : "이미 가입된 손님입니다."
+            //         });
+            //     } else {
+            //         console.error(error);
+            //         return response.status(500).json({
+            //             message : "내부 서버 오류입니다."
+            //         });
+            //     }
+            // } else if (!result) {
+            //     return response.status(500).json({
+            //         message : 'DB 회원정보 삽입 오류입니다.'
+            //     });
+            // } else {
+            //     // Just send the absolute path.
+            //     // location : 생성된 resource (회원정보) 를 어디서 확인할 수 있는지 확인할 수 있는 URL
+            //     // 이 때 location URL 은 반드시 절대경로여야한다.
+            //     // Reference : https://tools.ietf.org/html/rfc7231#section-7.1.2
+            //     return response.status(201)
+            //         .location(locationUrl.memberURL + memberInfo.id)
+            //         .json({
+            //         message : '회원가입 완료!',
+            //         name : memberInfo.name
+            //     });
+            // }
+        // })
     })
     .catch((error) => {
     console.error(error);
@@ -226,7 +259,6 @@ router.post('/store', (request, response) => {
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         getPoolConnection(connection=>{
-            console.log('store getPoolConnection Success!!');
             connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=>{
                     if(error) {
                         console.error(error);
@@ -247,7 +279,8 @@ router.post('/store', (request, response) => {
                             });
                     }
                 })
-            })
+            connection.release();
+            });
         })
         .catch(error => {
             console.error(error);
@@ -255,35 +288,6 @@ router.post('/store', (request, response) => {
                 message : "비밀번호 암호화 오류입니다."
             })
         });
-
-        /*
-        dbConnection().execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=> {
-            if(error) {
-                    console.error(error);
-                    return response.status(500).json({
-                        message : "서버 내부 오류입니다."
-                    });
-            } else if (!result) {
-                console.log(result);
-                return response.status(500).json({
-                message : 'DB 가게정보 삽입 오류입니다.'
-                });
-            } else {
-                return response.status(201)
-                    .location(locationUrl.storeURL + storeInfo.id)
-                    .json({
-                    message : '회원가입 완료!',
-                    name : storeInfo.name
-                });
-            }
-        })
-    })
-    .catch(error => {
-        console.error(error);
-        return response.status(500).json({
-                message : "비밀번호 암호화 오류입니다."
-        })});
-*/
 });
 
 

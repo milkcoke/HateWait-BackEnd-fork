@@ -35,7 +35,7 @@ router.get('/:id', (request, response)=> {
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
-                const sql = 'SELECT phone, name, people_number, is_called FROM waiting_customer WHERE store_id=?';
+                const sql = 'SELECT phone, name, people_number, called_time FROM waiting_customer WHERE store_id=?';
                 dbConnection().execute(sql, [storeId], (error, rows)=> {
                     if (error) {
                         console.error(error);
