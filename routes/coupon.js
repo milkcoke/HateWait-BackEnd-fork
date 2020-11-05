@@ -16,19 +16,19 @@ router.get('/member/:memberId', (request, response) => {
         'INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id' +
         'INNER JOIN visit_log ON store.id = visit_log.store_id' +
         'INNER JOIN member ON member.id = visit_log.member_id' +
-        'WHERE store.coupon_enable = true AND member.id=?' +
+        'WHERE store.coupon_enable = true AND member.id=? ' +
         'ORDER BY visit_log.visit_time DESC';
     getPoolConnection(connection=>{
         connection.execute(sql, [memberId], (error, rows) => {
             if (error) {
                 console.error(error);
                 return response.status(500).json({
-                    message: "서버 내부 오류입니다."
-                })
+                    message: '서버 내부 오류입니다.'
+                });
             } else if(rows.length === 0) {
                 return response.status(200).json({
                     message: '보유한 스탬프 & 쿠폰이 없어요'
-                })
+                });
             } else {
                 // store_name, stamp_count, maximum_stamp, coupon_count
                 return response.status(200).json({
