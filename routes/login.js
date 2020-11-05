@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const dbConnection = require('../db/db');
-// 삭제 예정 2줄
+const getPoolConnection = require('../db/db2');
 const passport = require('../config/passport');
 
 router.get('/', (request, response)=> {

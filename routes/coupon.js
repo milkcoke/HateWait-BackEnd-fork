@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
+const getPoolConnection = require('../db/db2');
 const Models = require('../models');
 const storeModel = Models.store;
 
@@ -16,23 +17,25 @@ router.get('/member/:memberId', (request, response) => {
         'INNER JOIN member ON member.id = visit_log.member_id' +
         'WHERE store.coupon_enable = true AND member.id=?' +
         'ORDER BY visit_log.visit_time DESC';
-
-    dbConnection().execute(sql, [memberId], (error, rows) => {
-        if (error) {
-           console.error(error);
-           return response.status(500).json({
-               message: "서버 내부 오류입니다."
-           })
-        } else if(rows.length === 0) {
-            return response.status(200).json({
-                message: '보유한 스탬프 & 쿠폰이 없어요'
-            })
-        } else {
-            // store_name, stamp_count, maximum_stamp, coupon_count
-            return response.status(200).json({
-                message: rows
-            });
-        }
+    getPoolConnection(connection=>{
+        connection.execute(sql, [memberId], (error, rows) => {
+            if (error) {
+                console.error(error);
+                return response.status(500).json({
+                    message: "서버 내부 오류입니다."
+                })
+            } else if(rows.length === 0) {
+                return response.status(200).json({
+                    message: '보유한 스탬프 & 쿠폰이 없어요'
+                })
+            } else {
+                // store_name, stamp_count, maximum_stamp, coupon_count
+                return response.status(200).json({
+                    message: rows
+                });
+            }
+        });
+        connection.release();
     });
 
 
@@ -83,21 +86,24 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
         console.log(`storeId : ${store.id}`);
         //나중에 발행된 순서대로 위에옴.
         const sql = 'SELECT issue_date, expiration_date, used_date FROM coupon WHERE member_id=? AND store_id=? ORDER BY issue_date DESC';
-        dbConnection().execute(sql, [request.params.memberId, store.id], (error, rows)=> {
-            if (error) {
-                console.error(error.message);
-                return response.status(500).json({
-                    message : "서버 내부 오류입니다."
-                })
-            } else if (rows.length === 0) {
-                return response.status(200).json({
-                    message : "아직 발행된 쿠폰이 없습니다."
-                })
-            } else {
-                return response.status(200).json({
-                    coupon : rows
-                });
-            }
+        getPoolConnection(connection=>{
+            connection.execute(sql, [request.params.memberId, store.id], (error, rows)=> {
+                if (error) {
+                    console.error(error.message);
+                    return response.status(500).json({
+                        message : "서버 내부 오류입니다."
+                    })
+                } else if (rows.length === 0) {
+                    return response.status(200).json({
+                        message : "아직 발행된 쿠폰이 없습니다."
+                    })
+                } else {
+                    return response.status(200).json({
+                        coupon : rows
+                    });
+                }
+            });
+            connection.release();
         });
     })
     .catch(error=>{
