@@ -106,6 +106,4 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
             message : "서버 내부 오류입니다."
         });
     });
-
-
 });

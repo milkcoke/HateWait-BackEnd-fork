@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require('../db/db');
+const getPoolConnection = require('../db/db2');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
 const checkId = require('../db/check_id');
@@ -224,6 +225,38 @@ router.post('/store', (request, response) => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        getPoolConnection(connection=>{
+            console.log('store getPoolConnection Success!!');
+            connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=>{
+                    if(error) {
+                        console.error(error);
+                        return response.status(500).json({
+                            message : "서버 내부 오류입니다."
+                        });
+                    } else if (!result) {
+                        console.log(result);
+                        return response.status(500).json({
+                            message : 'DB 가게정보 삽입 오류입니다.'
+                        });
+                    } else {
+                        return response.status(201)
+                            .location(locationUrl.storeURL + storeInfo.id)
+                            .json({
+                                message : '회원가입 완료!',
+                                name : storeInfo.name
+                            });
+                    }
+                })
+            })
+        })
+        .catch(error => {
+            console.error(error);
+            return response.status(500).json({
+                message : "비밀번호 암호화 오류입니다."
+            })
+        });
+
+        /*
         dbConnection().execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=> {
             if(error) {
                     console.error(error);
@@ -250,7 +283,7 @@ router.post('/store', (request, response) => {
         return response.status(500).json({
                 message : "비밀번호 암호화 오류입니다."
         })});
-
+*/
 });
 
 
