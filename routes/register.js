@@ -77,7 +77,7 @@ router.post('/store/id', (request, response) => {
 
 // 전화번호 중복체크 (member/store)
 router.post('/member/phone', (request, response) => {
-    if (!request.hasOwnProperty(phone)) {
+    if (!request.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
