@@ -40,7 +40,7 @@ router.get('/:id', (request, response) => {
     });
 });
 
-// in Tablet, mebmer id check, return member Name
+// in Tablet, member id check, return member Name
 router.post('/', (request, response) => {
     const memberId = request.body.id;
     const sql = 'SELECT name FROM member where id=?';

@@ -34,7 +34,7 @@ router.get('/member/:memberId', (request, response) => {
             } else {
                 // store_name, stamp_count, maximum_stamp, coupon_count
                 return response.status(200).json({
-                    message: rows
+                    rows
                 });
             }
         });
