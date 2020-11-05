@@ -120,6 +120,13 @@ router.patch('/information', (request, response) => {
                                 console.log('store is trying to change coupon_enable!');
                             } else {
                                 const newCouponInfo = newStoreInfo.coupon_information;
+                                // check property name & length
+                                if(!newCouponInfo.hasOwnProperty(benefit_description) || !newCouponInfo.hasOwnProperty(maximum_stamp) ||
+                                !newCouponInfo.hasOwnProperty(validity_period_days) || !newCouponInfo.hasOwnProperty(remark)) {
+                                    return response.status(400).json({
+                                        message: "쿠폰 정보 등록 또는 수정 요청이 잘못되었습니다."
+                                    });
+                                }
                                 //쿠폰사용 O 추가 정보 수정필요
                                 //    store_id, benefit_description, maximum_stamp, validity_period_days, remark
                                 // upsert: insert or update a single row
