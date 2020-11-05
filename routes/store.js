@@ -121,8 +121,8 @@ router.patch('/information', (request, response) => {
                             } else {
                                 const newCouponInfo = newStoreInfo.coupon_information;
                                 // check property name & length
-                                if(!newCouponInfo.hasOwnProperty(benefit_description) || !newCouponInfo.hasOwnProperty(maximum_stamp) ||
-                                !newCouponInfo.hasOwnProperty(validity_period_days) || !newCouponInfo.hasOwnProperty(remark)) {
+                                if(!newCouponInfo.hasOwnProperty('benefit_description') || !newCouponInfo.hasOwnProperty('maximum_stamp') ||
+                                !newCouponInfo.hasOwnProperty('validity_period_days') || !newCouponInfo.hasOwnProperty('remark')) {
                                     return response.status(400).json({
                                         message: "쿠폰 정보 등록 또는 수정 요청이 잘못되었습니다."
                                     });

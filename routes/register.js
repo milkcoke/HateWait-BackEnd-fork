@@ -8,7 +8,7 @@ const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)
 router.post('/member/id', (request, response) => {
-    if (!request.hasOwnProperty(id)) {
+    if (!request.hasOwnProperty('id')) {
         //id key를 갖지 않은경우
         return response.status(400).json({
             message: "비정상적인 요청입니다."
@@ -44,7 +44,7 @@ router.post('/member/id', (request, response) => {
 
 
 router.post('/store/id', (request, response) => {
-    if (!request.hasOwnProperty(id)) {
+    if (!request.hasOwnProperty('id')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
@@ -109,7 +109,7 @@ router.post('/member/phone', (request, response) => {
 
 
 router.post('/store/phone', (request, response) => {
-    if (!request.hasOwnProperty(phone)) {
+    if (!request.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
