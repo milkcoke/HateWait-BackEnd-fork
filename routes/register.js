@@ -196,37 +196,7 @@ router.post('/member', (request, response) => {
             });
             //return the poolConnection to Pool
             connection.release();
-        })
-        // dbConnection().query(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=> {
-            // if(error) {
-            //     if (error.code == 'ER_DUP_ENTRY') {
-            //         console.error(error.message);
-            //         return response.status(409).json({
-            //             message : "이미 가입된 손님입니다."
-            //         });
-            //     } else {
-            //         console.error(error);
-            //         return response.status(500).json({
-            //             message : "내부 서버 오류입니다."
-            //         });
-            //     }
-            // } else if (!result) {
-            //     return response.status(500).json({
-            //         message : 'DB 회원정보 삽입 오류입니다.'
-            //     });
-            // } else {
-            //     // Just send the absolute path.
-            //     // location : 생성된 resource (회원정보) 를 어디서 확인할 수 있는지 확인할 수 있는 URL
-            //     // 이 때 location URL 은 반드시 절대경로여야한다.
-            //     // Reference : https://tools.ietf.org/html/rfc7231#section-7.1.2
-            //     return response.status(201)
-            //         .location(locationUrl.memberURL + memberInfo.id)
-            //         .json({
-            //         message : '회원가입 완료!',
-            //         name : memberInfo.name
-            //     });
-            // }
-        // })
+        });
     })
     .catch((error) => {
     console.error(error);
