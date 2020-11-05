@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const dbConnection = require('../db/db');
 const getPoolConnection = require('../db/db2');
 const passport = require('../config/passport');
 
@@ -44,39 +43,42 @@ router.post('/members/test', (request, response) => {
     }
 
     const password_sql = 'SELECT name, pw FROM member where id=?';
-    dbConnection().execute(password_sql, [memberInfo.id], (error, rows)=> {
-        if (error) {
-            console.error(error);
-            response.status(500).json({
-                message : "서버 오류에요"
-            });
-        } else if (rows.length === 0) {
-            return response.status(409).json({
-                message : "해당 사용자가 존재하지 않습니다."
-            });
-        } else {
-            //비밀번호 값 대조, 로그인 시도
-            bcrypt.compare(memberInfo.pw, rows[0].pw)
-                .then(result => {
-                    //compare method return true/false
-                    if(result) {
-                        return response.status(200).json({
-                            message : "로그인 성공!",
-                            member : rows[0].name
-                        });
-                    } else {
-                        return response.status(409).json({
-                            message : "비밀번호가 옳지 않아요"
-                        })
-                    }
+    getPoolConnection(connection=>{
+        connection.execute(password_sql, [memberInfo.id],(error, rows)=> {
+            if (error) {
+                console.error(error);
+                response.status(500).json({
+                    message : "서버 오류에요"
+                });
+            } else if (rows.length === 0) {
+                return response.status(409).json({
+                    message : "해당 사용자가 존재하지 않습니다."
+                });
+            } else {
+                //비밀번호 값 대조, 로그인 시도
+                bcrypt.compare(memberInfo.pw, rows[0].pw)
+                    .then(result => {
+                        //compare method return true/false
+                        if(result) {
+                            return response.status(200).json({
+                                message : "로그인 성공!",
+                                member : rows[0].name
+                            });
+                        } else {
+                            return response.status(409).json({
+                                message : "비밀번호가 옳지 않아요"
+                            })
+                        }
 
-                })
-                .catch(error => {
+                    })
+                    .catch(error => {
                         return response.status(500).json({
                             message : "비밀번호 암호화 오류"
                         })
-                });
-        }
+                    });
+            }
+        });
+        connection.release();
     });
 
 });
@@ -96,42 +98,42 @@ router.post('/stores/test', (request, response) => {
         }
 
     const password_sql = 'SELECT name, pw FROM store where id=?';
-    dbConnection().execute(password_sql, [storeInfo.id], (error, rows)=> {
-        if (error) {
-            console.error(error);
-            response.status(500).json({
-                message : "서버 오류에요"
-            });
-        } else if (rows.length === 0) {
-            return response.status(409).json({
-                message : "해당 사용자가 존재하지 않습니다."
-            });
-        } else {
-            bcrypt.compare(storeInfo.pw, rows[0].pw)
-                .then(result => {
-                    if(result) {
-                        return response.status(200).json({
-                            message : "로그인 성공!",
-                            storeName : rows[0].name,
-                        });
-                    } else {
-                        return response.status(409).json({
-                            message : "비밀번호가 옳지 않아요"
-                        })
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    return response.status(500).json({
-                        message: "서버 오류입니다. 개발자놈 예끼이놈"
-                    })
+    getPoolConnection(connection=>{
+        connection.execute(password_sql, [storeInfo.id], (error, rows)=> {
+            if (error) {
+                console.error(error);
+                response.status(500).json({
+                    message : "서버 오류에요"
                 });
-        }
+            } else if (rows.length === 0) {
+                return response.status(409).json({
+                    message : "해당 사용자가 존재하지 않습니다."
+                });
+            } else {
+                bcrypt.compare(storeInfo.pw, rows[0].pw)
+                    .then(result => {
+                        if(result) {
+                            return response.status(200).json({
+                                message : "로그인 성공!",
+                                storeName : rows[0].name,
+                            });
+                        } else {
+                            return response.status(409).json({
+                                message : "비밀번호가 옳지 않아요"
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        return response.status(500).json({
+                            message: "서버 오류입니다. 개발자놈 예끼이놈"
+                        });
+                    });
+            }
+        });
+        connection.release();
     });
-
-    });
-
-
+});
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', passport.authenticate('local-login',
@@ -144,14 +146,10 @@ router.post('/stores', passport.authenticate('local-login',
     });
 
 
-
-
 router.get('/success', (request, response) => {
     return response.json({
         "message" : "로그인 성공!"
     })
 })
-
-
 
 module.exports = router;

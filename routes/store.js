@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dbConnection = require('../db/db');
+const getPoolConnection = require('../db/db2');
 const Models = require('../models');
 const storeModel = Models.store;
 const couponInformationModel = Models.coupon_information;
@@ -11,38 +11,44 @@ const checkId = require('../db/check_id');
 
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
-    dbConnection().execute(sql, (error, rows) => {
-        if (error) {
-            console.error(error);
-            response.status(500).json({
-                message: "서버 데이터베이스 오류입니다."
-            });
-        } else {
-            response.status(200).json({
-                allMembers: rows
-            });
-        }
+    getPoolConnection(connection=>{
+        connection.execute(sql, (error, rows) => {
+            if (error) {
+                console.error(error);
+                response.status(500).json({
+                    message: "서버 데이터베이스 오류입니다."
+                });
+            } else {
+                response.status(200).json({
+                    allMembers: rows
+                });
+            }
+        });
+        connection.release();
     });
 });
 
 router.get('/:id', function(request, response) {
     const sql = 'SELECT id, name, phone, email, info, business_hour, maximum_capacity, address, coupon_enable FROM store WHERE id=?';
     //권한을 확인하는게 필요하긴함. (가게 정보는 일단 open 된 정보므로 별도의 인증과정 X)
-    dbConnection().execute(sql, [request.params.id],(error, rows) => {
-        if (error) {
-            console.error(error);
-            response.status(500).json({
-                message: "서버 데이터베이스 오류입니다."
-            });
-        } else if(!rows[0]) {
-            response.status(404).json({
-                message: "가게 아이디를 확인해주세요"
-            });
-        } else {
-            response.status(200).json({
-                storeInfo: rows[0]
-            });
-        }
+    getPoolConnection(connection=>{
+        connection.execute(sql, [request.params.id],(error, rows) => {
+            if (error) {
+                console.error(error);
+                response.status(500).json({
+                    message: "서버 데이터베이스 오류입니다."
+                });
+            } else if(!rows[0]) {
+                response.status(404).json({
+                    message: "가게 아이디를 확인해주세요"
+                });
+            } else {
+                response.status(200).json({
+                    storeInfo: rows[0]
+                });
+            }
+        });
+        connection.release();
     });
 });
 
@@ -181,40 +187,5 @@ router.patch('/information', (request, response) => {
                 });
         });
 
-
 });
-
-
-//test용
-// router.patch('/test-find', (request, response)=> {
-//     const storeId = request.body.id;
-//     delete request.body.id;
-//     const targetKey = Object.keys(request.body)[0];
-//     const targetValue = request.body[targetKey];
-//     console.log(typeof targetKey, typeof targetValue);
-//     console.log(targetKey, targetValue);
-//
-//     storeModel.findOne({
-//         where : {id: storeId}
-//     })
-//         .catch(error=>{
-//             console.error(error);
-//         })
-//         .then(targetStore=>{
-//             targetStore.update({
-//                 [targetKey] : targetValue
-//             }, {
-//                 fields: [targetKey],
-//                 limit: 1
-//             }).then(result=>{
-//                 return response.status(200).json(result);
-//             }).catch(error=>{
-//                 console.error(error);
-//                 return response.status(500).json(error);
-//             })
-//         })
-//
-//
-//
-// })
 module.exports = router;

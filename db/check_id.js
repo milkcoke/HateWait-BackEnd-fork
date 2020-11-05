@@ -1,35 +1,40 @@
-const dbConnection = require('./db');
+const getPoolConnection = require('./db2');
 
 //async-await is not appropriate without parameter 'callback function'
 //so use Promise object.
 function checkStoreId(storeId) {
     const sql = 'SELECT id FROM store WHERE id=?';
     return new Promise((resolve, reject) => {
-        dbConnection().execute(sql, [storeId], (error, rows) => {
-            if(error) reject(error);
-            else {
-                if(rows.length === 0) {
+        getPoolConnection(connection=>{
+            connection.execute(sql, [storeId], (error, rows) => {
+                if (error) {
+                    console.error(error);
+                    reject(error);
+                } else if (rows.length === 0) {
                     resolve(null);
                 } else {
                     resolve(rows[0].id);
                 }
-            }
-        });;
+            });
+            connection.release();
+        });
     });
 }
 
 function checkMemberId(memberId) {
     const sql = 'SELECT id FROM member WHERE id=?';
     return new Promise((resolve, reject) => {
-        dbConnection().execute(sql, [memberId], (error, rows)=> {
-            if(error) reject(error);
-            else {
-                if (rows.length === 0) {
+        getPoolConnection(connection=>{
+            connection.execute(sql, [memberId], (error, rows)=> {
+                if(error) {
+                    reject(error);
+                }else if (rows.length === 0){
                     resolve(null);
                 } else {
                     resolve(rows[0].id);
                 }
-            }
+            });
+            connection.release();
         });
     });
 }

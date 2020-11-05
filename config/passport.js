@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt');
-const dbConnection = require('../db/db');
+const getConnectionPool = require('../db/db2');
 
 
 
@@ -49,18 +49,21 @@ passport.deserializeUser(function(storeInfo, done) {
     console.log('=====deserialize User=====');
     // 현재 세션에 저장된 id와
 
-    const sql = 'SELECT id, name FROM STORE where id=?'
-    dbConnection().execute(sql, [storeInfo.id], (error, rows)=> {
-        if (error) done(error, false);
-        // 여기 done 에서 HTTP request 에 req.storeId, storeName 를 붙여서 보냄.
-        // id만 붙이는게 나을까?
-        else {
-            // 여기서 날린 2nd argument 는 request.user 객체에 저장됨.
-            done(null, {
-                id: rows[0].id,
-                name: rows[0].name
-            });
-        }
+    const sql = 'SELECT id, name FROM STORE where id=?';
+    getConnectionPool(connection=>{
+        connection.execute(sql, [storeInfo.id], (error, rows)=>{
+            if (error) done(error, false);
+                // 여기 done 에서 HTTP request 에 req.storeId, storeName 를 붙여서 보냄.
+            // id만 붙이는게 나을까?
+            else {
+                // 여기서 날린 2nd argument 는 request.user 객체에 저장됨.
+                done(null, {
+                    id: rows[0].id,
+                    name: rows[0].name
+                });
+            }
+        });
+        connection.release();
     });
 });
 
@@ -79,43 +82,46 @@ passport.use('local-login', new LocalStrategy({
             // The second form .query(sqlString, values, callback) comes when using
             //3rd parameter of done is flash object
             const sql = 'SELECT id, name, phone, pw FROM STORE WHERE id=?';
-            dbConnection().execute(sql, [id], (error, rows) => {
-                if (error) {
-                    throw error;
-                    console.error(error + 'query 결과 없다.');
-                    return done(error);
-                } else if (rows.length === 0) {
-                    console.log("Can't find store id");
-                    return done(null, false, {
-                        message: 'id가 존재하지 않습니다.'
-                    });
-                } else {
-                    // 패스워드 검증
-                    bcrypt.compare(pw, rows[0].pw)
-                    .catch(error => {
-                        console.error(error);
+            getConnectionPool(connection=>{
+                connection.execute(sql, [id], (error, rows) => {
+                    if (error) {
+                        throw error;
+                        console.error(error + 'query 결과 없다.');
+                        return done(error);
+                    } else if (rows.length === 0) {
+                        console.log("Can't find store id");
                         return done(null, false, {
-                            message : "비밀번호 검증 오류!"
+                            message: 'id가 존재하지 않습니다.'
                         });
-                    })
-                    .then(result => {
-                        //success
-                        if(result) {
-                            //2nd parameter is saved at server and
-                            //available through request.user property
-                            return done(null, {
-                                id: rows[0].id,
-                                name: rows[0].name
-                            }, {
-                                message : '로그인 성공'
+                    } else {
+                        // 패스워드 검증
+                        bcrypt.compare(pw, rows[0].pw)
+                            .catch(error => {
+                                console.error(error);
+                                return done(null, false, {
+                                    message : "비밀번호 검증 오류!"
+                                });
+                            })
+                            .then(result => {
+                                //success
+                                if(result) {
+                                    //2nd parameter is saved at server and
+                                    //available through request.user property
+                                    return done(null, {
+                                        id: rows[0].id,
+                                        name: rows[0].name
+                                    }, {
+                                        message : '로그인 성공'
+                                    });
+                                } else {
+                                    return done(null, false, {
+                                        message : '비밀번호가 일치하지 않습니다.'
+                                    });
+                                }
                             });
-                        } else {
-                            return done(null, false, {
-                                message : '비밀번호가 일치하지 않습니다.'
-                            });
-                        }
-                    });
-                }
+                    }
+                });
+                connection.release();
             });
     }));
 
