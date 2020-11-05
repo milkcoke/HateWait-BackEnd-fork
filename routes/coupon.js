@@ -34,47 +34,22 @@ router.get('/member/:memberId', (request, response) => {
             } else {
                 // store_name, stamp_count, maximum_stamp, coupon_count
                 return response.status(200).json({
-                    rows
+                    array : rows
                 });
             }
         });
         connection.release();
     });
-
-
-    // stampModel.findAll({
-    //     where : {member_id: memberId}
-    // })
-    // .then(stores => {
-    //     let returnInformation = {};
-    //   //  how to store 'store.name, coupon_information.capacity, stamp.count,
-    //   for (const store in stores) {
-    //       store.name;
-    //       couponInformationModel.findOne({
-    //           where: {store_id : store.id}
-    //       })
-    //       .then(couponInformation => {
-    //           couponInformation.maximum_capacity
-    //           return stampModel.findOne({
-    //               where : {
-    //                   store_id: store.id,
-    //                   member_id: memberId
-    //               }
-    //           });
-    //       })
-    //       .then(stamp => {
-    //           stamp.count;
-    //       })
-    //   }
-    // })
-    // .catch(error => {
-    //     console.error(error);
-    // })
 });
 
 // 앱에서만 적용 (보유 쿠폰 현황 확인용)
 router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
     // 가게 이름이 중복된 경우 문제가 생김.
+    if(!request.params.hasOwnProperty('memberId') || !request.params.hasOwnProperty('storeId')) {
+        return response.status(400).json({
+            message : "잘못된 요청입니다."
+        });
+    }
     storeModel.findOne({
         where : {
             id : request.params.storeId,
@@ -102,7 +77,7 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
                     })
                 } else {
                     return response.status(200).json({
-                        coupon : rows
+                        coupons : rows
                     });
                 }
             });
