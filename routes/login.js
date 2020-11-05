@@ -113,7 +113,6 @@ router.post('/stores/test', (request, response) => {
                         return response.status(200).json({
                             message : "로그인 성공!",
                             storeName : rows[0].name,
-                            stack: null
                         });
                     } else {
                         return response.status(409).json({

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const dbConnection = require('../db/db');
+// const dbConnection = require('../db/db');
+const getPoolConnection = require('../db/db2');
 const checkId = require('../db/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');
@@ -21,36 +22,29 @@ router.get('/:id', (request, response)=> {
          .then(resultId => {
              console.log(`resultId : ${resultId}`);
             if (resultId === null) {
-                //요청한 storeId가 가입된 아이디가 아닌경우.
-                //json response 도 필요함.
-                // return response.status(404).render('error', {
-                //     message: "요청하신 페이지를 찾을 수 없습니다.",
-                //     error : {
-                //         message: "헤잇웨잇에 가입된 가게가 아닙니다.",
-                //         status: 404,
-                //         stack: null
-                //     }
-                // });
                 return response.status(404).json({
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
                 const sql = 'SELECT phone, name, people_number, called_time FROM waiting_customer WHERE store_id=?';
-                dbConnection().execute(sql, [storeId], (error, rows)=> {
-                    if (error) {
-                        console.error(error);
-                        return response.status(500).json({
-                            message: "서버 오류입니다."
-                        });
-                    } else if(rows.length === 0) {
-                        return response.status(200).json({
-                            message: "지금은 손님이 없어요"
-                        });
-                    } else {
-                        return response.status(200).json({
-                            waiting_customers: rows
-                        })
-                    }
+                getPoolConnection(connection=>{
+                    connection.execute(sql, [storeId], (error, rows)=> {
+                        if (error) {
+                            console.error(error);
+                            return response.status(500).json({
+                                message: "서버 오류입니다."
+                            });
+                        } else if(rows.length === 0) {
+                            return response.status(200).json({
+                                message: "지금은 손님이 없어요"
+                            });
+                        } else {
+                            return response.status(200).json({
+                                waiting_customers: rows
+                            });
+                        }
+                    });
+                    connection.release();
                 });
             }
         });
@@ -67,58 +61,63 @@ router.post('/:id', (request, response)=> {
     switch (customerInfo.is_member) {
         case true:
             // 회원 id 로부터 전화번호, 이름 얻어옴
-            const memberSql = 'SELECT phone, name FROM member where id=?'
-            dbConnection().execute(memberSql, [customerInfo.id], (error, rows)=> {
-                if(error) {
-                    console.error(error);
-                    return response.status(500).json({
-                        message: "서버 오류입니다."
-                    })
-                } else if(rows.length === 0) {
-                    return response.status(409).json({
-                        message: "아이디를 확인해주세요."
-                    })
-                } else {
-
-                    const memberPhone = rows[0].phone
-                    const memberName = rows[0].name
-                    dbConnection().execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, null, customerInfo.is_member], (error, result)=> {
-                        if(error) {
-                            if (error.code == 'ER_DUP_ENTRY') {
-                                console.error(error.message);
-                                return response.status(409).json({
-                                    message: "이미 대기열에 등록된 회원입니다."
-                                });
-                            } else {
-                                console.error(error);
-                                return response.status(500).json({
-                                    message: "서버 오류입니다."
-                                });
-                            }
-                        } else {
-                            // Error 가 존재하지 않으면
-                            const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?';
-                            dbConnection().execute(countSql, [storeId], (error, rows) => {
-                                // ER_DUP_ENTRY : PRIMARY CONSTRAINT 에러 , 여기선 이미 등록된 전화번호
-                                if(error) {
+            const memberSql = 'SELECT phone, name FROM member where id=?';
+            getPoolConnection(connection=>{
+                connection.execute(memberSql, [customerInfo.id], (error, rows)=> {
+                    if(error) {
+                        console.error(error);
+                        return response.status(500).json({
+                            message: "서버 오류입니다."
+                        });
+                    } else if(rows.length === 0) {
+                        return response.status(409).json({
+                            message: "아이디를 확인해주세요."
+                        });
+                    } else {
+                        const memberPhone = rows[0].phone
+                        const memberName = rows[0].name
+                        connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, null, customerInfo.is_member], (error, result)=>{
+                            if(error) {
+                                if (error.code == 'ER_DUP_ENTRY') {
+                                    console.error(error.message);
+                                    return response.status(409).json({
+                                        message: "이미 대기열에 등록된 회원입니다."
+                                    });
+                                } else {
                                     console.error(error);
                                     return response.status(500).json({
                                         message: "서버 오류입니다."
                                     });
-                                } else {
-                                    console.log(rows[0].turnNumber);
-                                    return response.status(201)
-                                        .location(locationUrl.waitingCustomerURL + customerInfo.id)
-                                        .json({
-                                        name: memberName,
-                                        count : rows[0].turnNumber
-                                    });
                                 }
-                            });
-                        }
-                    });
-                }
+                            } else {
+                                // Error 가 존재하지 않으면
+                                const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?';
+                                connection.execute(countSql, [storeId], (error, rows) => {
+                                    // ER_DUP_ENTRY : PRIMARY CONSTRAINT 에러 , 여기선 이미 등록된 전화번호
+                                    if(error) {
+                                        console.error(error);
+                                        return response.status(500).json({
+                                            message: "서버 오류입니다."
+                                        });
+                                    } else {
+                                        console.log(rows[0].turnNumber);
+                                        return response.status(201)
+                                            .location(locationUrl.waitingCustomerURL + customerInfo.id)
+                                            .json({
+                                                name: memberName,
+                                                count : rows[0].turnNumber
+                                            });
+                                    }
+                                });
+                            }
+                        })
+                    }
+                });
+                connection.release();
             });
+
+
+
             break;
         //    비회원인 경우
         case false:

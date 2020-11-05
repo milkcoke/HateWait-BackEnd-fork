@@ -8,6 +8,7 @@ module.exports = function getConnection(callback) {
         if (error) {
             console.log('DB Pool Connection Failed!');
             console.error(error);
+            connection.release();
         } else {
             callback(connection);
         }

@@ -107,3 +107,5 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
         });
     });
 });
+
+module.exports = router;
