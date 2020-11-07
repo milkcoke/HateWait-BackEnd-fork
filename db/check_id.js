@@ -7,6 +7,7 @@ function checkStoreId(storeId) {
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
             connection.execute(sql, [storeId], (error, rows) => {
+                connection.release();
                 if (error) {
                     console.error(error);
                     reject(error);
@@ -16,7 +17,6 @@ function checkStoreId(storeId) {
                     resolve(rows[0].id);
                 }
             });
-            connection.release();
         });
     });
 }
@@ -26,6 +26,7 @@ function checkMemberId(memberId) {
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
             connection.execute(sql, [memberId], (error, rows)=> {
+                connection.release();
                 if(error) {
                     reject(error);
                 }else if (rows.length === 0){
@@ -34,7 +35,6 @@ function checkMemberId(memberId) {
                     resolve(rows[0].id);
                 }
             });
-            connection.release();
         });
     });
 }

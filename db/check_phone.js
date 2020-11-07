@@ -6,6 +6,7 @@ function checkMemberPhone(memberPhone) {
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
             connection.execute(sql, [memberPhone], (error, rows)=> {
+                connection.release();
                 if (error) {
                     reject(error);
                 } else if (rows.length === 0) {
@@ -14,7 +15,6 @@ function checkMemberPhone(memberPhone) {
                     resolve(rows[0].phone);
                 }
             });
-            connection.release();
         });
     });
 }
@@ -25,6 +25,7 @@ function checkStorePhone(storePhone) {
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
             connection.execute(sql, [storePhone], (error, rows) => {
+                connection.release();
                 if (error) reject(error);
                 else {
                     if(rows.length === 0) {
@@ -34,7 +35,6 @@ function checkStorePhone(storePhone) {
                     }
                 }
             });
-            connection.release();
         })
     });
 }

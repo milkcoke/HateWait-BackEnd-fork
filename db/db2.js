@@ -6,9 +6,9 @@ const connectionPool = mysql.createPool(settings);
 module.exports = function getConnection(callback) {
     connectionPool.getConnection((error, connection)=> {
         if (error) {
+            connection.release();
             console.log('DB Pool Connection Failed!');
             console.error(error);
-            connection.release();
         } else {
             callback(connection);
         }
