@@ -47,8 +47,8 @@ router.get('/:storeId/:mode', (request, response)=> {
                     sql = `SELECT DATE_FORMAT(visit_time, '%Y-%m') AS visit_month, SUM(customer_number) AS monthly_customer_number
                         FROM visit_log
                         WHERE store_id = ?
-                        GROUP BY visit_date_month
-                        ORDER BY visit_date_month DESC`;
+                        GROUP BY visit_month
+                        ORDER BY visit_month DESC`;
                     break;
                 case 'week' :
                     sql = `SELECT CONCAT(DATE_FORMAT(DATE_SUB(visit_time, INTERVAL WEEKDAY(visit_time)*1 DAY), '%Y-%m-%d'),
@@ -57,8 +57,8 @@ router.get('/:storeId/:mode', (request, response)=> {
                                 SUM(customer_number) AS weekly_customer_numeber
                         FROM visit_log
                         WHERE store_id = ?
-                        GROUP BY visit_date_week
-                        ORDER BY visit_date_week DESC`;
+                        GROUP BY visit_week
+                        ORDER BY visit_week DESC`;
                     break;
                 case 'day' :
                     sql = `SELECT DATE_FORMAT(visit_time, '%Y-%m-%d') AS visit_day, SUM(customer_number) AS daily_customer_number
