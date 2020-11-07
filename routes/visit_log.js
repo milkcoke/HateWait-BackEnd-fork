@@ -26,7 +26,7 @@ router.get('/:storeId/:mode', (request, response)=> {
                     message : "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
-                return storeId
+                return storeId;
             }
         })
         .then(storeId=> {

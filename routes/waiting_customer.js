@@ -1,11 +1,14 @@
+import Sequelize from "sequelize";
+
 const express = require('express');
 const router = express.Router();
 const getPoolConnection = require('../db/db2');
 const checkId = require('../db/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');
-const waitingCustomerModel = require('../models').waiting_customer;
-
+const models = require('../models');
+const waitingCustomerModel = models.waiting_customer;
+const memberModel = models.member;
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 //대기열 조회
 router.get('/:id', (request, response)=> {
@@ -208,47 +211,116 @@ router.delete('/:id', (request, response) => {
             message: "잘못된 요청입니다."
         });
     }
-
-    waitingCustomerModel.findOne({
-            where : {phone: request.body.phone}
+    checkId.store(request.params.id)
+        .catch(error=>{
+            return response.status(500).json({
+                message: "서버 내부 오류입니다."
+            })
         })
-    .then(waitingCustomer => {
-        if (!waitingCustomer.is_member || !waitingCustomer.called_time) {
-            return waitingCustomer.destroy
-        } else {
-        //    여기에 No_Show vs 정상 가게 이용 구분.
-        }
-    })
-    .then( destroyResult=> {
-        console.log(destroyResult);
-        return response.status(200).json({
-            message: "대기열에서 삭제 완료!"
-        });
-    })
-
-
-    const storeId = request.params.id;
-    const sql = 'DELETE FROM waiting_customer WHERE store_id = ? AND phone=? LIMIT 1';
-    //DML (INSERT, DELETE 는 결과가 한 행으로나옴)
-    getPoolConnection(connection=>{
-        connection.execute(sql, [storeId, waitingCustomerPhone], (error, result) => {
-            connection.release();
-            if (error) {
-                console.error(error);
-                return response.status(500).json({
-                    message: "서버 오류입니다."
-                });
-            } else if(result.affectedRows === 0) {
-                return response.status(409).json({
-                    message: "전화번호나 가게 아이디를 확인해주세요."
+        .then(storeId=>{
+            if(storeId === null) {
+                return response.status(404).json({
+                    message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 })
-            } else {
-                return response.status(200).json({
-                    message: "대기열에서 삭제 완료"
-                });
             }
-        });
+            return storeId
+        })
+        .then(storeId=> {
+            // (비회원 or 구두 대기 취소) vs (No_Show vs 정상 이용 가게)
+                waitingCustomerModel.findOne({
+                    where : {phone: request.body.phone}
+                })
+                    .then(waitingCustomer => {
+                        // 비회원 및 현장 대기 취소 케이스
+                        if (!waitingCustomer.is_member || !waitingCustomer.called_time) {
+                            return waitingCustomer.destroy
+                        } else {
+                            //손님 회원 매장 이용 케이스
+                            memberModel.findOne({
+                                where: {phone: waitingCustomer.phone}
+                            })
+                            .catch(error=>{
+                              return response.status(500).json({
+                                  message: "서버 내부 오류입니다."
+                              });
+                            })
+                            .then(member=>{
+                                //    여기에 No_Show vs 정상 가게 이용 구분.
+                                //정상적으로 가게 온 경우
+                                const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, ?)`;
+                                const deleteSql = `DELETE FROM waiting_customer WHERE id = ?`;
+                                if (request.body.visited) {
+                                    getPoolConnection(connection=>{
+                                        connection.execute(visitSql, [storeId, waitingCustomerModel.people_number, member.id], (error, result)=>{
+                                            if(error) {
+                                                connection.release();
+                                                return response.status(500).json({
+                                                    message: "서버 내부 오류입니다."
+                                                });
+                                            } else {
+                                                console.log('삽입된 로우 수 : ', result.affectedRows)
+                                                connection.execute(deleteSql, [storeId], (error, result)=>{
+                                                    connection.release();
+                                                    if(error) {
+                                                        return response.status(500).json({
+                                                            message: "서버 내부 오류입니다."
+                                                        });
+                                                    } else {
+                                                        console.log('삭제된 로우 수: ', result.affectedRows)
+                                                        return response.status(200).json({
+                                                            message: `${member.name} 손님 방문 완료!`
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    //No Show 인 경우
+                                    //No Show 숫자가 일정 채워지면 제재를 가하긴 해야함.
+                                    member.update({
+                                        no_show: Sequelize.literal(`no_show + 1`)
+                                    }, {
+                                        fields : [no_show],
+                                        limit : 1
+                                    })
+                                    .then(numberAndModel=>{
+                                        console.log(`inserted Row Number : ${numberAndModel[0]}`);
+                                        console.log(`${member.name} 손님 no_show 증가!`);
+                                        console.log(`model : ${numberAndModel[1]}`);
+                                        return waitingCustomer[1].destroy
+                                    })
+                                    .then(result=>{
+                                        console.log(`대기열에서 삭제된 로우 수 : ${result.affectedRows}`);
+                                        return response.status(200).json({
+                                            message: "대기열 삭제 완료!"
+                                        });
+                                    })
+                                    .catch(error=>{
+                                        console.error(error);
+                                        return response.status(500).json({
+                                            message : "서버 내부 오류입니다."
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    })
+                    .catch(error=>{
+                        console.error(error)
+                        return response.status(500).json({
+                            message: "서버 내부 오류입니다."
+                        })
+                    })
+                    .then(nonMemberModelDestoryResult=>{
+                        // 비회원 삭제임.
+                        console.log(`비회원 삭제된 행 수 : ${nonMemberModelDestoryResult.affectedRows}`);
+                        return response.status(200).json({
+                            message: "대기열 삭제 완료!"
+                        });
+                    });
     });
+
 
 });
 
