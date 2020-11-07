@@ -58,6 +58,9 @@ router.get('/:storeId/:mode', (request, response)=> {
                 connection.release();
                 if (error) {
                     console.error(error);
+                    return response.status(500).json({
+                        message: "서버 내부 오류입니다."
+                    })
                 } else if (rows.length === 0) {
                     return response.status(200).json({
                         message: "아직 방문 기록이 없어요!"
