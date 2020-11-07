@@ -68,11 +68,15 @@ router.get('/:storeId/:mode', (request, response)=> {
                        ORDER BY visit_date DESC`;
                     break;
                 default :
+                    //mode가 month, week, day 중에 없는 경우
+                    return response.status(400).json({
+                        message: "잘못된 요청입니다."
+                    });
                     break;
             }
 
             getPoolConnection(connection=>{
-                connection.execute(sql, storeId, (error, rows) => {
+                connection.execute(sql, [storeId], (error, rows) => {
                     connection.release();
                     if (error) {
                         console.error(error);
