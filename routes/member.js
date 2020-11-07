@@ -8,13 +8,13 @@ router.get('/', function(req, res) {
     const sql = 'SELECT * FROM MEMBER';
     getPoolConnection(connection=>{
         connection.execute(sql, (error, rows) =>{
+            connection.release();
             if (error) {
                 res.send(error);
             } else {
                 res.json(rows);
             }
         });
-        connection.release();
     })
 });
 
@@ -23,6 +23,7 @@ router.get('/:id', (request, response) => {
     const sql = 'SELECT id, name, phone, email, no_show FROM MEMBER WHERE id=?';
     getPoolConnection(connection=>{
         connection.execute(sql,[memberId], (error, rows) => {
+            connection.release();
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -34,7 +35,6 @@ router.get('/:id', (request, response) => {
                 });
             }
         });
-        connection.release();
     });
 });
 
@@ -44,6 +44,7 @@ router.post('/', (request, response) => {
     const sql = 'SELECT name FROM member where id=?';
     getPoolConnection(connection=>{
         connection.execute(sql, [memberId], (error, rows) => {
+            connection.release();
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -59,7 +60,6 @@ router.post('/', (request, response) => {
                 });
             }
         });
-        connection.release();
     })
 });
 // router.patch('/:id', (request, response) => {

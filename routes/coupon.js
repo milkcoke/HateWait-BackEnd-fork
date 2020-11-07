@@ -22,6 +22,7 @@ router.get('/member/:memberId', (request, response) => {
 
     getPoolConnection(connection=>{
         connection.execute(sql, [memberId], (error, rows) => {
+            connection.release();
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -38,7 +39,6 @@ router.get('/member/:memberId', (request, response) => {
                 });
             }
         });
-        connection.release();
     });
 });
 
@@ -66,6 +66,7 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
         const sql = `SELECT issue_date, expiration_date, used_date FROM coupon WHERE member_id=? AND store_id=? ORDER BY issue_date DESC`;
         getPoolConnection(connection=>{
             connection.execute(sql, [request.params.memberId, store.id], (error, rows)=> {
+                connection.release();
                 if (error) {
                     console.error(error.message);
                     return response.status(500).json({
@@ -81,7 +82,6 @@ router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
                     });
                 }
             });
-            connection.release();
         });
     })
     .catch(error=>{

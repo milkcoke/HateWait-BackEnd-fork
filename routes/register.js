@@ -9,7 +9,7 @@ const locationUrl = require('../config/url_setting');
 //id 중복체크 (member / store)
 router.post('/member/id', (request, response) => {
     if (!request.hasOwnProperty('id')) {
-        //id key를 갖지 않은경우
+        //id key 를 갖지 않은경우
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
@@ -165,6 +165,7 @@ router.post('/member', (request, response) => {
         const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?, ?)';
         getPoolConnection(connection=>{
             connection.execute(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=>{
+                connection.release();
                 if(error) {
                     if (error.code == 'ER_DUP_ENTRY') {
                         console.error(error.message);
@@ -195,7 +196,6 @@ router.post('/member', (request, response) => {
                 }
             });
             //return the poolConnection to Pool
-            connection.release();
         });
     })
     .catch((error) => {
@@ -208,7 +208,6 @@ router.post('/member', (request, response) => {
 });
 
 router.post('/store', (request, response) => {
-
     const storeInfo = request.body
 //    null, "" 공백값 check
     console.log('========================');
@@ -229,6 +228,7 @@ router.post('/store', (request, response) => {
         const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         getPoolConnection(connection=>{
             connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=>{
+                    connection.release();
                     if(error) {
                         console.error(error);
                         return response.status(500).json({
@@ -247,8 +247,7 @@ router.post('/store', (request, response) => {
                                 name : storeInfo.name
                             });
                     }
-                })
-            connection.release();
+                });
             });
         })
         .catch(error => {

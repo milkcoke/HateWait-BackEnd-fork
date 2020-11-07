@@ -13,6 +13,7 @@ router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
     getPoolConnection(connection=>{
         connection.execute(sql, (error, rows) => {
+            connection.release();
             if (error) {
                 console.error(error);
                 response.status(500).json({
@@ -24,7 +25,6 @@ router.get('/', function(request, response) {
                 });
             }
         });
-        connection.release();
     });
 });
 
@@ -33,6 +33,7 @@ router.get('/:id', function(request, response) {
     //권한을 확인하는게 필요하긴함. (가게 정보는 일단 open 된 정보므로 별도의 인증과정 X)
     getPoolConnection(connection=>{
         connection.execute(sql, [request.params.id],(error, rows) => {
+            connection.release();
             if (error) {
                 console.error(error);
                 response.status(500).json({
@@ -48,7 +49,6 @@ router.get('/:id', function(request, response) {
                 });
             }
         });
-        connection.release();
     });
 });
 

@@ -24,6 +24,7 @@ router.get('/:storeId/:mode', (request, response)=> {
     const sql = 'SELECT visit_time, customer_number FROM visit_log where store_id=? ORDER BY visit_time DESC';
     getPoolConnection(connection=>{
         connection.execute(sql, [request.params.storeId], (error, rows)=> {
+            connection.release();
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -39,7 +40,6 @@ router.get('/:storeId/:mode', (request, response)=> {
                 });
             }
         });
-        connection.release();
     })
 
 });
