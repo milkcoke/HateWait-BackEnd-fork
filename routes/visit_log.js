@@ -44,7 +44,7 @@ router.get('/:storeId/:mode', (request, response)=> {
 
             switch (request.params.mode) {
                 case 'month' :
-                    sql = `SELECT DATE_FORMAT(visit_time, '%Y-%m') AS visit_date_month, SUM(customer_number) AS monthly_customer_number
+                    sql = `SELECT DATE_FORMAT(visit_time, '%Y-%m') AS visit_month, SUM(customer_number) AS monthly_customer_number
                         FROM visit_log
                         WHERE store_id = ?
                         GROUP BY visit_date_month
@@ -53,7 +53,7 @@ router.get('/:storeId/:mode', (request, response)=> {
                 case 'week' :
                     sql = `SELECT CONCAT(DATE_FORMAT(DATE_SUB(visit_time, INTERVAL WEEKDAY(visit_time)*1 DAY), '%Y-%m-%d'),
                                 '~',
-                                DATE_FORMAT(DATE_ADD(visit_time, INTERVAL 6 - WEEKDAY(visit_time) DAY), '%Y-%m-%d')) AS visit_date_week,
+                                DATE_FORMAT(DATE_ADD(visit_time, INTERVAL 6 - WEEKDAY(visit_time) DAY), '%Y-%m-%d')) AS visit_week,
                                 SUM(customer_number) AS weekly_customer_numeber
                         FROM visit_log
                         WHERE store_id = ?
@@ -61,11 +61,11 @@ router.get('/:storeId/:mode', (request, response)=> {
                         ORDER BY visit_date_week DESC`;
                     break;
                 case 'day' :
-                    sql = `SELECT DATE(visit_time) AS visit_date, SUM(customer_number) AS daily_customer_number
+                    sql = `SELECT DATE_FORMAT(visit_time, '%Y-%m-%d') AS visit_day, SUM(customer_number) AS daily_customer_number
                        FROM visit_log
                        WHERE store_id = ?
-                       GROUP BY visit_date
-                       ORDER BY visit_date DESC`;
+                       GROUP BY visit_day
+                       ORDER BY visit_day DESC`;
                     break;
                 default :
                     //mode가 month, week, day 중에 없는 경우
@@ -89,7 +89,7 @@ router.get('/:storeId/:mode', (request, response)=> {
                         });
                     } else {
                         return response.status(200).json({
-                            rows
+                            logs : rows
                         })
                     }
                 });
