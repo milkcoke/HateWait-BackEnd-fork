@@ -1,5 +1,4 @@
-import Sequelize from "sequelize";
-
+const Sequelize = require('sequelize');
 const express = require('express');
 const router = express.Router();
 const getPoolConnection = require('../db/db2');
