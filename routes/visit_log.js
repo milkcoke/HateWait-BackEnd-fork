@@ -30,7 +30,6 @@ router.get('/:storeId/:mode', (request, response)=> {
             }
         })
         .then(storeId=> {
-            console.log(`storeId (visit_log) : ${storeId}`);
             // 기간 설정 필요한 경우.
             //추가 : WHERE store_id=? AND DATE(visit_time) BETWEEN (NOW() - INTERVAL ? ?) AND NOW()
             // 총 손님 수..?
@@ -52,7 +51,7 @@ router.get('/:storeId/:mode', (request, response)=> {
                     break;
                 case 'week' :
                     sql = `SELECT CONCAT(DATE_FORMAT(DATE_SUB(visit_time, INTERVAL WEEKDAY(visit_time)*1 DAY), '%Y-%m-%d'),
-                                '~',
+                                ' ~ ',
                                 DATE_FORMAT(DATE_ADD(visit_time, INTERVAL 6 - WEEKDAY(visit_time) DAY), '%Y-%m-%d')) AS visit_week,
                                 SUM(customer_number) AS weekly_customer_numeber
                         FROM visit_log
