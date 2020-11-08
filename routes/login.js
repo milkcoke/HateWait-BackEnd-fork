@@ -46,6 +46,7 @@ router.post('/members/test', (request, response) => {
     const password_sql = 'SELECT id, name, pw FROM member where id=?';
     getPoolConnection(connection=>{
         connection.execute(password_sql, [memberInfo.id],(error, rows)=> {
+            connection.release();
             if (error) {
                 console.error(error);
                 response.status(500).json({
@@ -81,13 +82,12 @@ router.post('/members/test', (request, response) => {
                     });
             }
         });
-        connection.release();
     });
 
 });
 
 
-// json request test용
+// json request test 용
 router.post('/stores/test', (request, response) => {
         const storeInfo = request.body;
         console.log('store request start! ================');
