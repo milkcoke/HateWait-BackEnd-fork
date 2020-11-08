@@ -5,23 +5,22 @@ const Models = require('../models');
 const storeModel = Models.store;
 
 // 앱에서만 사용 (손님 회원 쿠폰&스탬프 보유 현황 확인)
-// //return info : 가게명, 쿠폰 발급 기준 스탬프수, 스탬프수
+// //return info : 가게명, 쿠폰 발급 기준 스탬프수, 해당 회원 보유 스탬프 수, 발급 쿠폰 수
 router.get('/member/:memberId', (request, response) => {
     const memberId = request.params.memberId;
     // Template Literals (Template Strings) : allowing embedded expressions.
     // you can use multi-line strings and string interpolation features with them.
     // [Reference] : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
-    const sql = `SELECT store.id AS store_id, store.name AS store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp,
-        (SELECT COUNT(*) FROM coupon WHERE store_id = store.id) AS coupon_count
+    const sql = `SELECT DISTINCT store.id AS store_id, store.name AS store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp,
+        (SELECT COUNT(*) FROM coupon WHERE store_id = store.id AND member_id=?) AS coupon_count
         FROM stamp INNER JOIN store ON stamp.store_id = store.id
         INNER JOIN coupon_information AS cuinfo ON store.id = cuinfo.store_id
         INNER JOIN visit_log ON store.id = visit_log.store_id
-        INNER JOIN member ON member.id = visit_log.member_id
-        WHERE store.coupon_enable = true AND member.id = ?
+        WHERE store.coupon_enable = true AND visit_log.member_id=?
         ORDER BY visit_log.visit_time DESC`;
 
     getPoolConnection(connection=>{
-        connection.execute(sql, [memberId], (error, rows) => {
+        connection.execute(sql, [memberId, memberId], (error, rows) => {
             connection.release();
             if (error) {
                 console.error(error);
@@ -43,7 +42,7 @@ router.get('/member/:memberId', (request, response) => {
 });
 
 // 앱에서만 적용 (보유 쿠폰 현황 확인용)
-router.get('/memeber/:memeberId/store/:storeId', (request, response) => {
+router.get('/member/:memberId/store/:storeId', (request, response) => {
     // 가게 이름이 중복된 경우 문제가 생김.
     if(!request.params.hasOwnProperty('memberId') || !request.params.hasOwnProperty('storeId')) {
         return response.status(400).json({
