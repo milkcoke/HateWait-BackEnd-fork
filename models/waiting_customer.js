@@ -9,7 +9,7 @@ class waiting_customer extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   super.init({
     phone: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+      type: DataTypes.STRING(12),
       allowNull: false,
       primaryKey: true
     },

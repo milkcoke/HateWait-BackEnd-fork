@@ -18,7 +18,7 @@ class store extends Sequelize.Model {
       allowNull: false
     },
     phone: {
-      type: DataTypes.INTEGER(11).UNSIGNED,
+      type: DataTypes.STRING(12),
       allowNull: false,
       unique: "phone"
     },
