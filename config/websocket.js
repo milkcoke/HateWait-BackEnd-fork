@@ -4,6 +4,7 @@ const webSocket = require('ws');
 module.exports = function(server) {
     //webSocket Server Create!
     const webSocketServer = new webSocket.Server({server: server});
+    console.log('websocket Server creating..');
 
     // Register Event
     webSocketServer.on('connection', (socketClient, request)=>{
