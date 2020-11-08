@@ -6,6 +6,8 @@
 const app = require('../app');
 const debug = require('debug')('hatewait-server:server');
 const http = require('http');
+// web Socket module import
+const createWebSocket = require('../config/websocket');
 
 /**
  * Get port from environment and store in Express.
@@ -17,7 +19,8 @@ app.set('port', port);
  * Create HTTP server.
  */
 const server = http.createServer(app);
-
+// web socket server create!
+createWebSocket(server);
 /**
  * Listen on provided port, on all network interfaces.
  */

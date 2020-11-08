@@ -8,6 +8,14 @@ const locationUrl = require('../config/url_setting');
 const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
 const memberModel = models.member;
+
+//대기열 조회 in 테블릿.
+// webSocket Initialize
+
+
+
+
+
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 //대기열 조회
 router.get('/:id', (request, response)=> {

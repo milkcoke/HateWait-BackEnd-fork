@@ -21,6 +21,10 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "sequelize": "^6.3.5",
-    "sequelize-auto": "^0.6.4"
+    "sequelize-auto": "^0.6.4",
+    "ws": "^7.4.0"
+  },
+  "optionalDependencies": {
+    "utf-8-validate": "^5.0.3"
   }
 }
