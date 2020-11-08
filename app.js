@@ -13,6 +13,7 @@ const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 const waitingCustomerRouter = require('./routes/waiting_customer');
 const couponRouter = require('./routes/coupon');
+const visitLogRouter = require('./routes/visit_log');
 
 const sequelize = require('./models').sequelize;
 const session = require('express-session');
@@ -92,7 +93,7 @@ app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
 app.use('/waiting-customers', waitingCustomerRouter);
 app.use('/coupon', couponRouter);
-
+app.use('/visit-log', visitLogRouter);
 
 
 app.use(function(request, response, next) {
