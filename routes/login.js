@@ -100,7 +100,7 @@ router.post('/stores/test', (request, response) => {
             });
         }
 
-    const password_sql = 'SELECT name, pw FROM store where id=?';
+    const password_sql = 'SELECT id, name, pw FROM store where id=?';
     getPoolConnection(connection=>{
         connection.execute(password_sql, [storeInfo.id], (error, rows)=> {
             connection.release();
