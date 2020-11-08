@@ -209,6 +209,7 @@ router.patch('/:storeId', (request, response)=> {
 
 })
 //대기열 삭제
+// request body : phone, visited
 // 2가지 분기 (회원 vs 비회원)
 // 비회원 -> 그냥 삭제 바로해보리기
 // 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
@@ -238,11 +239,36 @@ router.delete('/:id', (request, response) => {
                     where : {phone: request.body.phone}
                 })
                     .then(waitingCustomer => {
+                        const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, ?)`;
+                        const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
                         // 비회원 및 현장 대기 취소 케이스
-                        if (!waitingCustomer.is_member || !waitingCustomer.called_time) {
+                        if (!waitingCustomer.called_time) {
                             return waitingCustomer.destroy
+                        //    비회원이긴 한데 호출된 적 있는 경우
+                        } else if (!waitingCustomer.is_member) {
+                            // 정상적으로 온 경우
+                            if (request.body.visited) {
+                                getPoolConnection(connection=>{
+                                    // 방문 기록
+                                    connection.execute(visitSql, [storeId, waitingCustomer.people_number, null], (error, result)=>{
+                                        connection.release();
+                                        if(error) {
+                                            console.error(error);
+                                            return response.status(500).json({
+                                                message: "서버 내부 오류입니다."
+                                            });
+                                        } else {
+                                            // 대기열에서 삭제
+                                            return waitingCustomer.destroy
+                                        }
+                                    })
+                                })
+                            } else {
+                            //    정상적으로 오지 않은 경우. (호출되고 빤스런)
+                                return waitingCustomer.destroy
+                            }
                         } else {
-                            //손님 회원 매장 이용 케이스
+                            //호출된 '회원' 손님 매장 이용 케이스
                             memberModel.findOne({
                                 where: {phone: waitingCustomer.phone}
                             })
@@ -254,8 +280,6 @@ router.delete('/:id', (request, response) => {
                             .then(member=>{
                                 //    여기에 No_Show vs 정상 가게 이용 구분.
                                 //정상적으로 가게 온 경우
-                                const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, ?)`;
-                                const deleteSql = `DELETE FROM waiting_customer WHERE id = ?`;
                                 if (request.body.visited) {
                                     getPoolConnection(connection=>{
                                         connection.execute(visitSql, [storeId, waitingCustomerModel.people_number, member.id], (error, result)=>{
@@ -275,7 +299,7 @@ router.delete('/:id', (request, response) => {
                                                     } else {
                                                         console.log('삭제된 로우 수: ', result.affectedRows)
                                                         return response.status(200).json({
-                                                            message: `${member.name} 손님 방문 완료!`
+                                                            message: "손님 방문 완료!"
                                                         });
                                                     }
                                                 });
@@ -323,7 +347,7 @@ router.delete('/:id', (request, response) => {
                         // 비회원 삭제임.
                         console.log(`비회원 삭제된 행 수 : ${nonMemberModelDestoryResult.affectedRows}`);
                         return response.status(200).json({
-                            message: "대기열 삭제 완료!"
+                            message: "대기열 삭제 완료!",
                         });
                     });
     });
