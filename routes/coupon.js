@@ -11,6 +11,7 @@ router.get('/member/:memberId', (request, response) => {
     // Template Literals (Template Strings) : allowing embedded expressions.
     // you can use multi-line strings and string interpolation features with them.
     // [Reference] : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+    // Condition statement in INNER JOIN vs WHERE .. (Not yet)
     const sql = `SELECT DISTINCT store.id AS store_id, store.name AS store_name, stamp.count AS stamp_count, cuinfo.maximum_stamp AS maximum_stamp,
         (SELECT COUNT(*) FROM coupon WHERE store_id = store.id AND member_id=?) AS coupon_count
         FROM stamp INNER JOIN store ON stamp.store_id = store.id
