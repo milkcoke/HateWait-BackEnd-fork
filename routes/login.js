@@ -66,7 +66,7 @@ router.post('/members/test', (request, response) => {
                             return response.status(200).json({
                                 message : "로그인 성공!",
                                 id : rows[0].id,
-                                member : rows[0].name
+                                name : rows[0].name
                             });
                         } else {
                             return response.status(409).json({
@@ -120,7 +120,7 @@ router.post('/stores/test', (request, response) => {
                             return response.status(200).json({
                                 message : "로그인 성공!",
                                 id : rows[0].id,
-                                storeName : rows[0].name
+                                name : rows[0].name
                             });
                         } else {
                             return response.status(409).json({

@@ -214,8 +214,8 @@ router.patch('/:storeId', (request, response)=> {
 // 비회원 -> 그냥 삭제 바로해보리기
 // 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
 router.delete('/:id', (request, response) => {
-    if(!request.body.phone) {
-        return response.status(400).json({
+        if(!request.body.phone) {
+            return response.status(400).json({
             message: "잘못된 요청입니다."
         });
     }
