@@ -119,7 +119,8 @@ router.post('/stores/test', (request, response) => {
                         if(result) {
                             return response.status(200).json({
                                 message : "로그인 성공!",
-                                storeName : rows[0].name,
+                                id : rows[0].id,
+                                storeName : rows[0].name
                             });
                         } else {
                             return response.status(409).json({
