@@ -65,7 +65,7 @@ router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, null ?)';
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
@@ -88,7 +88,7 @@ router.post('/:id', (request, response)=> {
                     } else {
                         const memberPhone = rows[0].phone
                         const memberName = rows[0].name
-                        connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, null, customerInfo.is_member], (error, result)=>{
+                        connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error, result)=>{
                             if(error) {
                                 connection.release();
                                 if (error.code == 'ER_DUP_ENTRY') {
@@ -132,7 +132,7 @@ router.post('/:id', (request, response)=> {
         //    비회원인 경우
         case false:
             getPoolConnection(connection=>{
-                connection.execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, null, customerInfo.is_member], (error, result)=> {
+                connection.execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
                     if(error) {
                         connection.release();
                         if (error.code == 'ER_DUP_ENTRY') {
@@ -239,7 +239,7 @@ router.delete('/:id', (request, response) => {
                     where : {phone: request.body.phone}
                 })
                     .then(waitingCustomer => {
-                        const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, ?)`;
+                        const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, NULL)`;
                         const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
                         // 비회원 및 현장 대기 취소 케이스
                         if (!waitingCustomer.called_time) {
@@ -250,7 +250,7 @@ router.delete('/:id', (request, response) => {
                             if (request.body.visited) {
                                 getPoolConnection(connection=>{
                                     // 방문 기록
-                                    connection.execute(visitSql, [storeId, waitingCustomer.people_number, null], (error, result)=>{
+                                    connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error, result)=>{
                                         connection.release();
                                         if(error) {
                                             console.error(error);
@@ -282,7 +282,8 @@ router.delete('/:id', (request, response) => {
                                 //정상적으로 가게 온 경우
                                 if (request.body.visited) {
                                     getPoolConnection(connection=>{
-                                        connection.execute(visitSql, [storeId, waitingCustomerModel.people_number, member.id], (error, result)=>{
+                                        const visitMemberSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, ?)`;
+                                        connection.execute(visitMemberSql, [storeId, waitingCustomerModel.people_number, member.id], (error, result)=>{
                                             if(error) {
                                                 connection.release();
                                                 return response.status(500).json({
