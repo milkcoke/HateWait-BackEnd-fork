@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const getPoolConnection = require('../db/db2');
 const period = require('../config/visit_log_default_period_settings');
-const check_id = require('../db/check_id');
+const check_id = require('../function/check_id');
 
 //only support 'Web' application
 //전체 가게 이용 내역 조회
@@ -87,9 +87,11 @@ router.get('/:storeId/:mode', (request, response)=> {
                             message: "아직 방문 기록이 없어요!"
                         });
                     } else {
+                        // rows,
                         return response.status(200).json({
+                            count : rows.length,
                             logs : rows
-                        })
+                        });
                     }
                 });
             });

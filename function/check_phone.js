@@ -1,5 +1,5 @@
 // const dbConnection = require('./db');
-const getPoolConnection = require('./db2');
+const getPoolConnection = require('../db/db2');
 
 function checkMemberPhone(memberPhone) {
     const sql = 'SELECT phone FROM member WHERE id=?';

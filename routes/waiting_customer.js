@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const router = express.Router();
 const getPoolConnection = require('../db/db2');
-const checkId = require('../db/check_id');
+const checkId = require('../function/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');
 const models = require('../models');
@@ -59,21 +59,21 @@ router.get('/:id', (request, response)=> {
         });
 });
 
-//대기열 등록
+//대기열 등록 (비회원 - 회원)
 // where connection release issue ㅠ_ㅠ
 router.post('/:id', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, null ?)';
+    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, null, ?)';
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
         case true:
-            // 회원 id 로부터 전화번호, 이름 얻어옴
+            // 회원 id 로부터 전화번호, 이름 얻어옴 (이름부터 조회)
             const memberSql = 'SELECT phone, name FROM member where id=?';
             getPoolConnection(connection=>{
-                connection.execute(memberSql, [customerInfo.id], (error, rows)=> {
+                connection.execute(memberSql, [customerInfo.phone], (error, rows)=> {
                     if(error) {
                         connection.release();
                         console.error(error);
@@ -91,7 +91,7 @@ router.post('/:id', (request, response)=> {
                         connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error, result)=>{
                             if(error) {
                                 connection.release();
-                                if (error.code == 'ER_DUP_ENTRY') {
+                                if (error.code === 'ER_DUP_ENTRY') {
                                     console.error(error.message);
                                     return response.status(409).json({
                                         message: "이미 대기열에 등록된 회원입니다."
@@ -156,7 +156,7 @@ router.post('/:id', (request, response)=> {
                                         message: "내부 서버 오류입니다."
                                     });
                                 } else {
-                                    console.log(rows[0].turnNumber);
+                                    console.log('순서 번호 : ' , rows[0].turnNumber);
                                     return response.status(200).json({
                                         name: customerInfo.name,
                                         count : rows[0].turnNumber
@@ -206,7 +206,6 @@ router.patch('/:storeId', (request, response)=> {
             }
         });
     })
-
 })
 //대기열 삭제
 // request body : phone, visited
@@ -344,9 +343,9 @@ router.delete('/:id', (request, response) => {
                             message: "서버 내부 오류입니다."
                         })
                     })
-                    .then(nonMemberModelDestoryResult=>{
+                    .then(nonMemberDestoryResult=>{
                         // 비회원 삭제임.
-                        console.log(`비회원 삭제된 행 수 : ${nonMemberModelDestoryResult.affectedRows}`);
+                        console.log(`비회원 삭제된 행 수 : ${nonMemberDestoryResult.affectedRows}`);
                         return response.status(200).json({
                             message: "대기열 삭제 완료!",
                         });

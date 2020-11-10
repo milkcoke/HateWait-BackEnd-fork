@@ -1,4 +1,4 @@
-const getPoolConnection = require('./db2');
+const getPoolConnection = require('../db/db2');
 
 //async-await is not appropriate without parameter 'callback function'
 //so use Promise object.

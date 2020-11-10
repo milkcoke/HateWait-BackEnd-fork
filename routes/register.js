@@ -3,7 +3,7 @@ const router = express.Router();
 const getPoolConnection = require('../db/db2');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
-const checkId = require('../db/check_id');
+const checkId = require('../function/check_id');
 const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)

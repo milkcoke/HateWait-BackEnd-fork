@@ -6,7 +6,7 @@ const storeModel = Models.store;
 const couponInformationModel = Models.coupon_information;
 const bcrypt = require('bcrypt');
 const bcryptSetting = require('../config/bcrypt_setting');
-const checkId = require('../db/check_id');
+const checkId = require('../function/check_id');
 
 
 router.get('/', function(request, response) {
