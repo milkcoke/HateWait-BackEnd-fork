@@ -47,8 +47,9 @@ router.post('/name', (request, response) => {
                     message: "아이디를 확인해주세요."
                 })
             } else {
+                const bluredOutName = blurOutName(rows[0].name)
                 return response.status(200).json({
-                    memberName: blurOutName(rows[0].name)
+                    memberName: bluredOutName
                 });
             }
         });
