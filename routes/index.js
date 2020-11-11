@@ -4,8 +4,8 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log('session : ' + req.session);
-  console.log('session info: ' + req.session._passport);
+  // console.log('session : ' + req.session);
+  // console.log('session info: ' + req.session._passport);
   //session.passport, req.session._passport.user 는 없음.
 
   // console.log('session info: ' + req.session._passport.id);

@@ -1,6 +1,4 @@
 // Javascript string is immutable.
-
-
 module.exports = function(name) {
     const mosaicCharacter = 'x';
     switch(name.length) {

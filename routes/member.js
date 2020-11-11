@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const getPoolConnection = require('../db/db2');
+const blurOutName = require('../function/blur_out_name');
 
 router.get('/:id', (request, response) => {
     const memberId = request.params.id;
@@ -47,7 +48,7 @@ router.post('/name', (request, response) => {
                 })
             } else {
                 return response.status(200).json({
-                    memberName: rows[0].name
+                    memberName: blurOutName(rows[0].name)
                 });
             }
         });
