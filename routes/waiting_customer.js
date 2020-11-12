@@ -79,7 +79,7 @@ router.post('/', (request, response)=> {
             const memberSql = 'SELECT phone, name FROM member where id=?';
             getPoolConnection(connection=>{
                 // 회원 id 로부터 전화번호, 이름 얻어옴 (이름부터 조회)
-                connection.execute(memberSql, [customerInfo.id], (error, rows)=> {
+                connection.execute(memberSql, [customerInfo.member_id], (error, rows)=> {
                     if(error) {
                         connection.release();
                         console.error(error);
@@ -199,7 +199,6 @@ router.patch('/', (request, response)=> {
     const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
         connection.execute(sql, request.body.phone, (error, result)=> {
-
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -224,7 +223,7 @@ router.patch('/', (request, response)=> {
                     })
                     .catch(error=>{
                         connection.release();
-                        console.error(erorr);
+                        console.error(error);
                         return response.status(500).json({
                             message : "서버 내부 오류입니다."
                         });
