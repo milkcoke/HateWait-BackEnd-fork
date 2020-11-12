@@ -198,7 +198,7 @@ router.patch('/', (request, response)=> {
 
     const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
-        connection.execute(sql, request.body.phone, (error, result)=> {
+        connection.execute(sql, [request.body.phone], (error, result)=> {
             if (error) {
                 console.error(error);
                 return response.status(500).json({
