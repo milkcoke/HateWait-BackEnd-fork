@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const express = require('express');
-//상위 라우터의 Prameter 를 상속받기 위한 Option
+//상위 라우터의 Parameter 를 상속받기 위한 Option
 const router = express.Router({mergeParams : true});
 const getPoolConnection = require('../db/db2');
 const checkId = require('../function/check_id');
@@ -20,7 +20,6 @@ const memberModel = models.member;
 router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.id;
-     console.log(storeId);
 
      checkId.store(storeId)
          .catch(error=> {
@@ -66,7 +65,7 @@ router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = 'INSERT INTO waiting_customer VALUES (?, ?, ?, ?, null, ?)';
+    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, 'NULL', ?)`;
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
