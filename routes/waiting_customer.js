@@ -70,9 +70,15 @@ router.post('/', (request, response)=> {
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
         case true:
-            // 회원 id 로부터 전화번호, 이름 얻어옴 (이름부터 조회)
+            if(!customerInfo.hasOwnProperty('member_id') ||!customerInfo.hasOwnProperty('people_number') || !customerInfo.hasOwnProperty('is_member')) {
+                return response.status(400).json({
+                    message : "잘못된 요청입니다."
+                });
+            }
+
             const memberSql = 'SELECT phone, name FROM member where id=?';
             getPoolConnection(connection=>{
+                // 회원 id 로부터 전화번호, 이름 얻어옴 (이름부터 조회)
                 connection.execute(memberSql, [customerInfo.id], (error, rows)=> {
                     if(error) {
                         connection.release();
@@ -116,7 +122,7 @@ router.post('/', (request, response)=> {
                                     } else {
                                         console.log(rows[0].turnNumber);
                                         return response.status(201)
-                                            .location(locationUrl.waitingCustomerURL + customerInfo.id)
+                                            .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
                                                 name: memberName,
                                                 count : rows[0].turnNumber
@@ -131,6 +137,11 @@ router.post('/', (request, response)=> {
             break;
         //    비회원인 경우
         case false:
+            if (!customerInfo.hasOwnProperty('phone') || !customerInfo.hasOwnProperty('people_number') || !customerInfo.hasOwnProperty('is_member')) {
+                return response.status(400).json({
+                    message: "잘못된 요청입니다."
+                });
+            }
             getPoolConnection(connection=>{
                 connection.execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
                     if(error) {
@@ -185,10 +196,10 @@ router.patch('/', (request, response)=> {
         });
     }
 
-    const sql = 'UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1';
+    const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
         connection.execute(sql, request.body.phone, (error, result)=> {
-            connection.release();
+
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -200,9 +211,26 @@ router.patch('/', (request, response)=> {
                     message: "전화번호나 가게 아이디를 확인해주세요."
                 })
             } else {
-                return response.status(200).json({
-                    message: "손님 호출 완료!"
-                });
+                const getCalledTimeSql = `SELECT called_time FROM waiting_customer WHERE phone=?`;
+                connection.promise().execute(getCalledTimeSql, [request.body.phone])
+                    .then(([rows,fields])=>{
+                        connection.release();
+                        console.log(rows);
+                        console.log(fields);
+                        return response.status(200).json({
+                            message: "손님 호출 완료!",
+                            called_time : rows[0].called_time
+                        });
+                    })
+                    .catch(error=>{
+                        connection.release();
+                        console.error(erorr);
+                        return response.status(500).json({
+                            message : "서버 내부 오류입니다."
+                        });
+                    });
+                // connection.execute(getCalledTimeSql, [request.body.phone])
+
             }
         });
     })
