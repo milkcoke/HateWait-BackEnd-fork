@@ -11,7 +11,7 @@ const memberRouter = require('./routes/member');
 const reactRouter = require('./routes/reactTest');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
-const waitingCustomerRouter = require('./routes/waiting_customer');
+// const waitingCustomerRouter = require('./routes/waiting_customer');
 const couponRouter = require('./routes/coupon');
 const visitLogRouter = require('./routes/visit_log');
 
@@ -91,7 +91,7 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-app.use('/waiting-customers', waitingCustomerRouter);
+// app.use('/waiting-customers', waitingCustomerRouter);
 app.use('/coupon', couponRouter);
 app.use('/visit-log', visitLogRouter);
 

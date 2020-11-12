@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const express = require('express');
-const router = express.Router();
+//상위 라우터의 Prameter 를 상속받기 위한 Option
+const router = express.Router({mergeParams : true});
 const getPoolConnection = require('../db/db2');
 const checkId = require('../function/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
@@ -14,13 +15,13 @@ const memberModel = models.member;
 
 
 
-
-
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 //대기열 조회
-router.get('/:id', (request, response)=> {
+router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.id;
+     console.log(storeId);
+
      checkId.store(storeId)
          .catch(error=> {
              console.error(error);
@@ -61,7 +62,7 @@ router.get('/:id', (request, response)=> {
 
 //대기열 등록 (비회원 - 회원)
 // where connection release issue ㅠ_ㅠ
-router.post('/:id', (request, response)=> {
+router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
@@ -177,7 +178,7 @@ router.post('/:id', (request, response)=> {
 
 });
 // 가게에서  손님 호출.
-router.patch('/:storeId', (request, response)=> {
+router.patch('/', (request, response)=> {
     //phone (전화번호) 만 받으면 됨.
     if (!request.body.phone) {
         return response.status(400).json({
@@ -212,7 +213,7 @@ router.patch('/:storeId', (request, response)=> {
 // 2가지 분기 (회원 vs 비회원)
 // 비회원 -> 그냥 삭제 바로해보리기
 // 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
-router.delete('/:id', (request, response) => {
+router.delete('/', (request, response) => {
         if(!request.body.phone) {
             return response.status(400).json({
             message: "잘못된 요청입니다."

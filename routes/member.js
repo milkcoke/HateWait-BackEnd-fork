@@ -3,6 +3,7 @@ const router = express.Router();
 const getPoolConnection = require('../db/db2');
 const blurOutName = require('../function/blur_out_name');
 
+// 회원 정보 조회
 router.get('/:id', (request, response) => {
     const memberId = request.params.id;
 

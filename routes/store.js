@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const waitingCustomerRouter = require('./waiting_customer');
 const getPoolConnection = require('../db/db2');
 const Models = require('../models');
 const storeModel = Models.store;
@@ -28,6 +29,9 @@ router.get('/', function(request, response) {
     });
 });
 
+//stores/:id/waiting-customers 로 넘기고싶음 next 를 통해
+// :id는 유지한 채로...
+
 router.get('/:id', function(request, response) {
     const sql = 'SELECT id, name, phone, email, info, business_hour, maximum_capacity, address, coupon_enable FROM store WHERE id=?';
     //권한을 확인하는게 필요하긴함. (가게 정보는 일단 open 된 정보므로 별도의 인증과정 X)
@@ -51,6 +55,8 @@ router.get('/:id', function(request, response) {
         });
     });
 });
+// mainURL/stores/:id/waiting-customers
+router.use('/:id/waiting-customers', waitingCustomerRouter);
 
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
@@ -188,4 +194,6 @@ router.patch('/information', (request, response) => {
         });
 
 });
+
+
 module.exports = router;
