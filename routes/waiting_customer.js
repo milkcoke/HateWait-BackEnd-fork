@@ -35,7 +35,9 @@ router.get('/', (request, response)=> {
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
-                const sql = 'SELECT phone, name, people_number, called_time FROM waiting_customer WHERE store_id=?';
+                const sql = `SELECT phone, name, people_number, called_time 
+                            FROM waiting_customer WHERE store_id=?
+                            ORDER BY reservation_time ASC`;
                 getPoolConnection(connection=>{
                     connection.execute(sql, [storeId], (error, rows)=> {
                         connection.release();
@@ -65,7 +67,7 @@ router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, ?)`;
+    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL,?)`;
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
@@ -167,8 +169,9 @@ router.post('/', (request, response)=> {
                                         message: "내부 서버 오류입니다."
                                     });
                                 } else {
-                                    console.log('순서 번호 : ' , rows[0].turnNumber);
-                                    return response.status(200).json({
+                                    return response.status(201)
+                                        .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
+                                        .json({
                                         name: customerInfo.name,
                                         count : rows[0].turnNumber
                                     });
