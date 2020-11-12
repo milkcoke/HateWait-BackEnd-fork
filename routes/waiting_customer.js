@@ -65,7 +65,7 @@ router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, 'NULL', ?)`;
+    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, ?)`;
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
@@ -73,7 +73,7 @@ router.post('/', (request, response)=> {
             // 회원 id 로부터 전화번호, 이름 얻어옴 (이름부터 조회)
             const memberSql = 'SELECT phone, name FROM member where id=?';
             getPoolConnection(connection=>{
-                connection.execute(memberSql, [customerInfo.phone], (error, rows)=> {
+                connection.execute(memberSql, [customerInfo.id], (error, rows)=> {
                     if(error) {
                         connection.release();
                         console.error(error);
