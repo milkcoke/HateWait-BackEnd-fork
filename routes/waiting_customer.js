@@ -273,7 +273,7 @@ router.delete('/', (request, response) => {
                         // 비회원 및 현장 대기 취소 케이스
                         if (!waitingCustomer.called_time) {
                             console.log('호출된 적 없음!');
-                            return waitingCustomer.destroy
+                            return waitingCustomer.destroy()
                         //    비회원이긴 한데 호출된 적 있는 경우
                         } else if (!waitingCustomer.is_member) {
                             // 정상적으로 온 경우
@@ -289,13 +289,13 @@ router.delete('/', (request, response) => {
                                             });
                                         } else {
                                             // 대기열에서 삭제
-                                            return waitingCustomer.destroy
+                                            return waitingCustomer.destroy()
                                         }
                                     })
                                 })
                             } else {
                             //    정상적으로 오지 않은 경우. (호출되고 빤스런)
-                                return waitingCustomer.destroy
+                                return waitingCustomer.destroy()
                             }
                         } else {
                             //호출된 '회원' 손님 매장 이용 케이스
@@ -350,7 +350,7 @@ router.delete('/', (request, response) => {
                                         console.log(`inserted Row Number : ${numberAndModel[0]}`);
                                         console.log(`${member.name} 손님 no_show 증가!`);
                                         console.log(`model : ${numberAndModel[1]}`);
-                                        return waitingCustomer[1].destroy
+                                        return waitingCustomer[1].destroy()
                                     })
                                     .then(result=>{
                                         console.log(`대기열에서 삭제된 로우 수 : ${result.affectedRows}`);
