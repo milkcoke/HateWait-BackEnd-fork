@@ -272,6 +272,7 @@ router.delete('/', (request, response) => {
                         const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
                         // 비회원 및 현장 대기 취소 케이스
                         if (!waitingCustomer.called_time) {
+                            console.log('호출된 적 없음!');
                             return waitingCustomer.destroy
                         //    비회원이긴 한데 호출된 적 있는 경우
                         } else if (!waitingCustomer.is_member) {
@@ -373,14 +374,11 @@ router.delete('/', (request, response) => {
                             message: "서버 내부 오류입니다."
                         })
                     })
-                    .then(nonMemberDestoryResult=>{
+                    .then((deletedRow)=>{
                         // 비회원 삭제임.
-                        nonMemberDestoryResult.then(()=>{
-                            // console.log(nonMemberDestoryResult);
-                            // console.log(`비회원 삭제된 행 수 : ${nonMemberDestoryResult.affectedRows}`);
+                        console.log(`deleted rows : ${deletedRow.affectedRows}`);
                             return response.status(200).json({
                                 message: "대기열 삭제 완료!",
-                            });
                         });
 
                     });
