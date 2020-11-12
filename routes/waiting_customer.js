@@ -274,9 +274,8 @@ router.delete('/', (request, response) => {
                         if(waitingCustomer === null) {
                             return response.status(404).json({
                                 message : "대기열에 존재하지 않는 손님입니다."
-                            })
-                        }
-                        if (!waitingCustomer.called_time) {
+                            });
+                        } else if (!waitingCustomer.called_time) {
                             console.log('호출된 적 없음!');
                             return waitingCustomer.destroy()
                         //    비회원이긴 한데 호출된 적 있는 경우
