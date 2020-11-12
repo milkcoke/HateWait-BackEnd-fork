@@ -252,7 +252,7 @@ router.delete('/', (request, response) => {
         .catch(error=>{
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
-            })
+            });
         })
         .then(storeId=>{
             if(storeId === null) {
@@ -271,6 +271,11 @@ router.delete('/', (request, response) => {
                         const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, NULL)`;
                         const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
                         // 비회원 및 현장 대기 취소 케이스
+                        if(waitingCustomer === null) {
+                            return response.status(404).json({
+                                message : "대기열에 존재하지 않는 손님입니다."
+                            })
+                        }
                         if (!waitingCustomer.called_time) {
                             console.log('호출된 적 없음!');
                             return waitingCustomer.destroy()
