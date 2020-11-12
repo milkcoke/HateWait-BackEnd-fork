@@ -270,6 +270,7 @@ router.delete('/', (request, response) => {
                     .then(waitingCustomer => {
                         const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, NULL)`;
                         const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
+                        console.log(waitingCustomer);
                         // 비회원 및 현장 대기 취소 케이스
                         if (!waitingCustomer.called_time) {
                             return waitingCustomer.destroy
@@ -375,6 +376,7 @@ router.delete('/', (request, response) => {
                     })
                     .then(nonMemberDestoryResult=>{
                         // 비회원 삭제임.
+                        console.log(nonMemberDestoryResult);
                         console.log(`비회원 삭제된 행 수 : ${nonMemberDestoryResult.affectedRows}`);
                         return response.status(200).json({
                             message: "대기열 삭제 완료!",
