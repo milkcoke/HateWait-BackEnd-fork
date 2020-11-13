@@ -11,7 +11,6 @@ const memberRouter = require('./routes/member');
 const reactRouter = require('./routes/reactTest');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
-const couponRouter = require('./routes/coupon');
 
 const sequelize = require('./models').sequelize;
 const session = require('express-session');
@@ -89,7 +88,6 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-app.use('/coupon', couponRouter);
 
 
 app.use(function(request, response, next) {
