@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const couponRouter = require('coupon');
+const couponRouter = require('./coupon');
 const getPoolConnection = require('../db/dbConnection');
 const blurOutName = require('../function/blur_out_name');
 
