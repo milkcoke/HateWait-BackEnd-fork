@@ -14,7 +14,7 @@ router.get('/', (request, response)=>{
                });
             } else {
                 // coupon_enable == NULL (한 번도 지정 X)
-                if (!rows[0].coupon_enable) {
+                if (rows[0].coupon_enable === null) {
                     connection.release();
                     return response.status(204);
                 } else {
