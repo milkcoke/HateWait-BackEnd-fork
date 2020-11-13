@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const getPoolConnection = require('../db/db');
+const getPoolConnection = require('../db/dbConnection');
 const Models = require('../models');
 const storeModel = Models.store;
 

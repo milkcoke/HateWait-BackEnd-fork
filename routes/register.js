@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const getPoolConnection = require('../db/db');
+const getPoolConnection = require('../db/dbConnection');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');

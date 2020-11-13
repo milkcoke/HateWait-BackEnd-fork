@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 //상위 라우터의 Parameter 를 상속받기 위한 Option
 const router = express.Router({mergeParams : true});
-const getPoolConnection = require('../db/db.js');
+const getPoolConnection = require('../db/dbConnection.js');
 const checkId = require('../function/check_id');
 // 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');

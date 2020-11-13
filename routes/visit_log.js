@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const getPoolConnection = require('../db/db');
+const getPoolConnection = require('../db/dbConnection');
 const period = require('../config/visit_log_default_period_settings');
 const check_id = require('../function/check_id');
 
