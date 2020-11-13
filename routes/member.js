@@ -58,6 +58,6 @@ router.post('/name', (request, response) => {
     })
 });
 
-router.use(':memberid/coupons', couponRouter);
+router.use('/:memberId/coupons', couponRouter);
 
 module.exports = router;

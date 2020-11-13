@@ -7,7 +7,7 @@ const checkId = require('../function/check_id');
 // 앱에서만 사용 (손님 회원 쿠폰&스탬프 보유 현황 확인)
 // //return info : 가게명, 쿠폰 발급 기준 스탬프수, 해당 회원 보유 스탬프 수, 발급 쿠폰 수
 router.get('/', (request, response) => {
-    const memberId = request.params.memberid;
+    const memberId = request.params.memberId;
     console.log(memberId);
     checkId.member(memberId)
         .then(result => {
