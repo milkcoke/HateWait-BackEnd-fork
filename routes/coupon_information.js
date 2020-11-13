@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({mergeParams : true});
-const getPoolConnection = require('/db/db');
+const getPoolConnection = require('/db/db.js');
 
 router.get('/', (request, response)=>{
     const storeId = request.params.id;
