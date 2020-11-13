@@ -29,7 +29,7 @@ router.get('/', (request, response)=>{
                             });
                         } else {
                             return response.status(200).json({
-                                couponInformation : rows
+                                couponInformation : rows[0]
                             });
                         }
                     });

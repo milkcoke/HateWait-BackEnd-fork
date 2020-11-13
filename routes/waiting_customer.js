@@ -383,7 +383,7 @@ router.delete('/', (request, response) => {
                         // 비회원 삭제임.
                         console.log(`deleted rows : ${deletedRow.affectedRows}`);
                             return response.status(200).json({
-                                message: "대기열 삭제 완료!",
+                                message: "예약 취소 완료!",
                         });
 
                     });

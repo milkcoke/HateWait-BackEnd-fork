@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const waitingCustomerRouter = require('./waiting_customer');
 const couponInformationRouter = require('./coupon_information');
+const visitLogRouter = require('./visit_log');
 const getPoolConnection = require('../db/dbConnection.js');
 const Models = require('../models');
 const storeModel = Models.store;
@@ -60,7 +61,7 @@ router.get('/:id', function(request, response) {
 router.use('/:id/waiting-customers', waitingCustomerRouter);
 // mainURL/stores/:id/coupon-information
 router.use('/:id/coupon-information', couponInformationRouter);
-
+router.use('/:storeId/visit-log', visitLogRouter);
 
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
