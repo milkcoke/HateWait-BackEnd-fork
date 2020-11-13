@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const getPoolConnection = require('../db/db2');
+const getPoolConnection = require('../db/db');
 const passport = require('../config/passport');
 
 router.get('/', (request, response)=> {

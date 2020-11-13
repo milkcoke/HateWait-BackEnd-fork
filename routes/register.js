@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const getPoolConnection = require('../db/db2');
+const getPoolConnection = require('../db/db');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
@@ -225,9 +225,9 @@ router.post('/store', (request, response) => {
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-        const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)';
         getPoolConnection(connection=>{
-            connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.coupon_enable, storeInfo.pw], (error, result)=>{
+            connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.pw], (error, result)=>{
                     connection.release();
                     if(error) {
                         console.error(error);

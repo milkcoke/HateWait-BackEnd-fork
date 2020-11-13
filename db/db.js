@@ -1,29 +1,16 @@
 const mysql = require('mysql2');
 const settings = require('./settings.js');
 
+const connectionPool = mysql.createPool(settings);
 
-
-//disconnection Handling
-//10~20초 사이마다 새로운 쿼리가 없을 시 disconnect 된다.
-module.exports = function handleDisconnect() {
-    const dbConnection = mysql.createConnection(settings);
-    dbConnection.connect(function(error){
+module.exports = function getConnection(callback) {
+    connectionPool.getConnection((error, connection)=> {
         if (error) {
-            console.error(error.message);
-            setTimeout(handleDisconnect, 2000);
+            connection.release();
+            console.log('DB Pool Connection Failed!');
+            console.error(error);
         } else {
-            console.log("MySQL Database is Connected!");
+            callback(connection);
         }
     });
-    dbConnection.on('error', function(error) {
-        if (error.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect();
-        } else {
-            throw error;
-        }
-    });
-
-    return dbConnection;
 }
-
-

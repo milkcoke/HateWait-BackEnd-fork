@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const getPoolConnection = require('../db/db2');
+const getPoolConnection = require('../db/db');
 const blurOutName = require('../function/blur_out_name');
 
 // 회원 정보 조회
