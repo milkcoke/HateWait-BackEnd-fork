@@ -9,13 +9,13 @@ const checkId = require('../function/check_id');
 router.get('/', (request, response) => {
     const memberId = request.params.memberId;
     checkId.member(memberId)
-        .then(result=>{
+        .then(result => {
             if (result === null) {
                return response.status(404).json({
                    message : "헤잇웨잇에 가입되지 않은 회원입니다."
                });
             } else {
-                return memberId;
+                return result;
             }
         })
         .then(memberId=>{
