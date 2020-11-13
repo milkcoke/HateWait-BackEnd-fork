@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const couponRouter = require('coupon');
 const getPoolConnection = require('../db/dbConnection');
 const blurOutName = require('../function/blur_out_name');
 
@@ -56,8 +57,7 @@ router.post('/name', (request, response) => {
         });
     })
 });
-// router.patch('/:id', (request, response) => {
-//
-// })
+
+router.use(':memberId/coupon', couponRouter);
 
 module.exports = router;
