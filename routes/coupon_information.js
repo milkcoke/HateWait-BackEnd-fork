@@ -18,7 +18,8 @@ router.get('/', (request, response)=>{
                     connection.release();
                     return response.status(204);
                 } else {
-                    const getCouponInformationSql = `SELECT * FROM coupon_information WHERE id=? LIMIT 1`;
+                    const getCouponInformationSql = `SELECT benefit_description, maximum_stamp, validity_period_days, remark
+                                                    FROM coupon_information WHERE store_id=? LIMIT 1`;
                     connection.execute(getCouponInformationSql, [storeId], (error, rows)=>{
                         connection.release();
                         if(error) {
