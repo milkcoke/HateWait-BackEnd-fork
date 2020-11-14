@@ -66,22 +66,23 @@ router.use('/:storeId/visit-log', visitLogRouter);
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
 router.patch('/information', (request, response) => {
-    const storeId = request.body.id;
-    console.log(`storeId : ${storeId}`);
-    const newStoreInfo = request.body;
+    const {id = null, ...newStoreInfo} = request.body;
+    // const storeId = request.body.id;
+    console.log(`storeId : ${id}`);
+    // const newStoreInfo = request.body;
+
     // 새 정보에서 id는 제외시키고 시작함.
-    delete newStoreInfo.id;
+    // delete newStoreInfo.id;
     // id가 비워져있는 요청 예외처리.
-    if (!storeId) {
+    if (id === null) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
     }
 
-
     //올바르지 않은 id로 가게정보 수정을 요청한경우.
     //여기가 비동기라 아래가 실행되는게 문제임.
-    checkId.store(storeId)
+    checkId.store(id)
         .catch(error => {
             console.error(error);
             return response.status(500).json({
@@ -90,8 +91,8 @@ router.patch('/information', (request, response) => {
         })
         .then(result=>{
             if (result === null) {
-                return response.status(400).json({
-                    message: "비정상적인 요청입니다."
+                return response.status(404).json({
+                    message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
                 //하나의 then 안에 묶고싶지 않아 어거지로 Promise 처리 , 추후 수정할 필요가 있음.
@@ -110,25 +111,27 @@ router.patch('/information', (request, response) => {
             console.log(couponInformationModel);
 
             storeModel.findOne({
-                where : {id: storeId}
+                where : {id: id}
             })
                 .then(store => {
                     switch (targetKey) {
                         case 'pw':
-                            bcryptSetting.SALT
-                                .then(salt => {
-                                    return bcrypt.hash(targetValue, salt);
-                                })
-                                .then(newHashedPassword => {
-                                    //    store password (orm)
-                                    targetValue = newHashedPassword
-                                })
-                                .catch(error => {
-                                    console.error(error);
-                                    return response.status(500).json({
-                                        message : "비밀번호 암호화 오류입니다. 다시 시도해주세요"
-                                    });
-                                });
+                            const newHashedPassword = bcrypt.hashSync(targetValue, bcrypt.genSaltSync(bcryptSetting.SALT_ROUNDS));
+                            targetValue = newHashedPassword;
+                            // bcryptSetting.SALT
+                            //     .then(salt => {
+                            //         return bcrypt.hash(targetValue, salt);
+                            //     })
+                            //     .then(newHashedPassword => {
+                            //         //    store password (orm)
+                            //         targetValue = newHashedPassword
+                            //     })
+                            //     .catch(error => {
+                            //         console.error(error);
+                            //         return response.status(500).json({
+                            //             message : "비밀번호 암호화 오류입니다. 다시 시도해주세요"
+                            //         });
+                            //     });
                             break;
 
                         case 'coupon_enable' :
