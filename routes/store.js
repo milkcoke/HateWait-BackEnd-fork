@@ -120,10 +120,11 @@ router.patch('/information', (request, response) => {
                                 console.log('store is trying to change coupon_enable!');
                             } else {
                                 // const newCouponInfo = newStoreInfo.coupon_information;
-                                const {newBenefitDescription, newMaximumStamp, newValidityPeriodDays, newRemark} = newStoreInfo['coupon_information'];
+                                // 유효기간과 비고란은 공백 가능.
+                                const {newBenefitDescription, newMaximumStamp, newValidityPeriodDays = null, newRemark = null} = newStoreInfo['coupon_information'];
                                 // check property name & length == not null or undefined
-                                if(!newBenefitDescription || !newMaximumStamp ||
-                                    !newValidityPeriodDays || !newRemark) {
+
+                                if(!newBenefitDescription || !newMaximumStamp) {
                                     return response.status(400).json({
                                         message: "쿠폰 정보를 빠짐없이 입력해주세요."
                                     });
@@ -131,7 +132,7 @@ router.patch('/information', (request, response) => {
                                 // upsert: insert or update a single row
                                 // it's like a ON DUPLICATE KEY UPDATE in MySQL
                                 couponInformationModel.upsert({
-                                    //여기서의 store는 findOne 에서 검색 결과로 나온애.
+                                    //여기서의 store 는 findOne 에서 검색 결과로 나온애.
                                     store_id : store.id,
                                     benefit_description : newBenefitDescription,
                                     maximum_stamp : newMaximumStamp,
@@ -168,9 +169,7 @@ router.patch('/information', (request, response) => {
                     });
                 })
                 .then(result => {
-                    return response.status(200).json({
-                        message: "수정 완료!"
-                    });
+                    return response.status(204).end();
                 })
                 .catch(error => {
                     console.error(error);
