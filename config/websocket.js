@@ -1,7 +1,8 @@
 // webSocket Initialize
 const webSocket = require('ws');
 
-module.exports = function(server) {
+//customizing ~...
+module.exports = function(server, app) {
     //webSocket Server Create!
     const webSocketServer = new webSocket.Server({server: server});
     console.log('websocket Server creating..');
@@ -9,6 +10,7 @@ module.exports = function(server) {
     // Register Event
     webSocketServer.on('connection', (socketClient, request)=>{
         const clientIp = request.connection.remoteAddress;
+        app.locals.clients = webSocketServer.clients;
         console.log(`${clientIp} 클라이언트 접속 요청 !`);
 
         socketClient.on('message', requestMessage=>{
