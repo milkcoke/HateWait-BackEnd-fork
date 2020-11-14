@@ -124,7 +124,6 @@ router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.storeId;
-    console.log(`storeId : ${storeId}`);
     const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL, ?)`;
 
     //회원이면 id 정보만 받아옴.
@@ -181,7 +180,7 @@ router.post('/', (request, response)=> {
                                         });
                                     } else {
                                         // 손님 새로 등록할 때마다 현재 대기 인원 증가
-                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}`);
+                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                         return response.status(201)
                                             .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
@@ -230,7 +229,7 @@ router.post('/', (request, response)=> {
                                         message: "내부 서버 오류입니다."
                                     });
                                 } else {
-                                    broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turn_number}명`);
+                                    broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                     return response.status(201)
                                         .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                         .json({
