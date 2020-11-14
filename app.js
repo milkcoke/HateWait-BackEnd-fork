@@ -20,6 +20,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('./config/passport');
 const app = express();
+const expressWs = require('express-ws')(app);
 
 console.log('==========server started!========');
 
