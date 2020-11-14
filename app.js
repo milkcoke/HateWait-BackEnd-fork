@@ -12,6 +12,8 @@ const reactRouter = require('./routes/reactTest');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 
+const wsWaitingCustomersRouter = require('./ws_routes/waiting_customers');
+
 const sequelize = require('./models').sequelize;
 const session = require('express-session');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
@@ -88,7 +90,7 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-
+app.use('/ws', wsWaitingCustomersRouter);
 
 app.use(function(request, response, next) {
   // isAuthenticated : 현재 로그인 되어있는지 true, false
