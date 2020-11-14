@@ -43,7 +43,7 @@ router.post('/members/test', (request, response) => {
     }
 
     //id 는 빼야함.
-    const password_sql = 'SELECT id, name, pw FROM member where id=?';
+    const password_sql = 'SELECT id, name, phone, pw FROM member where id=?';
     getPoolConnection(connection=>{
         connection.execute(password_sql, [memberInfo.id],(error, rows)=> {
             connection.release();
@@ -66,7 +66,8 @@ router.post('/members/test', (request, response) => {
                             return response.status(200).json({
                                 message : "로그인 성공!",
                                 id : rows[0].id,
-                                name : rows[0].name
+                                name : rows[0].name,
+                                phone : rows[0].phone
                             });
                         } else {
                             return response.status(409).json({
