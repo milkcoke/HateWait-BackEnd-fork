@@ -19,7 +19,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 const server = http.createServer(app);
-// web socket server create!
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -29,7 +29,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-
+// web socket server create!
 createWebSocket(server);
 /**
  * Normalize a port into a number, string, or false.

@@ -4,6 +4,8 @@ const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const app = express();
+const expressWs = require('express-ws')(app);
 
 const loginRouter = require('./routes/login');
 const indexRouter = require('./routes/index');
@@ -19,8 +21,7 @@ const session = require('express-session');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
 const flash = require('connect-flash');
 const passport = require('./config/passport');
-const app = express();
-const expressWs = require('express-ws')(app);
+
 
 console.log('==========server started!========');
 
