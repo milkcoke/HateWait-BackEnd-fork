@@ -310,7 +310,7 @@ router.delete('/', (request, response) => {
             message: "잘못된 요청입니다."
         });
     }
-    checkId.store(request.params.id)
+    checkId.store(request.params.storeId)
         .catch(error=>{
             return response.status(500).json({
                 message: "서버 내부 오류입니다."
@@ -322,7 +322,7 @@ router.delete('/', (request, response) => {
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 })
             }
-            return storeId
+            return storeId;
         })
         .then(storeId=> {
             // (비회원 or 구두 대기 취소) vs (No_Show vs 정상 이용 가게)
