@@ -123,7 +123,7 @@ router.get('/', (request, response)=> {
 router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
-    const storeId = request.params.id;
+    const storeId = request.params.storeId;
     console.log(`storeId : ${storeId}`);
     const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL, ?)`;
 
