@@ -15,6 +15,7 @@ router.get('/', (request, response,next)=> {
     // request.params.id
     // 가게아이디가 담겨있을 경우
     if(request.params.hasOwnProperty('storeId')) {
+        console.log(`1st parameter : ${request.params.storeId}`);
         next();
         return;
     }
@@ -74,8 +75,8 @@ router.get('/', (request, response,next)=> {
 //대기열 조회
 router.get('/', (request, response)=> {
     // request.params.id
-     const storeId = request.params.id;
-
+     const storeId = request.params.storeId;
+     console.log(`2nd store id : ${storeId}`)
      checkId.store(storeId)
          .catch(error=> {
              console.error(error);
