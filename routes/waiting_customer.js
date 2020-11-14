@@ -124,7 +124,8 @@ router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
     const storeId = request.params.id;
-    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL,?)`;
+    console.log(`storeId : ${storeId}`);
+    const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL, ?)`;
 
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
@@ -197,12 +198,14 @@ router.post('/', (request, response)=> {
             break;
         //    비회원인 경우
         case false:
-            if (!customerInfo.hasOwnProperty('phone') || !customerInfo.hasOwnProperty('people_number') || !customerInfo.hasOwnProperty('is_member')) {
+            if (!customerInfo.hasOwnProperty('phone') || !customerInfo.hasOwnProperty('name') ||
+                !customerInfo.hasOwnProperty('people_number') || !customerInfo.hasOwnProperty('is_member')) {
                 return response.status(400).json({
                     message: "잘못된 요청입니다."
                 });
             }
             getPoolConnection(connection=>{
+                console.log(customerInfo);
                 connection.execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
                     if(error) {
                         connection.release();
