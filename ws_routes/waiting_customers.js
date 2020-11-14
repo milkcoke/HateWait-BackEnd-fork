@@ -4,7 +4,6 @@ const ws = require('ws');
 
 const broadcast = (clients, message) =>{
     clients.forEach(client=>{
-        console.log(ws.OPEN);
         if(client.readyState === ws.OPEN){
             client.send(message);
         }
@@ -13,7 +12,7 @@ const broadcast = (clients, message) =>{
 router.get('/', (request, response)=>{
     console.log('we requested from routing!');
     broadcast(request.app.locals.clients, "Hi Guys!");
-    return response.status(200);
+    return response.status(200).end();
 });
 
 module.exports = router;
