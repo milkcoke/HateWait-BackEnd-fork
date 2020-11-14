@@ -8,6 +8,7 @@ const locationUrl = require('../config/url_setting');
 const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
 const memberModel = models.member;
+const broadcast = require('../function/broadcast');
 
 //대기열 조회 in 테블릿.
 // webSocket Initialize
@@ -178,7 +179,8 @@ router.post('/', (request, response)=> {
                                             message: "서버 오류입니다."
                                         });
                                     } else {
-                                        console.log(rows[0].turnNumber);
+                                        // 손님 새로 등록할 때마다 현재 대기 인원 증가
+                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turn_number}`);
                                         return response.status(201)
                                             .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
@@ -225,6 +227,7 @@ router.post('/', (request, response)=> {
                                         message: "내부 서버 오류입니다."
                                     });
                                 } else {
+                                    broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turn_number}명`);
                                     return response.status(201)
                                         .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                         .json({
