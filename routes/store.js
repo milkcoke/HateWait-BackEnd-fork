@@ -11,7 +11,6 @@ const bcrypt = require('bcrypt');
 const bcryptSetting = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
 
-
 router.get('/', function(request, response) {
     const sql = 'SELECT * FROM store';
     getPoolConnection(connection=>{
@@ -31,8 +30,6 @@ router.get('/', function(request, response) {
     });
 });
 
-//stores/:id/waiting-customers 로 넘기고싶음 next 를 통해
-// :id는 유지한 채로...
 
 router.get('/:id', function(request, response) {
     const sql = 'SELECT id, name, phone, email, info, business_hour, maximum_capacity, address, coupon_enable FROM store WHERE id=?';
@@ -57,6 +54,7 @@ router.get('/:id', function(request, response) {
         });
     });
 });
+
 // mainURL/stores/:id/waiting-customers
 router.use('/:id/waiting-customers', waitingCustomerRouter);
 // mainURL/stores/:id/coupon-information
@@ -66,14 +64,10 @@ router.use('/:storeId/visit-log', visitLogRouter);
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
 router.patch('/information', (request, response) => {
+    //id parameter가 넘어오지 않은경우 null 처리
     const {id = null, ...newStoreInfo} = request.body;
-    // const storeId = request.body.id;
     console.log(`storeId : ${id}`);
-    // const newStoreInfo = request.body;
 
-    // 새 정보에서 id는 제외시키고 시작함.
-    // delete newStoreInfo.id;
-    // id가 비워져있는 요청 예외처리.
     if (id === null) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
@@ -118,20 +112,6 @@ router.patch('/information', (request, response) => {
                         case 'pw':
                             const newHashedPassword = bcrypt.hashSync(targetValue, bcrypt.genSaltSync(bcryptSetting.SALT_ROUNDS));
                             targetValue = newHashedPassword;
-                            // bcryptSetting.SALT
-                            //     .then(salt => {
-                            //         return bcrypt.hash(targetValue, salt);
-                            //     })
-                            //     .then(newHashedPassword => {
-                            //         //    store password (orm)
-                            //         targetValue = newHashedPassword
-                            //     })
-                            //     .catch(error => {
-                            //         console.error(error);
-                            //         return response.status(500).json({
-                            //             message : "비밀번호 암호화 오류입니다. 다시 시도해주세요"
-                            //         });
-                            //     });
                             break;
 
                         case 'coupon_enable' :
@@ -139,25 +119,24 @@ router.patch('/information', (request, response) => {
                             if (!targetValue) {
                                 console.log('store is trying to change coupon_enable!');
                             } else {
-                                const newCouponInfo = newStoreInfo.coupon_information;
-                                // check property name & length
-                                if(!newCouponInfo.hasOwnProperty('benefit_description') || !newCouponInfo.hasOwnProperty('maximum_stamp') ||
-                                !newCouponInfo.hasOwnProperty('validity_period_days') || !newCouponInfo.hasOwnProperty('remark')) {
+                                // const newCouponInfo = newStoreInfo.coupon_information;
+                                const {newBenefitDescription, newMaximumStamp, newValidityPeriodDays, newRemark} = newStoreInfo['coupon_information'];
+                                // check property name & length == not null or undefined
+                                if(!newBenefitDescription || !newMaximumStamp ||
+                                    !newValidityPeriodDays || !newRemark) {
                                     return response.status(400).json({
-                                        message: "쿠폰 정보 등록 또는 수정 요청이 잘못되었습니다."
+                                        message: "쿠폰 정보를 빠짐없이 입력해주세요."
                                     });
                                 }
-                                //쿠폰사용 O 추가 정보 수정필요
-                                //    store_id, benefit_description, maximum_stamp, validity_period_days, remark
                                 // upsert: insert or update a single row
                                 // it's like a ON DUPLICATE KEY UPDATE in MySQL
                                 couponInformationModel.upsert({
                                     //여기서의 store는 findOne 에서 검색 결과로 나온애.
                                     store_id : store.id,
-                                    benefit_description : newCouponInfo.benefit_description,
-                                    maximum_stamp : newCouponInfo.maximum_stamp,
-                                    validity_period_days : newCouponInfo.validity_period_days,
-                                    remark: newCouponInfo.remark
+                                    benefit_description : newBenefitDescription,
+                                    maximum_stamp : newMaximumStamp,
+                                    validity_period_days : newValidityPeriodDays,
+                                    remark: newRemark
                                 }).then(upsertResult => {
                                     console.log(`upsertResult : ${upsertResult}`);
                                     console.log('쿠폰 정보 수정 완료!');
