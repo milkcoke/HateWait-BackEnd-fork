@@ -121,7 +121,9 @@ router.patch('/information', (request, response) => {
                             } else {
                                 // const newCouponInfo = newStoreInfo.coupon_information;
                                 // 유효기간과 비고란은 공백 가능.
-                                const {newBenefitDescription, newMaximumStamp, newValidityPeriodDays = null, newRemark = null} = newStoreInfo['coupon_information'];
+                                const {benefit_description : newBenefitDescription, maximum_stamp : newMaximumStamp,
+                                    validity_period_days : newValidityPeriodDays = null,
+                                    remark : newRemark = null} = newStoreInfo['coupon_information'];
                                 // check property name & length == not null or undefined
 
                                 if(!newBenefitDescription || !newMaximumStamp) {
