@@ -3,7 +3,7 @@ const router = express.Router({mergeParams : true});
 const getPoolConnection = require('../db/dbConnection');
 
 router.get('/', (request, response)=>{
-    const storeId = request.params.id;
+    const storeId = request.params.storeId;
     const sql = `SELECT coupon_enable FROM store WHERE id=?`;
     getPoolConnection(connection=>{
         connection.execute(sql, [storeId], (error, rows)=>{
