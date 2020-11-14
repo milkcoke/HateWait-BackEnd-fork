@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router({mergeParams : true});
 const getPoolConnection = require('../db/dbConnection.js');
 const checkId = require('../function/check_id');
-// 이거 sync function 인데 왜 return 을 못받는거 같냐 아
 const locationUrl = require('../config/url_setting');
 const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
@@ -12,6 +11,62 @@ const memberModel = models.member;
 
 //대기열 조회 in 테블릿.
 // webSocket Initialize
+router.get('/', (request, response,next)=> {
+    // request.params.id
+    // 가게아이디가 담겨있을 경우
+    if(request.params.hasOwnProperty('storeId')) {
+        next();
+        return;
+    }
+
+    const memberId = request.params.memberId;
+    checkId.member(memberId)
+        .catch(error=> {
+            console.error(error);
+            return response.status(500).json({
+                message: "서버 오류입니다."
+            });
+        })
+        .then(resultId => {
+            console.log(`resultId : ${resultId}`);
+            if (resultId === null) {
+                return response.status(404).json({
+                    message: "헤잇웨잇에 가입된 손님이 아닙니다."
+                });
+            } else {
+
+                const getStoreNameSql = `SELECT store.name AS storeName, member.name AS memberName, tb.turnNumber
+                                         FROM waiting_customer INNER JOIN store ON waiting_customer.store_id = store.id
+                                                            INNER JOIN member ON member.phone = waiting_customer.phone
+                                                            JOIN (SELECT phone, NAME, @rownum := @rownum+1 AS turnNumber
+                                                                    FROM waiting_customer, (SELECT @rownum :=0) AS R
+                                                                    ORDER BY reservation_time ASC) AS tb ON member.phone = tb.phone
+                                         WHERE member.id=? LIMIT 1`;
+
+                    getPoolConnection(connection=>{
+                    connection.execute(getStoreNameSql, [memberId], (error, rows)=> {
+                        connection.release();
+                        if (error) {
+                            console.error(error);
+                            return response.status(500).json({
+                                message: "서버 오류입니다."
+                            });
+                        } else if(rows.length === 0) {
+                            return response.status(200).json({
+                                message: "대기중인 가게가 없습니다!"
+                            });
+                        } else {
+                            return response.status(200).json({
+                                store_name : rows[0].storeName,
+                                member_name : rows[0].memberName,
+                                turn_number : rows[0].turnNumber
+                            });
+                        }
+                    });
+                });
+            }
+        });
+});
 
 
 

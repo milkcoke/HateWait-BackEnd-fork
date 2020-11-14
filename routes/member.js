@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const couponRouter = require('./coupon');
+const waitingCustomersRouter = require('./waiting_customer');
 const getPoolConnection = require('../db/dbConnection');
 const blurOutName = require('../function/blur_out_name');
 
@@ -59,5 +60,5 @@ router.post('/name', (request, response) => {
 });
 
 router.use('/:memberId/coupons', couponRouter);
-
+router.use('/:memberId/waiting-customers', waitingCustomersRouter)
 module.exports = router;

@@ -56,9 +56,9 @@ router.get('/:id', function(request, response) {
 });
 
 // mainURL/stores/:id/waiting-customers
-router.use('/:id/waiting-customers', waitingCustomerRouter);
+router.use('/:storeId/waiting-customers', waitingCustomerRouter);
 // mainURL/stores/:id/coupon-information
-router.use('/:id/coupon-information', couponInformationRouter);
+router.use('/:storeId/coupon-information', couponInformationRouter);
 router.use('/:storeId/visit-log', visitLogRouter);
 
 //일단 권한 검사 없이 일부 Patch 만 구현
