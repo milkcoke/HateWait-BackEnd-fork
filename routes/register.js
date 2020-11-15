@@ -73,6 +73,7 @@ router.get('/members/phone/:phone', (request, response) => {
             message: "전화번호를 입력해주세요!"
         });
     } else {
+        console.log(`phone : ${request.params.phone}`);
         checkPhone.member(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
@@ -101,6 +102,7 @@ router.get('/stores/phone/:phone', (request, response) => {
             message: "전화번호를 입력해주세요!"
         });
     } else {
+        console.log(`phone : ${request.params.phone}`);
         checkPhone.store(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {

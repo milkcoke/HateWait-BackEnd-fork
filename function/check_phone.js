@@ -1,11 +1,10 @@
 const getPoolConnection = require('../db/dbConnection.js');
 
 function checkMemberPhone(memberPhone) {
-    console.log(`typeof : ${typeof memberPhone}`);
     const sql = 'SELECT phone FROM member WHERE id=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
-            connection.execute(sql, [memberPhone.toString()], (error, rows)=> {
+            connection.execute(sql, [memberPhone], (error, rows)=> {
                 connection.release();
                 if (error) {
                     reject(error);
@@ -21,11 +20,10 @@ function checkMemberPhone(memberPhone) {
 
 
 function checkStorePhone(storePhone) {
-    console.log(`typeof : ${typeof storePhone}`);
     const sql = 'SELECT phone FROM store WHERE phone=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
-            connection.execute(sql, [storePhone.toString()], (error, rows) => {
+            connection.execute(sql, [storePhone], (error, rows) => {
                 connection.release();
                 if (error) reject(error);
                 else {
