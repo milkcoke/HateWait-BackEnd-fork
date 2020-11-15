@@ -7,7 +7,7 @@ const checkId = require('../function/check_id');
 const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)
-router.get('/members/:id', (request, response) => {
+router.get('/members/id/:id', (request, response) => {
     if (!request.params.hasOwnProperty('id')) {
         //id key 를 갖지 않은경우
         return response.status(400).json({
@@ -38,7 +38,7 @@ router.get('/members/:id', (request, response) => {
 });
 
 
-router.get('/stores/:id', (request, response) => {
+router.get('/stores/id/:id', (request, response) => {
     if (!request.params.hasOwnProperty('id')) {
         return response.status(400).json({
             message: "아이디를 입력해주세요!"
@@ -66,7 +66,7 @@ router.get('/stores/:id', (request, response) => {
 });
 
 // 전화번호 중복체크 (member/store)
-router.get('/members/:phone', (request, response) => {
+router.get('/members/phone/:phone', (request, response) => {
     if (!request.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "전화번호를 입력해주세요!"
@@ -94,7 +94,7 @@ router.get('/members/:phone', (request, response) => {
 });
 
 
-router.get('/stores/:phone', (request, response) => {
+router.get('/stores/phone/:phone', (request, response) => {
     if (!request.params.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "전화번호를 입력해주세요!"
