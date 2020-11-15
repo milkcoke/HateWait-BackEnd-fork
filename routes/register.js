@@ -11,7 +11,7 @@ router.get('/members/:id', (request, response) => {
     if (!request.params.hasOwnProperty('id')) {
         //id key 를 갖지 않은경우
         return response.status(400).json({
-            message: "비정상적인 요청입니다."
+            message: "아이디를 입력해주세요!"
         });
     } else {
         checkId.member(request.params.id)
@@ -41,7 +41,7 @@ router.get('/members/:id', (request, response) => {
 router.get('/stores/:id', (request, response) => {
     if (!request.params.hasOwnProperty('id')) {
         return response.status(400).json({
-            message: "비정상적인 요청입니다."
+            message: "아이디를 입력해주세요!"
         });
     } else {
         checkId.store(request.params.id)
@@ -69,7 +69,7 @@ router.get('/stores/:id', (request, response) => {
 router.get('/members/:phone', (request, response) => {
     if (!request.hasOwnProperty('phone')) {
         return response.status(400).json({
-            message: "비정상적인 요청입니다."
+            message: "전화번호를 입력해주세요!"
         });
     } else {
         checkId.store(request.params.phone)
@@ -97,7 +97,7 @@ router.get('/members/:phone', (request, response) => {
 router.get('/stores/:phone', (request, response) => {
     if (!request.params.hasOwnProperty('phone')) {
         return response.status(400).json({
-            message: "비정상적인 요청입니다."
+            message: "전화번호를 입력해주세요!"
         });
     } else {
         checkId.store(request.params.phone)
