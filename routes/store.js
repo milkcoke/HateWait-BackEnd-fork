@@ -11,8 +11,11 @@ const bcrypt = require('bcrypt');
 const bcryptSetting = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
 
-router.get('/', function(request, response) {
-    const sql = 'SELECT * FROM store';
+router.get('/all', function(request, response) {
+    const sql = `SELECT store.name AS name, store.business_hour AS business_hour, store.maximum_capacity AS maximum_capacity, store.address AS address, COUNT(waiting_customer.phone) AS team_count
+                    FROM store LEFT OUTER JOIN waiting_customer ON store.id = waiting_customer.store_id
+                    GROUP BY name
+                    ORDER BY address ASC`;
     getPoolConnection(connection=>{
         connection.execute(sql, (error, rows) => {
             connection.release();
@@ -23,7 +26,7 @@ router.get('/', function(request, response) {
                 });
             } else {
                 response.status(200).json({
-                    allMembers: rows
+                    stores: rows
                 });
             }
         });
