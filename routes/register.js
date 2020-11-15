@@ -4,6 +4,7 @@ const getPoolConnection = require('../db/dbConnection');
 const bcrypt = require('bcrypt');
 const bcryptConfig = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
+const checkPhone = require('../function/check_phone');
 const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)
@@ -72,7 +73,7 @@ router.get('/members/phone/:phone', (request, response) => {
             message: "전화번호를 입력해주세요!"
         });
     } else {
-        checkId.store(request.params.phone)
+        checkPhone.member(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
                     return response.status(200).json({
@@ -100,7 +101,7 @@ router.get('/stores/phone/:phone', (request, response) => {
             message: "전화번호를 입력해주세요!"
         });
     } else {
-        checkId.store(request.params.phone)
+        checkPhone.store(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
                     return response.status(200).json({
