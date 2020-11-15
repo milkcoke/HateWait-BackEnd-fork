@@ -67,7 +67,7 @@ router.get('/stores/id/:id', (request, response) => {
 
 // 전화번호 중복체크 (member/store)
 router.get('/members/phone/:phone', (request, response) => {
-    if (!request.hasOwnProperty('phone')) {
+    if (!request.params.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "전화번호를 입력해주세요!"
         });
