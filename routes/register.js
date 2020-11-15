@@ -144,9 +144,9 @@ router.post('/member', (request, response) => {
         memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         // const register_member_sql = 'INSERT INTO member SET ?';
-        const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, ?, ?)';
+        const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, 0, ?)';
         getPoolConnection(connection=>{
-            connection.execute(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, 0, memberInfo.pw], (error, result)=>{
+            connection.execute(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, memberInfo.pw], (error, result)=>{
                 connection.release();
                 if(error) {
                     if (error.code == 'ER_DUP_ENTRY') {
