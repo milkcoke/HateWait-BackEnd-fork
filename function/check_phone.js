@@ -1,7 +1,7 @@
 const getPoolConnection = require('../db/dbConnection.js');
 
 function checkMemberPhone(memberPhone) {
-
+    console.log(`typeof : ${typeof memberPhone}`);
     const sql = 'SELECT phone FROM member WHERE id=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
@@ -21,6 +21,7 @@ function checkMemberPhone(memberPhone) {
 
 
 function checkStorePhone(storePhone) {
+    console.log(`typeof : ${typeof storePhone}`);
     const sql = 'SELECT phone FROM store WHERE phone=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
