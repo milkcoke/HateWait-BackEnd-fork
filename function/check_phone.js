@@ -1,10 +1,11 @@
 const getPoolConnection = require('../db/dbConnection.js');
 
 function checkMemberPhone(memberPhone) {
+
     const sql = 'SELECT phone FROM member WHERE id=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
-            connection.execute(sql, [memberPhone], (error, rows)=> {
+            connection.execute(sql, [memberPhone.toString()], (error, rows)=> {
                 connection.release();
                 if (error) {
                     reject(error);
@@ -23,7 +24,7 @@ function checkStorePhone(storePhone) {
     const sql = 'SELECT phone FROM store WHERE phone=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
-            connection.execute(sql, [storePhone], (error, rows) => {
+            connection.execute(sql, [storePhone.toString()], (error, rows) => {
                 connection.release();
                 if (error) reject(error);
                 else {
