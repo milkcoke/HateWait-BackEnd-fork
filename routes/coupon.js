@@ -102,6 +102,7 @@ router.get('/stores', (request, response) => {
                         message : "아직 발행된 쿠폰이 없습니다."
                     })
                 } else {
+                    // remark, benefit_description NULL일 때 처리 필요.
                     return response.status(200).json({
                         coupons : rows
                     });

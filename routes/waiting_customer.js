@@ -74,6 +74,7 @@ router.get('/', (request, response,next)=> {
 
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
 //대기열 조회
+// 가게에 대한 정보임.
 router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.storeId;

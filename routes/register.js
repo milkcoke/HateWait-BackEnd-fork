@@ -7,19 +7,14 @@ const checkId = require('../function/check_id');
 const locationUrl = require('../config/url_setting');
 
 //id 중복체크 (member / store)
-router.post('/member/id', (request, response) => {
-    if (!request.hasOwnProperty('id')) {
+router.get('/members/:id', (request, response) => {
+    if (!request.params.hasOwnProperty('id')) {
         //id key 를 갖지 않은경우
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
-    //    id가 null or "" (공백)으로 온 경우
-    } else if (!request.id) {
-        return response.status(409).json({
-            message: "아이디를 입력해주세요"
-        });
     } else {
-        checkId.member(request.id)
+        checkId.member(request.params.id)
             .then(resultId=>{
                 // 쿼리 결과상 나오지 않은 사용 가능한 아이디.
                 if(resultId === null) {
@@ -43,18 +38,13 @@ router.post('/member/id', (request, response) => {
 });
 
 
-router.post('/store/id', (request, response) => {
-    if (!request.hasOwnProperty('id')) {
+router.get('/stores/:id', (request, response) => {
+    if (!request.params.hasOwnProperty('id')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
-        //    id가 null or "" (공백)으로 온 경우
-    } else if (!request.id) {
-        return response.status(409).json({
-            message: "아이디를 입력해주세요"
-        });
     } else {
-        checkId.store(request.id)
+        checkId.store(request.params.id)
             .then(resultId=>{
                 if(resultId === null) {
                     return response.status(200).json({
@@ -76,17 +66,13 @@ router.post('/store/id', (request, response) => {
 });
 
 // 전화번호 중복체크 (member/store)
-router.post('/member/phone', (request, response) => {
+router.get('/members/:phone', (request, response) => {
     if (!request.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
-    } else if (!request.phone) {
-        return response.status(409).json({
-            message: "전화번호를 입력해주세요"
-        });
     } else {
-        checkId.store(request.phone)
+        checkId.store(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
                     return response.status(200).json({
@@ -108,17 +94,13 @@ router.post('/member/phone', (request, response) => {
 });
 
 
-router.post('/store/phone', (request, response) => {
-    if (!request.hasOwnProperty('phone')) {
+router.get('/stores/:phone', (request, response) => {
+    if (!request.params.hasOwnProperty('phone')) {
         return response.status(400).json({
             message: "비정상적인 요청입니다."
         });
-    } else if (!request.phone) {
-        return response.status(409).json({
-            message: "전화번호를 입력해주세요"
-        });
     } else {
-        checkId.store(request.phone)
+        checkId.store(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
                     return response.status(200).json({
