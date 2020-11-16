@@ -9,6 +9,8 @@ const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
 const memberModel = models.member;
 const broadcast = require('../function/broadcast');
+const twilioSetting = require('../config/twilio_setting');
+const sms = require('twilio')(twilioSetting.accountSid, twilioSetting.authenticationToken);
 
 //대기열 조회 in 테블릿.
 // webSocket Initialize
@@ -252,10 +254,12 @@ router.post('/', (request, response)=> {
     }
 
 });
-// 가게에서  손님 호출.
+// 가게에서 손님 호출.
 router.patch('/', (request, response)=> {
     //phone (전화번호) 만 받으면 됨.
-    if (!request.body.phone) {
+    //Destructuring!
+    const {storeId, customerPhone = null} = [request.params.storeId, request.body.phone];
+    if (!customerPhone) {
         return response.status(400).json({
             message: "잘못된 요청입니다."
         });
@@ -263,7 +267,7 @@ router.patch('/', (request, response)=> {
 
     const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
-        connection.execute(sql, [request.body.phone], (error, result)=> {
+        connection.execute(sql, [customerPhone], (error, result)=> {
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -275,15 +279,35 @@ router.patch('/', (request, response)=> {
                     message: "전화번호나 가게 아이디를 확인해주세요."
                 })
             } else {
-                const getCalledTimeSql = `SELECT called_time FROM waiting_customer WHERE phone=?`;
-                connection.promise().execute(getCalledTimeSql, [request.body.phone])
+                // const getCalledTimeSql = `SELECT called_time, phone FROM waiting_customer WHERE phone=?`;
+                const getCalledTimeAndTurnNumberSQL = `SELECT waiting_customer.called_time AS called_time, waiting_customer.phone AS phone, tb.turnNumber AS turnNumber, store.name AS storeName
+                                                        FROM waiting_customer JOIN (
+                                                            SELECT phone, @rownum := @rownum+1 AS turnNumber
+                                                            FROM waiting_customer, (SELECT @rownum :=0) AS R
+                                                            WHERE store_id=?
+                                                            ORDER BY reservation_time) AS tb USING(phone)
+                                                            JOIN store ON store.id=waiting_customer.store_id
+                                                        WHERE phone=? LIMIT 1`;
+                connection.promise().execute(getCalledTimeAndTurnNumberSQL, [storeId, customerPhone])
                     .then(([rows,fields])=>{
                         connection.release();
-                        console.log(rows);
-                        return response.status(200).json({
-                            message: "손님 호출 완료!",
-                            called_time : rows[0].called_time
-                        });
+                        sms.messages.create({
+                            to: `+${rows[0].phone}`,
+                            from : twilioSetting.fromPhone,
+                            body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${row[0].storeName}로 와주세요!`
+                        })
+                        .then(success=>{
+                            return response.status(200).json({
+                                message: "손님 호출 완료!",
+                                called_time : rows[0].called_time
+                            });
+                        })
+                        .catch(error=>{
+                            console.error(error)
+                            return response.status(500).json({
+                                message : `손님 SMS 호출 실패!\n 서버 내부 오류입니다`
+                            });
+                        })
                     })
                     .catch(error=>{
                         connection.release();
