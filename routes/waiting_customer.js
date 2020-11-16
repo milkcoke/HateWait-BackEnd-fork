@@ -292,8 +292,9 @@ router.patch('/', (request, response)=> {
                 connection.promise().execute(getCalledTimeAndTurnNumberSQL, [storeId, customerPhone])
                     .then(([rows,fields])=>{
                         connection.release();
+                        // 한국 country code 82 추가
                         sms.messages.create({
-                            to: `+${rows[0].phone}`,
+                            to: `+82${rows[0].phone}`,
                             from : twilioSetting.fromPhone,
                             body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${rows[0].storeName}로 와주세요!`
                         })
