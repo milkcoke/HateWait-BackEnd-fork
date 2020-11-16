@@ -259,7 +259,6 @@ router.patch('/', (request, response)=> {
     //phone (전화번호) 만 받으면 됨.
     //Destructuring!
     const [storeId, customerPhone = null] = [request.params.storeId, request.body.phone];
-    console.log(storeId, customerPhone);
 
     if (!customerPhone) {
         return response.status(400).json({
