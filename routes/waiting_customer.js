@@ -295,7 +295,7 @@ router.patch('/', (request, response)=> {
                         sms.messages.create({
                             to: `+${rows[0].phone}`,
                             from : twilioSetting.fromPhone,
-                            body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${row[0].storeName}로 와주세요!`
+                            body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${rows[0].storeName}로 와주세요!`
                         })
                         .then(success=>{
                             return response.status(200).json({
