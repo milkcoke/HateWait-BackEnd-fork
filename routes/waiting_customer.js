@@ -181,7 +181,7 @@ router.post('/', (request, response)=> {
                                         });
                                     } else {
                                         // 손님 새로 등록할 때마다 현재 대기 인원 증가
-                                        broadcast(app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
+                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                         return response.status(201)
                                             .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
