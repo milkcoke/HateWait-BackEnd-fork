@@ -181,7 +181,7 @@ router.post('/', (request, response)=> {
                                         });
                                     } else {
                                         // 손님 새로 등록할 때마다 현재 대기 인원 증가
-                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
+                                        broadcast(app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                         return response.status(201)
                                             .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
@@ -356,12 +356,22 @@ router.delete('/', (request, response) => {
                                         } else {
                                             // 대기열에서 삭제
                                             return waitingCustomer.destroy()
+                                                .then(()=>{
+                                                    return response.status(200).json({
+                                                        message: "손님 방문 완료!"
+                                                    });
+                                                });
                                         }
                                     })
-                                })
+                                });
                             } else {
                             //    정상적으로 오지 않은 경우. (호출되고 빤스런)
-                                return waitingCustomer.destroy()
+                                waitingCustomer.destroy()
+                                    .then(()=>{
+                                        return response.status(200).json({
+                                            message: "손님 대기 삭제 완료!"
+                                        });
+                                    });
                             }
                         } else {
                             //호출된 '회원' 손님 매장 이용 케이스
@@ -413,12 +423,13 @@ router.delete('/', (request, response) => {
                                         limit : 1
                                     })
                                     .then(numberAndModel=>{
-                                        console.log(`inserted Row Number : ${numberAndModel[0]}`);
+                                        console.log(`affected (no show + 1) Row Number : ${numberAndModel[0]}`);
                                         console.log(`${member.name} 손님 no_show 증가!`);
                                         console.log(`model : ${numberAndModel[1]}`);
-                                        return waitingCustomer[1].destroy()
+                                        return waitingCustomer[1].destroy();
                                     })
                                     .then(result=>{
+                                        console.log(`result : ${result}`);
                                         console.log(`대기열에서 삭제된 로우 수 : ${result.affectedRows}`);
                                         return response.status(200).json({
                                             message: "대기열 삭제 완료!"
