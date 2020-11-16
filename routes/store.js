@@ -73,7 +73,7 @@ router.get('/:id/members', function(request, response) {
             if (error) {
                 console.error(error);
                 response.status(500).json({
-                    message: "서버 데이터베이스 오류입니다."
+                    message: "서버 내부 오류입니다."
                 });
             } else if(rows.length === 0) {
                 response.status(200).json({

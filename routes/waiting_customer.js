@@ -280,7 +280,6 @@ router.patch('/', (request, response)=> {
                     .then(([rows,fields])=>{
                         connection.release();
                         console.log(rows);
-                        console.log(fields);
                         return response.status(200).json({
                             message: "손님 호출 완료!",
                             called_time : rows[0].called_time
