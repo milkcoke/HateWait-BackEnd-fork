@@ -289,7 +289,7 @@ router.patch('/', (request, response)=> {
                                                             WHERE store_id=?
                                                             ORDER BY reservation_time) AS tb USING(phone)
                                                             JOIN store ON store.id=waiting_customer.store_id
-                                                        WHERE phone=? LIMIT 1`;
+                                                        WHERE waiting_customer.phone=?`;
                 connection.promise().execute(getCalledTimeAndTurnNumberSQL, [storeId, customerPhone])
                     .then(([rows,fields])=>{
                         connection.release();
