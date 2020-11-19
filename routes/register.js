@@ -102,7 +102,6 @@ router.get('/stores/phone/:phone', (request, response) => {
             message: "전화번호를 입력해주세요!"
         });
     } else {
-        console.log(`phone : ${request.params.phone}`);
         checkPhone.store(request.params.phone)
             .then(requestPhone=>{
                 if(requestPhone === null) {
@@ -147,12 +146,12 @@ router.post('/member', (request, response) => {
         memberInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
         // const register_member_sql = 'INSERT INTO member SET ?';
-        const register_member_sql = 'INSERT INTO member VALUES (?, ?, ?, ?, 0, ?)';
+        const register_member_sql = `INSERT INTO member VALUES (?, ?, ?, ?, 0, ?)`;
         getPoolConnection(connection=>{
             connection.execute(register_member_sql, [memberInfo.id, memberInfo.name, memberInfo.phone, memberInfo.email, memberInfo.pw], (error, result)=>{
                 connection.release();
                 if(error) {
-                    if (error.code == 'ER_DUP_ENTRY') {
+                    if (error.code === 'ER_DUP_ENTRY') {
                         console.error(error.message);
                         return response.status(409).json({
                             message : "이미 가입된 손님입니다."
@@ -210,7 +209,7 @@ router.post('/store', (request, response) => {
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-        const register_store_sql = 'INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)';
+        const register_store_sql = `INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)`;
         getPoolConnection(connection=>{
             connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.pw], (error, result)=>{
                     connection.release();
