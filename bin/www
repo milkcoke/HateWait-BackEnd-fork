@@ -6,6 +6,8 @@
 const app = require('../app');
 const debug = require('debug')('hatewait-server:server');
 const http = require('http');
+// web Socket module import
+const createWebSocket = require('../config/websocket');
 
 /**
  * Get port from environment and store in Express.
@@ -18,6 +20,7 @@ app.set('port', port);
  */
 const server = http.createServer(app);
 
+
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -26,12 +29,14 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+// web socket server create!
+createWebSocket(server, app);
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
