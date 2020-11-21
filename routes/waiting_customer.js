@@ -8,10 +8,9 @@ const locationUrl = require('../config/url_setting');
 const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
 const memberModel = models.member;
-const broadcast = require('../function/broadcast');
+// const broadcast = require('../function/broadcast');
 
-//대기열 조회 in 테블릿.
-// webSocket Initialize
+//손님이 대기열 조회할 때
 router.get('/', (request, response,next)=> {
     // request.params.id
     // 가게아이디가 담겨있을 경우
@@ -37,6 +36,54 @@ router.get('/', (request, response,next)=> {
                 });
             } else {
 
+                const sql = `SELECT member.name AS memberName, member.phone AS memberPhone, waiting_customer.store_id AS storeId, store.name AS storeName
+                                FROM member JOIN waiting_customer USING(phone)
+                                    INNER JOIN store ON store.id=waiting_customer.store_id
+                            WHERE member.id=?`;
+
+                getPoolConnection(connection=>{
+                    //1차 쿼리
+                    connection.execute(sql, [memberId], (error, rows)=> {
+                        // connection.release();
+                        if (error) {
+                            connection.release();
+                            console.error(error);
+                            return response.status(500).json({
+                                message: "서버 오류입니다."
+                            });
+                        } else if(rows.length === 0) {
+                            connection.release();
+                            return response.status(200).json({
+                                message: "대기중인 가게가 없습니다!"
+                            });
+                        } else {
+                            //2차 쿼리에서 순서 번호를 알아냄. (MySQL 에서는 rowNumber 를 제공하지 않아서 쿼리 이후 찾는 과정 필요)
+                            const {storeName, memberName, memberPhone, storeId} = rows[0];
+                            const getTurnNumberSql = `SELECT phone, @rownum := @rownum+1 AS turnNumber
+                                                        FROM waiting_customer, (SELECT @rownum :=0) AS R
+                                                        WHERE store_id=${storeId}
+                                                      ORDER BY reservation_time ASC`;
+                            connection.execute(getTurnNumberSql, (error, rows)=>{
+                                connection.release();
+                                if (error) {
+                                    console.error(error);
+                                    return response.status(500).json({
+                                        message: "서버 오류입니다."
+                                    });
+                                } else {
+                                    const targetRow = rows.find(member=>member.phone === memberPhone);
+                                    if(!targetRow) console.log(`아니 어떻게 이게 안나와? : ${targetRow.phone}, ${targetRow.turnNumber}`);
+                                    return response.status(200).json({
+                                        store_name : storeName,
+                                        member_name : memberName,
+                                        turn_number : targetRow.turnNumber
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+
                 const getStoreNameSql = `SELECT store.name AS storeName, member.name AS memberName, tb.turnNumber
                                          FROM waiting_customer INNER JOIN store ON waiting_customer.store_id = store.id
                                                             INNER JOIN member ON member.phone = waiting_customer.phone
@@ -44,28 +91,9 @@ router.get('/', (request, response,next)=> {
                                                                     FROM waiting_customer, (SELECT @rownum :=0) AS R
                                                                     ORDER BY reservation_time ASC) AS tb ON member.phone = tb.phone
                                          WHERE member.id=? LIMIT 1`;
+                    // WHERE store_id='gore' 만 도중에 추가하면 되는데 아 ㄹㅇ
+                // 서브쿼리 너무 길다 인간적으로
 
-                    getPoolConnection(connection=>{
-                    connection.execute(getStoreNameSql, [memberId], (error, rows)=> {
-                        connection.release();
-                        if (error) {
-                            console.error(error);
-                            return response.status(500).json({
-                                message: "서버 오류입니다."
-                            });
-                        } else if(rows.length === 0) {
-                            return response.status(200).json({
-                                message: "대기중인 가게가 없습니다!"
-                            });
-                        } else {
-                            return response.status(200).json({
-                                store_name : rows[0].storeName,
-                                member_name : rows[0].memberName,
-                                turn_number : rows[0].turnNumber
-                            });
-                        }
-                    });
-                });
             }
         });
 });
@@ -73,7 +101,7 @@ router.get('/', (request, response,next)=> {
 
 
 // 대기열 정보도 다른 가게에서 알 수 없게 session-cookie 인증이 필요함.
-//대기열 조회
+// 가게별 대기열 조회
 router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.storeId;
@@ -119,7 +147,6 @@ router.get('/', (request, response)=> {
 });
 
 //대기열 등록 (비회원 - 회원)
-// where connection release issue ㅠ_ㅠ
 router.post('/', (request, response)=> {
     const customerInfo = request.body;
     //is_member 비어있으면 아직 회원인지 아닌지 모르는거임.
@@ -180,7 +207,7 @@ router.post('/', (request, response)=> {
                                         });
                                     } else {
                                         // 손님 새로 등록할 때마다 현재 대기 인원 증가
-                                        broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
+                                        // broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                         return response.status(201)
                                             .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                             .json({
