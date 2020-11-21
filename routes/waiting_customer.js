@@ -29,7 +29,6 @@ router.get('/', (request, response,next)=> {
             });
         })
         .then(resultId => {
-            console.log(`resultId : ${resultId}`);
             if (resultId === null) {
                 return response.status(404).json({
                     message: "헤잇웨잇에 가입된 손님이 아닙니다."
@@ -83,7 +82,7 @@ router.get('/', (request, response,next)=> {
                         }
                     });
                 });
-
+/*
                 const getStoreNameSql = `SELECT store.name AS storeName, member.name AS memberName, tb.turnNumber
                                          FROM waiting_customer INNER JOIN store ON waiting_customer.store_id = store.id
                                                             INNER JOIN member ON member.phone = waiting_customer.phone
@@ -91,9 +90,9 @@ router.get('/', (request, response,next)=> {
                                                                     FROM waiting_customer, (SELECT @rownum :=0) AS R
                                                                     ORDER BY reservation_time ASC) AS tb ON member.phone = tb.phone
                                          WHERE member.id=? LIMIT 1`;
+ */
                     // WHERE store_id='gore' 만 도중에 추가하면 되는데 아 ㄹㅇ
                 // 서브쿼리 너무 길다 인간적으로
-
             }
         });
 });
