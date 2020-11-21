@@ -61,9 +61,9 @@ router.get('/', (request, response,next)=> {
                             const {storeName, memberName, memberPhone, storeId} = rows[0];
                             const getTurnNumberSql = `SELECT phone, @rownum := @rownum+1 AS turnNumber
                                                         FROM waiting_customer, (SELECT @rownum :=0) AS R
-                                                        WHERE store_id=${storeId}
+                                                        WHERE store_id=?
                                                       ORDER BY reservation_time ASC`;
-                            connection.execute(getTurnNumberSql, (error, rows)=>{
+                            connection.execute(getTurnNumberSql,[storeId], (error, rows)=>{
                                 connection.release();
                                 if (error) {
                                     console.error(error);
