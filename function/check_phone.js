@@ -1,7 +1,7 @@
 const getPoolConnection = require('../db/dbConnection.js');
 
 function checkMemberPhone(memberPhone) {
-    const sql = 'SELECT phone FROM member WHERE id=?';
+    const sql = 'SELECT phone FROM member WHERE phone=?';
     return new Promise((resolve, reject) => {
         getPoolConnection(connection=>{
             connection.execute(sql, [memberPhone], (error, rows)=> {

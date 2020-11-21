@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router({mergeParams : true});
 const getPoolConnection = require('../db/dbConnection');
-const period = require('../config/visit_log_default_period_settings');
 const check_id = require('../function/check_id');
 
 //only support 'Web' application

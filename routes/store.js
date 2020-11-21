@@ -11,8 +11,11 @@ const bcrypt = require('bcrypt');
 const bcryptSetting = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
 
-router.get('/', function(request, response) {
-    const sql = 'SELECT * FROM store';
+router.get('/all', function(request, response) {
+    const sql = `SELECT store.name AS name, store.phone AS phone, store.info AS info, store.business_hour AS business_hour, store.maximum_capacity AS maximum_capacity, store.address AS address, COUNT(waiting_customer.phone) AS team_count
+                    FROM store LEFT OUTER JOIN waiting_customer ON store.id = waiting_customer.store_id
+                    GROUP BY name
+                    ORDER BY address ASC`;
     getPoolConnection(connection=>{
         connection.execute(sql, (error, rows) => {
             connection.release();
@@ -23,7 +26,7 @@ router.get('/', function(request, response) {
                 });
             } else {
                 response.status(200).json({
-                    allMembers: rows
+                    stores: rows
                 });
             }
         });
@@ -54,6 +57,37 @@ router.get('/:id', function(request, response) {
         });
     });
 });
+
+router.get('/:id/members', function(request, response) {
+    const sql = `SELECT DISTINCT member.name AS member_name, member.phone AS member_phone, MAX(visit_log.visit_time) AS recent_visit_time, COUNT(DISTINCT coupon.issue_number) AS coupon_count
+                    FROM store INNER JOIN visit_log ON store.id = visit_log.store_id
+                        INNER JOIN member ON visit_log.member_id = member.id
+                        INNER JOIN coupon ON coupon.member_id = member.id
+                    WHERE store.id = ?
+                    GROUP BY member_name
+                    ORDER BY recent_visit_time DESC`;
+
+    getPoolConnection(connection=>{
+        connection.execute(sql, [request.params.id],(error, rows) => {
+            connection.release();
+            if (error) {
+                console.error(error);
+                response.status(500).json({
+                    message: "서버 내부 오류입니다."
+                });
+            } else if(rows.length === 0) {
+                response.status(200).json({
+                    message: "쿠폰 보유중인 회원이 없어요!"
+                });
+            } else {
+                response.status(200).json({
+                    members: rows
+                });
+            }
+        });
+    });
+});
+
 
 // mainURL/stores/:id/waiting-customers
 router.use('/:storeId/waiting-customers', waitingCustomerRouter);
