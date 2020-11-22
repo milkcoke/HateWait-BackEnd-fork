@@ -8,6 +8,8 @@ const locationUrl = require('../config/url_setting');
 const models = require('../models');
 const waitingCustomerModel = models.waiting_customer;
 const memberModel = models.member;
+const twilioSetting = require('../config/twilio_setting');
+const sms = require('twilio')(twilioSetting.accountSid, twilioSetting.authenticationToken);
 // const broadcast = require('../function/broadcast');
 
 //손님이 대기열 조회할 때
@@ -58,11 +60,13 @@ router.get('/', (request, response,next)=> {
                         } else {
                             //2차 쿼리에서 순서 번호를 알아냄. (MySQL 에서는 rowNumber 를 제공하지 않아서 쿼리 이후 찾는 과정 필요)
                             const {storeName, memberName, memberPhone, storeId} = rows[0];
-                            const getTurnNumberSql = `SELECT phone, @rownum := @rownum+1 AS turnNumber
-                                                        FROM waiting_customer, (SELECT @rownum :=0) AS R
-                                                        WHERE store_id=?
-                                                      ORDER BY reservation_time ASC`;
-                            connection.execute(getTurnNumberSql,[storeId], (error, rows)=>{
+                            const getTurnNumberSql = `SELECT turnNumber
+                                                        FROM (SELECT phone, @rownum := @rownum+1 AS turnNumber
+                                                                FROM waiting_customer, (SELECT @rownum :=0) AS R
+                                                                WHERE store_id=?
+                                                                ORDER BY reservation_time ASC) AS waiting_customer
+                                                        WHERE waiting_customer.phone=?`;
+                            connection.execute(getTurnNumberSql,[storeId, memberPhone], (error, rows)=>{
                                 connection.release();
                                 if (error) {
                                     console.error(error);
@@ -70,12 +74,11 @@ router.get('/', (request, response,next)=> {
                                         message: "서버 오류입니다."
                                     });
                                 } else {
-                                    const targetRow = rows.find(member=>member.phone === memberPhone);
-                                    if(!targetRow) console.log(`아니 어떻게 이게 안나와? : ${targetRow.phone}, ${targetRow.turnNumber}`);
+                                    if(rows.length === 0) console.log('아니 어떻게 이게 안나와?');
                                     return response.status(200).json({
                                         store_name : storeName,
                                         member_name : memberName,
-                                        turn_number : targetRow.turnNumber
+                                        turn_number : rows[0].turnNumber
                                     });
                                 }
                             });
@@ -234,7 +237,7 @@ router.post('/', (request, response)=> {
                 connection.execute(sql, [customerInfo.phone, storeId, customerInfo.name, customerInfo.people_number, customerInfo.is_member], (error, result)=> {
                     if(error) {
                         connection.release();
-                        if (error.code == 'ER_DUP_ENTRY') {
+                        if (error.code === 'ER_DUP_ENTRY') {
                             console.error(error.message);
                             return response.status(409).json({
                                 message: "이미 대기열에 등록된 회원입니다."
@@ -255,7 +258,7 @@ router.post('/', (request, response)=> {
                                         message: "내부 서버 오류입니다."
                                     });
                                 } else {
-                                    broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
+                                    // broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                     return response.status(201)
                                         .location(locationUrl.storeURL + `${storeId}/` + 'waiting-customers')
                                         .json({
@@ -280,7 +283,10 @@ router.post('/', (request, response)=> {
 // 가게에서  손님 호출.
 router.patch('/', (request, response)=> {
     //phone (전화번호) 만 받으면 됨.
-    if (!request.body.phone) {
+    //Destructuring!
+    const [storeId, customerPhone = null] = [request.params.storeId, request.body.phone];
+
+    if (!customerPhone) {
         return response.status(400).json({
             message: "잘못된 요청입니다."
         });
@@ -288,7 +294,7 @@ router.patch('/', (request, response)=> {
 
     const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
-        connection.execute(sql, [request.body.phone], (error, result)=> {
+        connection.execute(sql, [customerPhone], (error, result)=> {
             if (error) {
                 console.error(error);
                 return response.status(500).json({
@@ -300,16 +306,35 @@ router.patch('/', (request, response)=> {
                     message: "전화번호나 가게 아이디를 확인해주세요."
                 })
             } else {
-                const getCalledTimeSql = `SELECT called_time FROM waiting_customer WHERE phone=?`;
-                connection.promise().execute(getCalledTimeSql, [request.body.phone])
+                const getCalledTimeAndTurnNumberSQL = `SELECT waiting_customer.called_time AS called_time, waiting_customer.phone AS phone, tb.turnNumber AS turnNumber, store.name AS storeName
+                                                        FROM waiting_customer JOIN (
+                                                            SELECT phone, @rownum := @rownum+1 AS turnNumber
+                                                            FROM waiting_customer, (SELECT @rownum :=0) AS R
+                                                            WHERE store_id=?
+                                                            ORDER BY reservation_time) AS tb USING(phone)
+                                                            JOIN store ON store.id=waiting_customer.store_id
+                                                        WHERE waiting_customer.phone=?`;
+                connection.promise().execute(getCalledTimeAndTurnNumberSQL, [storeId, customerPhone])
                     .then(([rows,fields])=>{
                         connection.release();
-                        console.log(rows);
-                        console.log(fields);
-                        return response.status(200).json({
-                            message: "손님 호출 완료!",
-                            called_time : rows[0].called_time
-                        });
+                        // 한국 country code 82 추가
+                        sms.messages.create({
+                            to: `+82${rows[0].phone}`,
+                            from : twilioSetting.fromPhone,
+                            body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${rows[0].storeName}로 와주세요!`
+                        })
+                            .then(success=>{
+                                return response.status(200).json({
+                                    message: "손님 호출 완료!",
+                                    called_time : rows[0].called_time
+                                });
+                            })
+                            .catch(error=>{
+                                console.error(error)
+                                return response.status(500).json({
+                                    message : `손님 SMS 호출 실패!\n 서버 내부 오류입니다`
+                                });
+                            })
                     })
                     .catch(error=>{
                         connection.release();
@@ -318,8 +343,6 @@ router.patch('/', (request, response)=> {
                             message : "서버 내부 오류입니다."
                         });
                     });
-                // connection.execute(getCalledTimeSql, [request.body.phone])
-
             }
         });
     })
@@ -330,8 +353,8 @@ router.patch('/', (request, response)=> {
 // 비회원 -> 그냥 삭제 바로해보리기
 // 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
 router.delete('/', (request, response) => {
-        if(!request.body.phone) {
-            return response.status(400).json({
+    if(!request.body.phone) {
+        return response.status(400).json({
             message: "잘못된 요청입니다."
         });
     }
@@ -351,53 +374,63 @@ router.delete('/', (request, response) => {
         })
         .then(storeId=> {
             // (비회원 or 구두 대기 취소) vs (No_Show vs 정상 이용 가게)
-                waitingCustomerModel.findOne({
-                    where : {phone: request.body.phone}
-                })
-                    .then(waitingCustomer => {
-                        const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, NULL)`;
-                        const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
+            waitingCustomerModel.findOne({
+                where : {phone: request.body.phone}
+            })
+                .then(waitingCustomer => {
+                    const visitSql = `INSERT INTO visit_log VALUES(NOW(), ?, ?, NULL)`;
+                    const deleteSql = `DELETE FROM waiting_customer WHERE phone = ?`;
 
-                        if (waitingCustomer === null) {
-                            return response.status(404).json({
-                                message : "대기열에 존재하지 않는 손님입니다."
-                            });
-                        } else if (!waitingCustomer.called_time) {
-                            // 비회원 및 현장 대기 취소 케이스
-                            console.log('호출된 적 없음!');
-                            return waitingCustomer.destroy()
+                    if (waitingCustomer === null) {
+                        return response.status(404).json({
+                            message : "대기열에 존재하지 않는 손님입니다."
+                        });
+                    } else if (!waitingCustomer.called_time) {
+                        // 비회원 및 현장 대기 취소 케이스
+                        console.log('호출된 적 없음!');
+                        return waitingCustomer.destroy()
                         //    비회원이긴 한데 호출된 적 있는 경우
-                        } else if (!waitingCustomer.is_member) {
-                            // 정상적으로 온 경우
-                            if (request.body.visited) {
-                                getPoolConnection(connection=>{
-                                    // 방문 기록
-                                    connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error, result)=>{
-                                        connection.release();
-                                        if(error) {
-                                            console.error(error);
-                                            return response.status(500).json({
-                                                message: "서버 내부 오류입니다."
+                    } else if (!waitingCustomer.is_member) {
+                        // 정상적으로 온 경우
+                        if (request.body.visited) {
+                            getPoolConnection(connection=>{
+                                // 방문 기록
+                                connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error, result)=>{
+                                    connection.release();
+                                    if(error) {
+                                        console.error(error);
+                                        return response.status(500).json({
+                                            message: "서버 내부 오류입니다."
+                                        });
+                                    } else {
+                                        // 대기열에서 삭제
+                                        return waitingCustomer.destroy()
+                                            .then(()=>{
+                                                return response.status(200).json({
+                                                    message: "손님 방문 완료!"
+                                                });
                                             });
-                                        } else {
-                                            // 대기열에서 삭제
-                                            return waitingCustomer.destroy()
-                                        }
-                                    })
+                                    }
                                 })
-                            } else {
-                            //    정상적으로 오지 않은 경우. (호출되고 빤스런)
-                                return waitingCustomer.destroy()
-                            }
+                            });
                         } else {
-                            //호출된 '회원' 손님 매장 이용 케이스
-                            memberModel.findOne({
-                                where: {phone: waitingCustomer.phone}
-                            })
+                            //    정상적으로 오지 않은 경우. (호출되고 빤스런)
+                            waitingCustomer.destroy()
+                                .then(()=>{
+                                    return response.status(200).json({
+                                        message: "손님 대기 삭제 완료!"
+                                    });
+                                });
+                        }
+                    } else {
+                        //호출된 '회원' 손님 매장 이용 케이스
+                        memberModel.findOne({
+                            where: {phone: waitingCustomer.phone}
+                        })
                             .catch(error=>{
-                              return response.status(500).json({
-                                  message: "서버 내부 오류입니다."
-                              });
+                                return response.status(500).json({
+                                    message: "서버 내부 오류입니다."
+                                });
                             })
                             .then(member=>{
                                 //    여기에 No_Show vs 정상 가게 이용 구분.
@@ -438,45 +471,43 @@ router.delete('/', (request, response) => {
                                         fields : [no_show],
                                         limit : 1
                                     })
-                                    .then(numberAndModel=>{
-                                        console.log(`inserted Row Number : ${numberAndModel[0]}`);
-                                        console.log(`${member.name} 손님 no_show 증가!`);
-                                        console.log(`model : ${numberAndModel[1]}`);
-                                        return waitingCustomer[1].destroy()
-                                    })
-                                    .then(result=>{
-                                        console.log(`대기열에서 삭제된 로우 수 : ${result.affectedRows}`);
-                                        return response.status(200).json({
-                                            message: "대기열 삭제 완료!"
+                                        .then(numberAndModel=>{
+                                            console.log(`affected (no show + 1) Row Number : ${numberAndModel[0]}`);
+                                            console.log(`${member.name} 손님 no_show 증가!`);
+                                            console.log(`model : ${numberAndModel[1]}`);
+                                            return waitingCustomer[1].destroy();
+                                        })
+                                        .then(result=>{
+                                            console.log(`result : ${result}`);
+                                            console.log(`대기열에서 삭제된 로우 수 : ${result.affectedRows}`);
+                                            return response.status(200).json({
+                                                message: "대기열 삭제 완료!"
+                                            });
+                                        })
+                                        .catch(error=>{
+                                            console.error(error);
+                                            return response.status(500).json({
+                                                message : "서버 내부 오류입니다."
+                                            });
                                         });
-                                    })
-                                    .catch(error=>{
-                                        console.error(error);
-                                        return response.status(500).json({
-                                            message : "서버 내부 오류입니다."
-                                        });
-                                    });
                                 }
                             });
-                        }
+                    }
+                })
+                .catch(error=>{
+                    console.error(error)
+                    return response.status(500).json({
+                        message: "서버 내부 오류입니다."
                     })
-                    .catch(error=>{
-                        console.error(error)
-                        return response.status(500).json({
-                            message: "서버 내부 오류입니다."
-                        })
-                    })
-                    .then((deletedRow)=>{
-                        // 비회원 삭제임.
-                        console.log(`deleted rows : ${deletedRow.affectedRows}`);
-                            return response.status(200).json({
-                                message: "예약 취소 완료!",
-                        });
-
+                })
+                .then((deletedRow)=>{
+                    // 비회원 삭제임.
+                    console.log(`deleted rows : ${deletedRow.affectedRows}`);
+                    return response.status(200).json({
+                        message: "예약 취소 완료!",
                     });
-    });
-
-
+                });
+        });
 });
 
 module.exports = router;
