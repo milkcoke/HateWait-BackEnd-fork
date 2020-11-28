@@ -37,12 +37,13 @@ module.exports = function authenticationToken(request, response, next){
                             if(!store.id === dbStore.id) return response.status(403).json({message: "You are not trying to right token request"});
                             const newAccessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '15s', algorithm: 'RS256'});
                             const newRefreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
-                            targetStore.upsert({
+                            targetStore.update({
                                 refresh_token: newRefreshToken
                             }).then(result => {
                                 response.cookie('jwt', newAccessToken, {secure: false, httpOnly: true});
                                 request.store = dbStore;
                                 console.log(`refresh token result : ${result}, refreshToken updated!`);
+                                next();
                             }).catch(error=>{
                                 console.error(error);
                             });
