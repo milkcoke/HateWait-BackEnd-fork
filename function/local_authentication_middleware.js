@@ -21,7 +21,7 @@ module.exports = function authenticate(request, response, next) {
                         message: "서버 내부 오류입니다."
                     });
                 }
-                const accessToken = jwt.sign({id: store.id}, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem')), {expiresIn: '1h', algorithm: 'RS256'});
+                const accessToken = jwt.sign({id: store.id}, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem')), {expiresIn: '1h', algorithms: ['RS256']});
                 console.log(`accessToken : ${accessToken}`);
 
                 return response.status(200).json({
