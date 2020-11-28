@@ -41,11 +41,10 @@ module.exports = function authenticate(request, response, next) {
                     console.error(`${error} refresh token update error`);
                 });
 
-                response.cookie('jwt', accessToken, {secure: false, httpOnly: true});
-                return response.end();
-                // return response.status(200).json({
-                //     accessToken : accessToken
-                // });
+                // response.cookie('jwt', accessToken, {secure: false, httpOnly: true});
+                return response.status(200).json({
+                    accessToken : accessToken
+                });
 
             });
         }
