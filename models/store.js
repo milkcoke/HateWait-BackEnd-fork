@@ -47,7 +47,7 @@ class store extends Sequelize.Model {
       allowNull: true
     },
     refresh_token: {
-      type: DataTypes.STRING(1023),
+      type: DataTypes.STRING(4095),
       allowNull: true
     },
     pw: {
