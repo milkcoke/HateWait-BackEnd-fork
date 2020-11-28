@@ -33,9 +33,6 @@ module.exports = function authenticate(request, response, next) {
                 const refreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
                 console.log(`refreshToken : ${refreshToken}`);
 
-                console.log('store model returning ===========');
-                console.dir(store);
-
                 store.upsert({
                     refresh_token: refreshToken
                 }).then(result => {
@@ -45,9 +42,11 @@ module.exports = function authenticate(request, response, next) {
                 });
 
                 response.cookie('jwt', accessToken, {secure: false, httpOnly: true});
-                return response.status(200).json({
-                    accessToken : accessToken
-                })
+                return response.end();
+                // return response.status(200).json({
+                //     accessToken : accessToken
+                // });
+
             });
         }
     })(request, response);
