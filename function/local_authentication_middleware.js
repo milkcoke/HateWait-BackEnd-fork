@@ -33,7 +33,7 @@ module.exports = function authenticate(request, response, next) {
                 const refreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
                 console.log(`refreshToken : ${refreshToken}`);
 
-                store.upsert({
+                store.update({
                     refresh_token: refreshToken
                 }).then(result => {
                     console.log(`upsertResult : ${result}`);
