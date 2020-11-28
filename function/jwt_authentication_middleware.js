@@ -15,7 +15,7 @@ module.exports = function authenticationToken(request, response, next){
         // const token = authorizationHeader && authorizationHeader.split(' ')[1];
         const accessToken = authorizationCookie && authorizationCookie.split(' ')[1];
         //if there is no token stored in cookies, the request is unauthorized
-        if(accessToken === null) return response.sendStatus(400);
+        if(!accessToken) return response.sendStatus(400);
 
         //클라이언트 단에서 만료시간 지나면 토큰 재발급 요청하는게 더 나음.
         //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가
