@@ -11,6 +11,7 @@ module.exports = function authenticationToken(request, response, next){
         //    object key name is auto transformed from Upper case to lower case
         const authorizationHeader = request.headers['authorization'];
         const token = authorizationHeader && authorizationHeader.split(' ')[1];
+        console.log(`authorizationHeader : ${authorizationHeader}\ntoken: ${token}`);
 
         if(token === null) return response.sendStatus(401);
 
