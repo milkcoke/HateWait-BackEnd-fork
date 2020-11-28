@@ -24,7 +24,9 @@ module.exports = function authenticate(request, response, next) {
                 const accessToken = jwt.sign({id: store.id}, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem')), {expiresIn: '1h'});
                 console.log(`accessToken : ${accessToken}`);
 
-                return response.status(200).json(accessToken)
+                return response.status(200).json({
+                    accessToken : accessToken
+                })
             });
         }
     })(request, response);

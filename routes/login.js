@@ -141,10 +141,20 @@ router.post('/stores/test', (request, response) => {
     });
 });
 
-const authenticate = require('../function/authenticationMiddleware');
+const localAuthenticate = require('../function/local_authentication_middleware');
+const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
-router.post('/stores', authenticate);
+router.post('/stores', localAuthenticate);
 
+router.post('/store', jwtAuthenticate, (request, response)=>{
+    console.dir(request);
+    console.dir(response);
+    if(!request.hasOwnProperty('user')) console.log('don have user property');
+    if(!request.hasOwnProperty('store')) console.log('don have store property');
+    return response.status(200).json({
+        store: request.user
+    });
+});
 
 module.exports = router;
