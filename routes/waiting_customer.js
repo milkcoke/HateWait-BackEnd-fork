@@ -17,7 +17,7 @@ router.get('/', (request, response,next)=> {
     // request.params.id
     // 가게아이디가 담겨있을 경우
     if(request.params.hasOwnProperty('storeId')) {
-        console.log(`1st parameter : ${request.params.storeId}`);
+        console.log(`this request is from store : ${request.params.storeId}`);
         next();
         return;
     }
@@ -107,7 +107,6 @@ router.get('/', (request, response,next)=> {
 router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.storeId;
-     console.log(`2nd store id : ${storeId}`)
      checkId.store(storeId)
          .catch(error=> {
              console.error(error);
@@ -116,7 +115,6 @@ router.get('/', (request, response)=> {
              });
          })
          .then(resultId => {
-             console.log(`resultId : ${resultId}`);
             if (resultId === null) {
                 return response.status(404).json({
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."

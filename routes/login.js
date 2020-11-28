@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const getPoolConnection = require('../db/dbConnection');
-const passport = require('../config/passport');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 router.get('/', (request, response)=> {
     //확인용
@@ -140,21 +141,10 @@ router.post('/stores/test', (request, response) => {
     });
 });
 
+const authenticate = require('../function/authenticationMiddleware');
+
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
-router.post('/stores', passport.authenticate('local-login',
-    {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
-    function(request, response) {
-        //로그인 이후 메인 페이지로 이동.
-        return response.json({
-            message : 'login-trying is completed!'
-        });
-    });
+router.post('/stores', authenticate);
 
-
-router.get('/success', (request, response) => {
-    return response.json({
-        "message" : "로그인 성공!"
-    })
-})
 
 module.exports = router;
