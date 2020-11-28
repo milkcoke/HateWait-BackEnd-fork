@@ -41,6 +41,7 @@ function passport_local_initialize(passport) {
 function passport_jwt_initialize(passport){
     const jwtOption = {
         jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
+        algorithms: ['HS256'],
         secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'))
     }
     async function jwtAuthentication(jwt_payload, done) {
