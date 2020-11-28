@@ -14,6 +14,8 @@ module.exports = function authenticationToken(request, response, next){
         const authorizationCookie = request.cookies['jwt'];
         // const token = authorizationHeader && authorizationHeader.split(' ')[1];
         const accessToken = authorizationCookie && authorizationCookie.split(' ')[1];
+        console.log(`authorizationCookie: ${authorizationCookie}, accessToken : ${accessToken}`);
+
         //if there is no token stored in cookies, the request is unauthorized
         if(!accessToken) return response.sendStatus(400);
 

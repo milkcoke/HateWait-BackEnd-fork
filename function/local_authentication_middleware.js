@@ -32,7 +32,7 @@ module.exports = function authenticate(request, response, next) {
                 //보통의 경우 refresh token 은 database 에 담음
                 const refreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
                 console.log(`refreshToken : ${refreshToken}`);
-
+                //store.upsert가 아님... 삽입아니야
                 store.update({
                     refresh_token: refreshToken
                 }).then(result => {
