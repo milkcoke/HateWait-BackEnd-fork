@@ -6,7 +6,7 @@ const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
     passport.authenticate('jwt', {session: false}, (error, store)=>{
-
+        console.log(`targetStore : ${store}`);
         //    verify the accessToken
         //    token comes from the header
         //    object key name is auto transformed from Upper case to lower case
@@ -22,7 +22,7 @@ module.exports = function authenticationToken(request, response, next){
         //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가
 
         //verify 할때는 algorithms : array 이고
-        jwt.verify(accessToken, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem'), 'utf8'),{algorithms: ['RS256']}, (error, store)=>{
+        jwt.verify(accessToken, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem'), 'utf8'),{algorithms: ['RS256']}, error=>{
             if(error) {
                 if(error.name === 'TokenExpiredError'){
                     console.log(`expiredDate: ${error.expiredAt}`);
