@@ -16,11 +16,12 @@ module.exports = function authenticate(request, response, next) {
         } else {
             request.login(store, {session: false}, error=>{
                 if (error) {
+                    console.error(error);
                     response.status(500).json({
                         message: "서버 내부 오류입니다."
                     });
                 }
-                const accessToken = jwt.sign({id: store.id}, fs.readFileSync(path.join(__dirname, 'id_rsa_private.pem')), {expiresIn: '1h'});
+                const accessToken = jwt.sign({id: store.id}, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem')), {expiresIn: '1h'});
                 console.log(`accessToken : ${accessToken}`);
 
                 return response.status(200).json(accessToken)
