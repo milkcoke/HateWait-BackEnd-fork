@@ -16,10 +16,10 @@ function genKeyPair() {
     });
 
     // Create the public key file
-    fs.writeFileSync(__dirname + '/id_rsa_public.pem', keyPair.publicKey);
+    fs.writeFileSync(__dirname + '/id_rsa_public_refresh.pem', keyPair.publicKey);
 
     // Create the private key file
-    fs.writeFileSync(__dirname + '/id_rsa_private.pem', keyPair.privateKey);
+    fs.writeFileSync(__dirname + '/id_rsa_private_refresh.pem', keyPair.privateKey);
 
 }
 

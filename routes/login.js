@@ -149,11 +149,9 @@ router.post('/stores', localAuthenticate);
 
 router.get('/store', jwtAuthenticate, (request, response)=>{
 
-    console.log('request start');
-    console.dir(request);
-    console.log('request end');
     if(!request.hasOwnProperty('user')) console.log('don have user property');
     if(!request.hasOwnProperty('store')) console.log('don have store property');
+
     return response.status(200).json({
         store: request.store
     });

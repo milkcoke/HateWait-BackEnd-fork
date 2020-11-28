@@ -14,6 +14,8 @@ function passport_local_initialize(passport) {
         usernameField: 'id',
         passwordField: 'pw'
     }
+    // if user don't input id or pw => server automatically response code '401'
+    // it's implements of passport
     async function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
         storeModel.findOne({
