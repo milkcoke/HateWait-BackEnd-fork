@@ -148,8 +148,10 @@ const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 router.post('/stores', localAuthenticate);
 
 router.get('/store', jwtAuthenticate, (request, response)=>{
+
+    console.log('request start');
     console.dir(request);
-    console.dir(response);
+    console.log('request end');
     if(!request.hasOwnProperty('user')) console.log('don have user property');
     if(!request.hasOwnProperty('store')) console.log('don have store property');
     return response.status(200).json({

@@ -20,7 +20,8 @@ module.exports = function authenticationToken(request, response, next){
                 console.error(error);
                 return response.status(403).json({message : "your token is no longer valid"});
             }
-            request.user = store;
+            //request.user = store;
+            request.store = store;
             next();
         });
     })(request, response);
