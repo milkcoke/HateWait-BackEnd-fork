@@ -54,7 +54,7 @@ app.use(express.json());
 //         }
 //     })
 // );
-app.use(flash());
+// app.use(flash());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
