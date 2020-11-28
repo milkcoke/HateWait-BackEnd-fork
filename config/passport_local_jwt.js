@@ -55,6 +55,7 @@ function passport_jwt_initialize(passport){
             if(!store) return done(null, false);
             else return done(null, store);
         }).catch(error=>{
+            console.log('storeModel jwtAuthentication Error');
             return done(error);
         });
     }
