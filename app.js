@@ -19,7 +19,7 @@ const wsWaitingCustomersRouter = require('./ws_routes/waiting_customers');
 const sequelize = require('./models').sequelize;
 const session = require('express-session');
 // connect-flash middleware use 'cookie-parser' and 'express-session'
-// const flash = require('connect-flash');
+const flash = require('express-flash');
 // const passport = require('./config/passport');
 const passport = require('passport');
 
