@@ -27,7 +27,7 @@ module.exports = function authenticationToken(request, response, next){
                 if(error.name === 'TokenExpiredError'){
                     console.log(`expiredDate: ${error.expiredAt}`);
                     storeModel.findOne({
-                        where: store.id
+                        where: {id : store.id}
                     }).then(targetStore => {
                         if(!targetStore.refresh_token) return response.status(403).json({message: "Don't try to hack"});
                         const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');
