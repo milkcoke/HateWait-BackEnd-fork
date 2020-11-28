@@ -27,7 +27,7 @@ module.exports = function authenticate(request, response, next) {
                 // 오로지 id 만을 담음.
                 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem'), 'utf8');
 
-                const accessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '1h', algorithm: 'RS256'});
+                const accessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '15s', algorithm: 'RS256'});
 
                 //보통의 경우 refresh token 은 database 에 담음
                 const refreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
