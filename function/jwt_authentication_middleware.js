@@ -26,29 +26,27 @@ module.exports = function authenticationToken(request, response, next){
             if(error) {
                 if(error.name === 'TokenExpiredError'){
                     console.log(`expiredDate: ${error.expiredAt}`);
-                    storeModel.findOne({
-                        where: {id : store.id}
-                    }).then(targetStore => {
-                        if(!targetStore.refresh_token) return response.status(403).json({message: "Don't try to hack"});
-                        const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');
-                        const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private_refresh.pem'), 'utf8');
+                    console.log(`targetStore: ${store}`);
+                    if(!store.refresh_token) return response.status(403).json({message: "Don't try to hack"});
+                    const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');
+                    const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private_refresh.pem'), 'utf8');
 
-                        jwt.verify(targetStore.refresh_token, PUBLIC_KEY, {algorithms: ['RS512']}, (error, dbStore)=>{
-                            if(!store.id === dbStore.id) return response.status(403).json({message: "You are not trying to right token request"});
-                            const newAccessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '15s', algorithm: 'RS256'});
-                            const newRefreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
-                            targetStore.update({
-                                refresh_token: newRefreshToken
-                            }).then(result => {
-                                response.cookie('jwt', newAccessToken, {secure: false, httpOnly: true});
-                                request.store = dbStore;
-                                console.log(`refresh token result : ${result}, refreshToken updated!`);
-                                next();
-                            }).catch(error=>{
-                                console.error(error);
-                            });
+                    jwt.verify(store.refresh_token, PUBLIC_KEY, {algorithms: ['RS512']}, (error, payloadStore)=>{
+                        console.log(`dbStore: ${payloadStore}`);
+                        if(!store.id === payloadStore.id) return response.status(403).json({message: "You are not trying to right token request"});
+                        const newAccessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '15s', algorithm: 'RS256'});
+                        const newRefreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30d', algorithm: 'RS512'});
+                        store.update({
+                            refresh_token: newRefreshToken
+                        }).then(result => {
+                            response.cookie('jwt', newAccessToken, {secure: false, httpOnly: true});
+                            request.store = payloadStore;
+                            console.log(`refresh token result : ${result}, refreshToken updated!`);
+                            next();
+                        }).catch(error=>{
+                            console.error(error);
                         });
-                    })
+                    });
                     return response.status(403).json({message : "your token is no longer valid"});
                 } else {
                     console.error(error);
