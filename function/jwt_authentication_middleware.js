@@ -14,7 +14,7 @@ module.exports = function authenticationToken(request, response, next){
 
         if(token === null) return response.sendStatus(401);
 
-        jwt.verify(token, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem')), (error, store)=>{
+        jwt.verify(token, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem'), 'utf8'), (error, store)=>{
             if(error) {
                 console.error(error);
                 return response.status(403).json({message : "your token is no longer valid"});

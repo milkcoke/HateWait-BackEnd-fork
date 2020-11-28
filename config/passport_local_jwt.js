@@ -39,10 +39,11 @@ function passport_local_initialize(passport) {
 }
 
 function passport_jwt_initialize(passport){
+    //this is used for verify json web token (not sign, issue the token)
     const jwtOption = {
         jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
         algorithms: ['RS256'],
-        secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'))
+        secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
     async function jwtAuthentication(jwt_payload, done) {
         storeModel.findOne({
