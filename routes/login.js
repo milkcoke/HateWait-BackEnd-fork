@@ -155,7 +155,7 @@ router.get('/store', jwtAuthenticate, (request, response)=>{
     if(!request.hasOwnProperty('user')) console.log('don have user property');
     if(!request.hasOwnProperty('store')) console.log('don have store property');
     return response.status(200).json({
-        store: request.user
+        store: request.store
     });
 });
 
