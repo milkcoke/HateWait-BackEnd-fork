@@ -6,6 +6,7 @@ const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
     passport.authenticate('jwt', {session: false}, (error, store)=>{
+        //여기서 false 가 나오는 이유?
         console.log(`targetStore : ${store}`);
         //    verify the accessToken
         //    token comes from the header
@@ -22,12 +23,12 @@ module.exports = function authenticationToken(request, response, next){
         //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가
 
         //verify 할때는 algorithms : array 이고
-        jwt.verify(accessToken, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem'), 'utf8'),{algorithms: ['RS256']}, error=>{
+        jwt.verify(accessToken, fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public.pem'), 'utf8'),{algorithms: ['RS256']}, (error,targetStore)=>{
             if(error) {
                 if(error.name === 'TokenExpiredError'){
                     console.log(`expiredDate: ${error.expiredAt}`);
-                    console.log(`targetStore: ${store}`);
-                    if(!store.refresh_token) return response.status(403).json({message: "Don't try to hack"});
+                    console.log(`targetStore: ${targetStore}`);
+                    if(!targetStore.refresh_token) return response.status(403).json({message: "Don't try to hack"});
                     const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');
                     const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private_refresh.pem'), 'utf8');
 
@@ -54,7 +55,7 @@ module.exports = function authenticationToken(request, response, next){
                 }
             } else {
                 //request.user = store;
-                request.store = store;
+                request.store = targetStore;
                 next();
             }
         });
