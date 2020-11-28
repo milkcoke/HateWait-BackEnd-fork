@@ -147,7 +147,7 @@ const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', localAuthenticate);
 
-router.post('/store', jwtAuthenticate, (request, response)=>{
+router.get('/store', jwtAuthenticate, (request, response)=>{
     console.dir(request);
     console.dir(response);
     if(!request.hasOwnProperty('user')) console.log('don have user property');
