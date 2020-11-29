@@ -12,9 +12,17 @@ module.exports = function authenticate(request, response, next) {
         console.log(`error : ${error}`);
         console.log(`store : ${store}`);
         console.log(`status : ${status}`);
-        if(status?.name === 'Missing Credential'){
-            status.code = 400;
+        if(status) {
+            console.dir(status);
+            if(status.hasOwnProperty('name')) {
+                console.log('here is name');
+                if(status.name === 'Missing credentials') status.code = 400;
+            } else if (status.hasOwnProperty('fail')) {
+                console.log('here is fail');
+                if(status.fail === 'Missing credentials') status.code = 400;
+            }
         }
+
 
         if(error) {
             return response.status(500).json({
