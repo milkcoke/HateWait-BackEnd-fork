@@ -18,13 +18,12 @@ function passport_local_initialize(passport) {
     // it's implements of passport
     async function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
-        if(!id) return done(null, false, {code: 400})
+        // id가 입력되지 않으면 missing credentials 에러가 옴.
 
         await storeModel.findOne({
             where: {id: id}
         })
             .then(store=>{
-
                 // 그 어느 docs 에도 나와있지 않지만
                 // done 3rd parameter must be object (Number , String 비허용)
                 if(!store) {

@@ -12,6 +12,7 @@ module.exports = function authenticate(request, response, next) {
         console.log(`error : ${error}`);
         console.log(`store : ${store}`);
         console.dir(status);
+        if(status.message === 'Missing credentials') {status.code = 400}
 
         if(error) {
             return response.status(500).json({

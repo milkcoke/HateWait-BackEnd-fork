@@ -10,6 +10,9 @@ module.exports = function authenticationToken(request, response, next){
         //여기서 false 가 나오는 이유? -> passport  jwt option : jwtFromRequest: fromAuthHeader
         // 우리는 지금 cookie 를 추출하고 있음.
 
+        console.log(`error: ${error}`);
+        console.log(`store: ${store}`);
+        console.log(`status: ${status}`);
         //    token comes from the header
         //    object key name is automatically transformed from Upper case to lower case
         // const authorizationHeader = request.cookies['authorization'];
@@ -23,6 +26,7 @@ module.exports = function authenticationToken(request, response, next){
                 return response.status(404).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
                 break;
                 default :
+                console.log(`statusCode : ${status.code}`);
                 return response.status(500).json({message: "여까지 왜왔누?"});
                 break;
             }
