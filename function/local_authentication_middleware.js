@@ -21,8 +21,7 @@ module.exports = function authenticate(request, response, next) {
             //use request.login to establish session temporarily for use custom callback
             request.login(false, {session: false}, error=>{
                 if(error) console.error(error);
-
-                switch (statusCode) {
+                switch (status.code) {
                     case 400:
                         return response.status(status.code).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
                         break;
