@@ -7,30 +7,35 @@ const storeModel = require('../models').store;
 module.exports = function authenticationToken(request, response, next){
     //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
     passport.authenticate('jwt', {session: false}, (error, store, status)=>{
-        //여기서 false 가 나오는 이유? -> passport  jwt option : jwtFromRequest: fromAuthHeader
-        // 우리는 지금 cookie 를 추출하고 있음.
 
         console.log(`error: ${error}`);
         console.log(`store: ${store}`);
-        //    token comes from the header
+
         //    object key name is automatically transformed from Upper case to lower case
         // const authorizationHeader = request.cookies['authorization'];
 
         //if there is no token stored in cookies, the request is unauthorized
         // and passport jwt authenticate function return 'false' (that doesn't find id of jwt payload)
         if(error) return response.status(500).json({message: "서버 내부 오류입니다."});
-        status? console.log(status) : console.log(`status is missing`);
-
-        if(status.name === 'TokenExpiredError') return response.status(401).json({message: "your token is expired"});
+        if (status) {
+            const {name: errorMessage = null} = status
+            if(errorMessage === 'TokenExpiredError') status.code = 400;
+            else {
+                console.log(status);
+            }
+        }
 
         if(!store) {
             switch (status.code) {
+                case 401:
+                return response.status(status.code).json({message: "토큰이 유효하지 않습니다. 다시 로그인해주세요."});
+                break;
                 case 404:
-                return response.status(404).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
+                return response.status(status.code).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
                 break;
                 default :
                 console.log(`statusCode : ${status.code}`);
-                return response.status(status.code || 500).json({message: "여까지 왜왔누?"});
+                return response.status(status.code || 500).json({message: "여까지 왜왔지..개발자를 욕해주세요?"});
                 break;
             }
         } else {

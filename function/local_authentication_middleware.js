@@ -13,19 +13,9 @@ module.exports = function authenticate(request, response, next) {
         console.log(`store : ${store}`);
         console.log(`status : ${status}`);
         if(status) {
-            console.dir(status);
-            console.log(`status is array? length check : ${status.length}`);
             if(status.hasOwnProperty('message')) {
-                console.log('here is message');
                 if(status.message === 'Missing credentials') status.code = 400;
             }
-            // if(status.hasOwnProperty('name')) {
-            //     console.log('here is name');
-            //     if(status.name === 'Missing credentials') status.code = 400;
-            // } else if (status.hasOwnProperty('fail')) {
-            //     console.log('here is fail');
-            //     if(status.fail === 'Missing credentials') status.code = 400;
-            // }
         }
 
 
