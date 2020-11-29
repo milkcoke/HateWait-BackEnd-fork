@@ -50,7 +50,6 @@ function passport_jwt_initialize(passport){
     // customizing jwtFormRequest ('cookie!!')
     const cookieExtractor = function(request) {
         if (request && request.cookies) {
-            console.log('여기 init 함수 쿠키정보 : ', request.cookies['jwt']);
             return request.cookies['jwt'];
         } else {
             throw new Error("don't has json web token for login");
