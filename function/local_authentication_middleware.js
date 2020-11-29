@@ -5,13 +5,13 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response, next) {
-    passport.authenticate('local',{session: true}, (error, store, statusCode)=>{
+    passport.authenticate('local',{session: true}, (error, store, status)=>{
         // If authentication failed, user will be set to false.
         // If an exception occurred, err will be set.
         // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.
         console.log(`error : ${error}`);
         console.log(`store : ${store}`);
-        console.log(`local statusCode: ${statusCode}`);
+        console.log(`local status: ${status}`);
 
         if(error) {
             return response.status(500).json({
@@ -24,14 +24,14 @@ module.exports = function authenticate(request, response, next) {
 
                 switch (statusCode) {
                     case 400:
-                        return response.status(statusCode).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
+                        return response.status(status.code).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
                         break;
                     case 409:
-                        return response.status(statusCode).json({message: "비밀번호가 일치하지 않습니다."});
+                        return response.status(status.code).json({message: "비밀번호가 일치하지 않습니다."});
                         break;
                     default:
                         console.log('switch case statusCode 여기까지 온거부터가 레게노, 403 자동에러 설정인지 아닌지 확인 필요');
-                        return response.status(statusCode).json({message: "여까지 왜왔누"});
+                        return response.status(status.code || 500).json({message: "여까지 왜왔누"});
                         break;
                 }
             });

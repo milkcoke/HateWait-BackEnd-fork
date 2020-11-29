@@ -6,12 +6,9 @@ const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
     //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
-    passport.authenticate('jwt', {session: false}, (error, store, statusCode)=>{
+    passport.authenticate('jwt', {session: false}, (error, store)=>{
         //여기서 false 가 나오는 이유? -> passport  jwt option : jwtFromRequest: fromAuthHeader
         // 우리는 지금 cookie 를 추출하고 있음.
-        console.log(`targetStore : ${store}`);
-        console.log(`statusCode : ${statusCode}`);
-        console.log('=======middleware return store model==========')
 
 
         //    verify the accessToken
@@ -22,7 +19,7 @@ module.exports = function authenticationToken(request, response, next){
 
         //if there is no token stored in cookies, the request is unauthorized
         // and passport jwt authenticate function return 'false' (that doesn't find id of jwt payload)
-        if(!store) return response.status(403).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
+        if(!store) return response.status(403).json({message: "your token is invalid, try to re login"});
 
         //클라이언트 단에서 만료시간 지나면 토큰 재발급 요청하는게 더 나음.
         //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가

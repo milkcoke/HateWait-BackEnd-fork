@@ -23,11 +23,11 @@ function passport_local_initialize(passport) {
         })
             .then(store=>{
                 if(!store) {
-                    return done(null, false, 400);
+                    return done(null, false, {code : 400});
                 } else if (bcrypt.compareSync(pw, store.pw)) {
                     return done(null, store)
                 } else {
-                    return done(null, false, 409);
+                    return done(null, false, {code : 409});
                 }
             })
             .catch(error=>{
