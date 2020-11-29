@@ -19,7 +19,7 @@ module.exports = function authenticationToken(request, response, next){
         if(error) return response.status(500).json({message: "서버 내부 오류입니다."});
         if (status) {
             const {name: errorMessage = null} = status
-            if(errorMessage === 'TokenExpiredError') status.code = 400;
+            if(errorMessage === 'TokenExpiredError') status.code = 401;
             else {
                 console.log(status);
             }
