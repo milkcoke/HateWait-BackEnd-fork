@@ -87,7 +87,7 @@ passportConfig.passport_jwt_initialize(passport);
 // app.use(passport.initialize());
 // passport - session connect method!
 // Application uses persistent login sessions
-// app.use(passport.session());
+app.use(passport.session());
 
 
 app.use('/', indexRouter);
