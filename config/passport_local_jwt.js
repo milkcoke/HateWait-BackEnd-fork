@@ -72,7 +72,7 @@ function passport_jwt_initialize(passport){
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null
-            if(!store) return done(null, false, {code: 404});
+            if(!store) return done(new Error('헤잇웨잇에 가입된 가게가 아닙니다.'), false, {code: 404});
             else return done(null, store);
         }).catch(error=>{
             console.error('jwt passport error : ' , error);
