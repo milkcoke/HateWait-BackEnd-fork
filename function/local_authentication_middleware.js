@@ -11,8 +11,10 @@ module.exports = function authenticate(request, response, next) {
         // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.
         console.log(`error : ${error}`);
         console.log(`store : ${store}`);
-        console.dir(status);
-        if(status.message === 'Missing credentials') {status.code = 400}
+        console.log(`status : ${status}`);
+        if(status?.name === 'Missing Credential'){
+            status.code = 400;
+        }
 
         if(error) {
             return response.status(500).json({
