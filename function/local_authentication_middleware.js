@@ -17,8 +17,6 @@ module.exports = function authenticate(request, response, next) {
                 if(status.message === 'Missing credentials') status.code = 400;
             }
         }
-
-
         if(error) {
             return response.status(500).json({
             message : "서버 내부 오류입니다."

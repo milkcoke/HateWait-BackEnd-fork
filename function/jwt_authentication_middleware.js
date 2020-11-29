@@ -1,7 +1,4 @@
-const fs = require('fs');
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
@@ -46,62 +43,5 @@ module.exports = function authenticationToken(request, response, next){
             };
             next();
         }
-
-        /*
-        //클라이언트 단에서 만료시간 지나면 토큰 재발급 요청하는게 더 나음.
-        //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가
-        const accessToken = request.cookies['jwt'];
-
-        //verify 할때는 algorithms : array 이고
-        //default callback (1st: error, 2nd: payload of jwt)
-
-            if(!store.refresh_token) return response.status(403).json({message: "Don't try to hack"});
-
-                const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');
-                const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem'), 'utf8');
-                const REFRESH_PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private_refresh.pem'), 'utf8');
-
-                jwt.verify(store.refresh_token, PUBLIC_KEY, {algorithms: ['RS512']}, (error, payloadStore)=>{
-                    //refresh token is invalid
-                    if(error) {
-                        console.error(error);
-                        if(error.name === 'TokenExpiredError') {
-                            //refresh token 이 오래된 경우
-                            const newRefreshToken = jwt.sign({id: store.id}, REFRESH_PRIVATE_KEY, {expiresIn: '1d', algorithm: 'RS512'});
-                            store.update({
-                                refresh_token: newRefreshToken
-                            }).then(result => {
-                                response.cookie('jwt', newAccessToken, {secure: false, httpOnly: true});
-                                console.log(`refresh token result : ${result}, refreshToken updated!`);
-
-                                // response new token payload
-                                request.store = payloadStore;
-                                request.status = 'refresh token'
-                            }).catch(error=>{
-                                console.error(error);
-                            });
-                        } else {
-                            return response.status(403).json({message: "refresh token is invalid (not with exp)"})
-                        }
-                    } else {
-                        console.log(`store refreshToken Payload: ${payloadStore}`);
-                        console.log(`refresh Token exp: ${payloadStore.exp} VS now time : ${Math.floor(Date.now()/ 1000)}`);
-                        console.log(`exp convert: ${new Date(payloadStore.exp)} VS now Time: ${new Date()}`)
-                    }
-                    // refresh token 에러 없는 경우 (유효기간 내에 보유중)
-                    const newAccessToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '30s', algorithm: 'RS256'});
-                    response.cookie('jwt', newAccessToken, {secure: false, httpOnly: true});
-                    request.store = payloadStore;
-                    next();
-                });
-                // 기간말고 딴거때메 access token 유효하지 않음.
-                return response.status(401).json({message: "유효하지 않은 요청입니다. 재로그인 해주세요"});
-
-            // response current cookie token payload
-            request.store = targetStore;
-            next();
-
-
-         */
     })(request, response);
 }
