@@ -5,14 +5,15 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
+    //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
     passport.authenticate('jwt', {session: false}, (error, store, statusCode)=>{
         //여기서 false 가 나오는 이유? -> passport  jwt option : jwtFromRequest: fromAuthHeader
         // 우리는 지금 cookie 를 추출하고 있음.
         console.log(`targetStore : ${store}`);
         console.log(`statusCode : ${statusCode}`);
-        console.error(`after passport authenticate : ${error}`);
         console.log('=======middleware return store model==========')
-        console.dir(store);
+
+
         //    verify the accessToken
         //    token comes from the header
         //    object key name is auto transformed from Upper case to lower case

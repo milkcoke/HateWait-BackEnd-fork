@@ -6,7 +6,13 @@ const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response, next) {
     passport.authenticate('local', {session: false}, (error, store, statusCode)=>{
+        // If authentication failed, user will be set to false.
+        // If an exception occurred, err will be set.
+        // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.
+        console.log(`error : ${error}`);
+        console.log(`store : ${store}`);
         console.log(`local statusCode: ${statusCode}`);
+
         if(error) {
             return response.status(500).json({
             message : "서버 내부 오류입니다."
@@ -25,14 +31,17 @@ module.exports = function authenticate(request, response, next) {
                     break;
             }
         } else {
-            //login은 대체 어디서 튀어나왔냐 ㅋㅋㅋ 아 ㅋㅋㅋ
-            request.login(store, {session: false}, error=>{
-                if (error) {
-                    console.error(error);
-                    return response.status(500).json({
-                        message: "서버 내부 오류입니다."
-                    });
-                }
+            // The callback can use the arguments supplied to handle the authentication result as desired.
+            // Note that when using a custom callback,
+            // it becomes the application's responsibility to establish a session (by calling req.login()) and send a response.
+            // login 은 대체 어디서 튀어나왔나 했더니 custom callback 쓰려면 이거 써야함 진짜 말도안되네
+            // request.login(store, {session: false}, error=>{
+            //     if (error) {
+            //         console.error(error);
+            //         return response.status(500).json({
+            //             message: "서버 내부 오류입니다."
+            //         });
+            //     }
                 //sign 할때는 algorithm ㅋㅋㅋㅋ 골때린다 진짜하 ㅋㅋㅋㅋ
                 // 오로지 id 만을 담음.
                 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem'), 'utf8');
@@ -56,7 +65,7 @@ module.exports = function authenticate(request, response, next) {
                     accessToken : accessToken
                 });
 
-            });
+            // });
         }
     })(request, response);
 }
