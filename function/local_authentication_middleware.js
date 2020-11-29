@@ -19,7 +19,7 @@ module.exports = function authenticate(request, response, next) {
             });
         } else if(!store) {
             //use request.login to establish session temporarily for use custom callback
-            request.login(false, {session: false}, error=>{
+            // request.login(false, {session: false}, error=>{
                 if(error) console.error(error);
                 switch (status.code) {
                     case 400:
@@ -33,19 +33,13 @@ module.exports = function authenticate(request, response, next) {
                         return response.status(status.code || 500).json({message: "여까지 왜왔누"});
                         break;
                 }
-            });
+            // });
         } else {
             // The callback can use the arguments supplied to handle the authentication result as desired.
             // Note that when using a custom callback,
             // it becomes the application's responsibility to establish a session (by calling req.login()) and send a response.
             // login 은 대체 어디서 튀어나왔나 했더니 custom callback 쓰려면 이거 써야함 진짜 말도안되네
-                request.login(store, {session: false}, error=>{
-                    if (error) {
-                        console.error(error);
-                        return response.status(500).json({
-                            message: "서버 내부 오류입니다."
-                        });
-                }
+
                 //sign 할때는 algorithm ㅋㅋㅋㅋ 골때린다 진짜하 ㅋㅋㅋㅋ
                 // 오로지 id 만을 담음.
                 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem'), 'utf8');
@@ -69,8 +63,6 @@ module.exports = function authenticate(request, response, next) {
                     accessToken : accessToken
                 });
 
-            // });
-            });
         }
     })(request, response);
 }
