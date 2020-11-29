@@ -33,7 +33,7 @@ module.exports = function authenticationToken(request, response, next){
                 if(error.name === 'TokenExpiredError'){
                     console.log(`expiredDate: ${error.expiredAt}`);
                     console.log(`decoded target store payload: ${targetStore}`);
-                    // refresh token이 없는 경우 비정상적 요청으로 판단
+                    // refresh token 이 없는 경우 비정상적 요청으로 판단
                     if(!store.refresh_token) return response.status(403).json({message: "Don't try to hack"});
 
                     const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_public_refresh.pem'), 'utf8');

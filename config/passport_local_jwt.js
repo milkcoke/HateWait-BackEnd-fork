@@ -18,7 +18,7 @@ function passport_local_initialize(passport) {
     // it's implements of passport
     async function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
-        storeModel.findOne({
+        await storeModel.findOne({
             where: {id: id}
         })
             .then(async store=>{
@@ -65,7 +65,7 @@ function passport_jwt_initialize(passport){
     async function jwtAuthentication(jwt_payload, done) {
         console.log(`jwt_payload : ${jwt_payload}`);
 
-        storeModel.findOne({
+        await storeModel.findOne({
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null
