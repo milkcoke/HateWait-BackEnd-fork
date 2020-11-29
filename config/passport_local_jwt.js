@@ -18,12 +18,17 @@ function passport_local_initialize(passport) {
     // it's implements of passport
     async function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
+        if(!id) return done(null, false, {code: 400})
+
         await storeModel.findOne({
             where: {id: id}
         })
             .then(store=>{
+
+                // 그 어느 docs 에도 나와있지 않지만
+                // done 3rd parameter must be object (Number , String 비허용)
                 if(!store) {
-                    return done(null, false, {code : 400});
+                    return done(null, false, {code : 404});
                 } else if (bcrypt.compareSync(pw, store.pw)) {
                     return done(null, store)
                 } else {
@@ -60,7 +65,6 @@ function passport_jwt_initialize(passport){
         algorithms: ['RS256'],
         secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
-
     async function jwtAuthentication(jwt_payload, done) {
         console.log(`==========jwt_payload=======`);
         console.dir(jwt_payload);
@@ -69,8 +73,8 @@ function passport_jwt_initialize(passport){
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null
-            if(!store) return done(null, false, 403);
-            else return done(null, store, 200);
+            if(!store) return done(null, false, {code: 404});
+            else return done(null, store);
         }).catch(error=>{
             console.error('jwt passport error : ' , error);
             return done(error);
