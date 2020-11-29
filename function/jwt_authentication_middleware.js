@@ -5,10 +5,12 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticationToken(request, response, next){
-    passport.authenticate('jwt', {session: false}, (error, store)=>{
+    passport.authenticate('jwt', {session: false}, (error, store, statusCode)=>{
         //여기서 false 가 나오는 이유? -> passport  jwt option : jwtFromRequest: fromAuthHeader
         // 우리는 지금 cookie 를 추출하고 있음.
         console.log(`targetStore : ${store}`);
+        console.log(`statusCode : ${statusCode}`);
+        console.error(`after passport authenticate : ${error}`);
         console.log('=======middleware return store model==========')
         console.dir(store);
         //    verify the accessToken

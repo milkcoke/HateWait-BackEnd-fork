@@ -18,17 +18,16 @@ function passport_local_initialize(passport) {
     // it's implements of passport
     async function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
-        await storeModel.findOne({
+        storeModel.findOne({
             where: {id: id}
         })
             .then(async store=>{
                 if(!store) {
-                    return done(null, false, {message: '헤잇웨잇에 가입되지 않은 아이디입니다.'});
-                //    이부분 불안요소긴해.
+                    return done(null, false, 400);
                 } else if (await bcrypt.compare(pw, store.pw)) {
                     return done(null, store)
                 } else {
-                    return done(null, false, {message: "비밀번호가 일치하지 않습니다."});
+                    return done(null, false, 409);
                 }
             })
             .catch(error=>{
@@ -63,15 +62,17 @@ function passport_jwt_initialize(passport){
     }
 
     async function jwtAuthentication(jwt_payload, done) {
-        console.log(`jwt_payload : ${jwt_payload}`);
+        console.log(`==========jwt_payload=======`);
+        console.dir(jwt_payload);
 
         await storeModel.findOne({
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null
-            if(!store) return done(null, false);
-            else return done(null, store);
+            if(!store) return done(null, false, 403);
+            else return done(null, store, 200);
         }).catch(error=>{
+            console.error('jwt passport error : ' , error);
             return done(error);
         });
     }

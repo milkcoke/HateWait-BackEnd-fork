@@ -5,15 +5,22 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response, next) {
-    passport.authenticate('local', {session: false}, (error, store)=>{
+    passport.authenticate('local', {session: false}, (error, store, statusCode)=>{
         if(error) {
             return response.status(500).json({
             message : "서버 내부 오류입니다."
             });
         } else if(!store) {
-            return response.status(409).json({
-                message: "헤잇웨잇에 가입된 가게 아이디가 아닙니다."
-            });
+            switch (statusCode) {
+                case 400:
+                    return response.status(statusCode).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
+                    break;
+                case 409:
+                    return response.status(statusCode).json({message: "비밀번호가 일치하지 않습니다."});
+                    break;
+                default:
+                    break;
+            }
         } else {
             //login은 대체 어디서 튀어나왔냐 ㅋㅋㅋ 아 ㅋㅋㅋ
             request.login(store, {session: false}, error=>{
@@ -32,7 +39,7 @@ module.exports = function authenticate(request, response, next) {
                 //보통의 경우 refresh token 은 database 에 담음
                 const refreshToken = jwt.sign({id: store.id}, PRIVATE_KEY, {expiresIn: '1d', algorithm: 'RS512'});
                 console.log(`refreshToken : ${refreshToken}`);
-                //store.upsert가 아님... 삽입아니야
+
                 store.update({
                     refresh_token: refreshToken
                 }).then(result => {
