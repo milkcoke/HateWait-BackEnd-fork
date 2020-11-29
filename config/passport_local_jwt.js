@@ -59,11 +59,15 @@ function passport_jwt_initialize(passport){
 
     //this is used for verify json web token (not sign, issue the token)
     // form header -> cookie
+
+    // 이 옵션만으로 자동으로 expiration 검사도 해줌. (expiration -> verify function X, throw 'Token Expiration Error'
     const jwtOption = {
         jwtFromRequest : cookieExtractor,
         algorithms: ['RS256'],
         secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
+
+    //default behavior : check the 'TokenExpiredError'
     async function jwtAuthentication(jwt_payload, done) {
         console.log(`==========jwt_payload=======`);
         console.dir(jwt_payload);
@@ -72,7 +76,7 @@ function passport_jwt_initialize(passport){
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null
-            if(!store) return done(new Error('헤잇웨잇에 가입된 가게가 아닙니다.'), false, {code: 404});
+            if(!store) return done(null, false, {code: 404});
             else return done(null, store);
         }).catch(error=>{
             console.error('jwt passport error : ' , error);
