@@ -12,7 +12,6 @@ module.exports = function authenticationToken(request, response, next){
 
         console.log(`error: ${error}`);
         console.log(`store: ${store}`);
-        console.log(`status: ${status}`);
         //    token comes from the header
         //    object key name is automatically transformed from Upper case to lower case
         // const authorizationHeader = request.cookies['authorization'];
@@ -20,7 +19,7 @@ module.exports = function authenticationToken(request, response, next){
         //if there is no token stored in cookies, the request is unauthorized
         // and passport jwt authenticate function return 'false' (that doesn't find id of jwt payload)
         if(error) return response.status(500).json({message: "서버 내부 오류입니다."});
-        status? console.dir(status) : console.log(`status is missing`);
+        status? console.log(status) : console.log(`status is missing`);
 
         if(status.name === 'TokenExpiredError') return response.status(401).json({message: "your token is expired"});
 
