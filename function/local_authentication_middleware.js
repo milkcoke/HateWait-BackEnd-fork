@@ -5,7 +5,7 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response, next) {
-    passport.authenticate('local',(error, store, statusCode)=>{
+    passport.authenticate('local',{session: false}, (error, store, statusCode)=>{
         // If authentication failed, user will be set to false.
         // If an exception occurred, err will be set.
         // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.
@@ -34,7 +34,7 @@ module.exports = function authenticate(request, response, next) {
                         return response.status(statusCode).json({message: "여까지 왜왔누"});
                         break;
                 }
-            })
+            });
         } else {
             // The callback can use the arguments supplied to handle the authentication result as desired.
             // Note that when using a custom callback,
