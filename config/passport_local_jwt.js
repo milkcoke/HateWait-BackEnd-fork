@@ -40,13 +40,27 @@ function passport_local_initialize(passport) {
 
 }
 
+
+
 function passport_jwt_initialize(passport){
+    //http://www.passportjs.org/packages/passport-jwt/#extracting-the-jwt-from-the-request
+    // customizing jwtFormRequest ('cookie!!')
+    const cookieExtractor = function(request) {
+        if (request && request.cookies) {
+            return request.cookies['jwt'];
+        } else {
+            throw new Error("don't has json web token for login");
+        }
+    }
+
     //this is used for verify json web token (not sign, issue the token)
+    // form header -> cookie
     const jwtOption = {
-        jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest : cookieExtractor,
         algorithms: ['RS256'],
         secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
+
     async function jwtAuthentication(jwt_payload, done) {
         storeModel.findOne({
             where: {id: jwt_payload.id}
@@ -55,7 +69,6 @@ function passport_jwt_initialize(passport){
             if(!store) return done(null, false);
             else return done(null, store);
         }).catch(error=>{
-            console.log('storeModel jwtAuthentication Error');
             return done(error);
         });
     }

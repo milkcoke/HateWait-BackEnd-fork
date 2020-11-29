@@ -5,22 +5,6 @@ const getPoolConnection = require('../db/dbConnection');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
-router.get('/', (request, response)=> {
-    //확인용
-    const reLoginFlash = request.flash();
-    console.log(reLoginFlash);
-    console.error(reLoginFlash.error[0]);
-
-    if (reLoginFlash.error) {
-       return response.json({
-           message : reLoginFlash.error[0]
-       })
-    } else {
-        return response.json({
-            message : '로그인에 실패하셨군요, 재로그인 페이지입니다.'
-        })
-    }
-});
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
@@ -151,9 +135,14 @@ router.get('/store', jwtAuthenticate, (request, response)=>{
 
     if(!request.hasOwnProperty('user')) console.log('don have user property');
     if(!request.hasOwnProperty('store')) console.log('don have store property');
-
+    if(request.status) {
+        return response.status(201).json({
+        store: request.store,
+        status: request.status
+        });
+    }
     return response.status(200).json({
-        store: request.store
+        store: request.store,
     });
 });
 
