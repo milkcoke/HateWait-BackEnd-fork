@@ -16,14 +16,14 @@ module.exports = function authenticationToken(request, response, next){
         //    object key name is auto transformed from Upper case to lower case
         // const authorizationHeader = request.cookies['authorization'];
 
-        // const token = authorizationHeader && authorizationHeader.split(' ')[1];
-        const accessToken = request.cookies['jwt'];
 
         //if there is no token stored in cookies, the request is unauthorized
-        if(!accessToken) return response.status(403).json({message: "not logged in"});
+        // and passport jwt authenticate function return 'false' (that doesn't find id of jwt payload)
+        if(!store) return response.status(403).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
 
         //클라이언트 단에서 만료시간 지나면 토큰 재발급 요청하는게 더 나음.
         //일단 편의를 위해 서버단에서 토큰 만료시 자동 재발급 요청 로직 추가
+        const accessToken = request.cookies['jwt'];
 
         //verify 할때는 algorithms : array 이고
         //default callback (1st: error, 2nd: payload of jwt)
