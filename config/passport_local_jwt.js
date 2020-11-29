@@ -16,7 +16,7 @@ function passport_local_initialize(passport) {
     }
     // if user don't input id or pw => server automatically response code '401'
     // it's implements of passport
-    async function localAuthentication(id, pw, done) {
+    function localAuthentication(id, pw, done) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
         storeModel.findOne({
             where: {id: id}
@@ -61,11 +61,11 @@ function passport_jwt_initialize(passport){
         secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
 
-    async function jwtAuthentication(jwt_payload, done) {
+    function jwtAuthentication(jwt_payload, done) {
         console.log(`==========jwt_payload=======`);
         console.dir(jwt_payload);
 
-        await storeModel.findOne({
+        storeModel.findOne({
             where: {id: jwt_payload.id}
         }).then(store => {
             // if findOne result not exist => return null

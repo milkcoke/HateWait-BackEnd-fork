@@ -6,6 +6,7 @@ const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response, next) {
     passport.authenticate('local', {session: false}, (error, store, statusCode)=>{
+        console.log(`local statusCode: ${statusCode}`);
         if(error) {
             return response.status(500).json({
             message : "서버 내부 오류입니다."
@@ -19,6 +20,8 @@ module.exports = function authenticate(request, response, next) {
                     return response.status(statusCode).json({message: "비밀번호가 일치하지 않습니다."});
                     break;
                 default:
+                    console.log('switch case statusCode 여기까지 온거부터가 레게노, 403 자동에러 설정인지 아닌지 확인 필요');
+                    return response.status(statusCode).json({message: "여까지 왜왔누"});
                     break;
             }
         } else {
