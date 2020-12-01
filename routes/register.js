@@ -209,11 +209,7 @@ router.post('/store', (request, response) => {
     }).then(hashedPassword => {
         storeInfo.pw = hashedPassword;
         // 암호화된 비밀번호와 함께 DB에 가게 회원 정보 삽입.
-<<<<<<< HEAD
         const register_store_sql = `INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?)`;
-=======
-        const register_store_sql = `INSERT INTO store VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)`;
->>>>>>> e986b35665b3d6990fa6e34b6343c1135efb1043
         getPoolConnection(connection=>{
             connection.execute(register_store_sql, [storeInfo.id, storeInfo.name, storeInfo.phone, storeInfo.email, storeInfo.info, storeInfo.business_hour, storeInfo.maximum_capacity, storeInfo.address, storeInfo.pw], (error, result)=>{
                     connection.release();

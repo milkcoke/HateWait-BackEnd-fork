@@ -14,11 +14,8 @@ const reactRouter = require('./routes/reactTest');
 const storeRouter = require('./routes/store');
 const registerRouter = require('./routes/register');
 
-const wsWaitingCustomersRouter = require('./ws_routes/waiting_customers');
-
 const sequelize = require('./models').sequelize;
 // const session = require('express-session');
-// connect-flash middleware use 'cookie-parser' and 'express-session'
 // const flash = require('express-flash');
 // const passport = require('./config/passport');
 const passport = require('passport');
@@ -76,9 +73,7 @@ sequelize.authenticate()
     .then(success => {
         console.log('sequelize success to synchronize defined models to the DB' + success);
     })
-    .catch(error => {
-        console.error(error);
-    });
+    .catch(console.error);
 
 const passportConfig = require('./config/passport_local_jwt');
 passportConfig.passport_local_initialize(passport);
@@ -96,7 +91,6 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-// app.use('/ws', wsWaitingCustomersRouter);
 
 
 // catch 404 and forward to error handler

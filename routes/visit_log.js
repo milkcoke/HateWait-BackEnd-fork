@@ -5,7 +5,6 @@ const check_id = require('../function/check_id');
 
 //only support 'Web' application
 //전체 가게 이용 내역 조회
-//mode : 통계 '모두' '월간', '주간', '일간',
 router.get('/', (request, response)=> {
     // 요청 형식이 잘못된 경우
     if(!request.params.storeId) {
