@@ -107,7 +107,7 @@ function passport_jwt_initialize(passport){
                 }).then(member => {
                     // if findOne result not exist => return null
                     if(!member) return done(null, false, {code: 404});
-                    else return done(null, {member, userType});
+                    else return done(null, [member, userType]);
                 }).catch(error=>{
                     console.error('jwt passport error : ' , error);
                     return done(error);
@@ -119,7 +119,7 @@ function passport_jwt_initialize(passport){
                 }).then(store => {
                     // if findOne result not exist => return null
                     if(!store) return done(null, false, {code: 404});
-                    else return done(null, {store, userType});
+                    else return done(null, [store, userType]);
                 }).catch(error=>{
                     console.error('jwt passport error : ' , error);
                     return done(error);

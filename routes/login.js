@@ -130,7 +130,7 @@ router.post('/stores/test', (request, response) => {
 router.post('/stores', (request, response, next)=>{
    request.userType = 'store';
    next();
-   }, localAuthenticate);
+}, localAuthenticate);
 
 router.get('/store', (request, response, next)=>{
     request.userType = 'store';
