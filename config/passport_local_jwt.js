@@ -92,8 +92,7 @@ function passport_jwt_initialize(passport){
     const jwtOption = {
         jwtFromRequest : cookieExtractor,
         algorithms: ['RS256'],
-        secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8'),
-        ignoreExpiration: true
+        secretOrKey : fs.readFileSync(path.join(__dirname, 'id_rsa_public.pem'), 'utf8')
     }
 
     //default behavior : check the 'TokenExpiredError'

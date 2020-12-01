@@ -19,7 +19,8 @@ module.exports = function authenticationToken(request, response){
         // correctUserType is from request URL vs userType is from request Token
         // if don't sync between them => token is not valid (bad request)
         if (userType !== correctUserType) {
-            errorStatus = {code: 401};
+            // errorStatus = {code: 401};
+            return response.status(401).json({message: "토큰이 유효하지 않습니다. 다시 로그인해주세요."});
         }
 
         if (errorStatus) {
