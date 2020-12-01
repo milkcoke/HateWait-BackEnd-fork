@@ -6,6 +6,12 @@ const check_id = require('../function/check_id');
 //only support 'Web' application
 //전체 가게 이용 내역 조회
 router.get('/', (request, response)=> {
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
     // 요청 형식이 잘못된 경우
     if(!request.params.storeId) {
         return response.status(400).json({
@@ -13,11 +19,7 @@ router.get('/', (request, response)=> {
         });
     }
         check_id.store(request.params.storeId)
-        .catch(error=>{
-            return response.status(500).json({
-                message: "서버 내부 오류입니다."
-            });
-        })
+        .catch(errorRespond)
         .then(storeId=>{
             if (!storeId) {
                 return response.status(404).json({
@@ -48,10 +50,7 @@ router.get('/', (request, response)=> {
                 connection.execute(sql, [storeId], (error, rows) => {
                     connection.release();
                     if (error) {
-                        console.error(error);
-                        return response.status(500).json({
-                            message: "서버 내부 오류입니다."
-                        })
+                        errorRespond(error);
                     } else if (rows.length === 0) {
                         return response.status(200).json({
                             message: "아직 방문 기록이 없어요!"

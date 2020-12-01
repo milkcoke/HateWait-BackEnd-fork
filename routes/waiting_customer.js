@@ -14,6 +14,12 @@ const sms = require('twilio')(twilioSetting.accountSid, twilioSetting.authentica
 
 //손님이 대기열 조회할 때
 router.get('/', (request, response,next)=> {
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
     // request.params.id
     // 가게아이디가 담겨있을 경우
     if(request.params.hasOwnProperty('storeId')) {
@@ -24,12 +30,7 @@ router.get('/', (request, response,next)=> {
 
     const memberId = request.params.memberId;
     checkId.member(memberId)
-        .catch(error=> {
-            console.error(error);
-            return response.status(500).json({
-                message: "서버 오류입니다."
-            });
-        })
+        .catch(errorRespond)
         .then(resultId => {
             if (resultId === null) {
                 return response.status(404).json({
@@ -48,10 +49,7 @@ router.get('/', (request, response,next)=> {
                         // connection.release();
                         if (error) {
                             connection.release();
-                            console.error(error);
-                            return response.status(500).json({
-                                message: "서버 오류입니다."
-                            });
+                            errorRespond(error);
                         } else if(rows.length === 0) {
                             connection.release();
                             return response.status(200).json({
@@ -69,10 +67,7 @@ router.get('/', (request, response,next)=> {
                             connection.execute(getTurnNumberSql,[storeId, memberPhone], (error, rows)=>{
                                 connection.release();
                                 if (error) {
-                                    console.error(error);
-                                    return response.status(500).json({
-                                        message: "서버 오류입니다."
-                                    });
+                                    errorRespond(error);
                                 } else {
                                     if(rows.length === 0) console.log('아니 어떻게 이게 안나와?');
                                     return response.status(200).json({
@@ -107,13 +102,15 @@ router.get('/', (request, response,next)=> {
 router.get('/', (request, response)=> {
     // request.params.id
      const storeId = request.params.storeId;
+     const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+     }
+
      checkId.store(storeId)
-         .catch(error=> {
-             console.error(error);
-             return response.status(500).json({
-                 message: "서버 오류입니다."
-             });
-         })
+         .catch(errorRespond)
          .then(resultId => {
             if (resultId === null) {
                 return response.status(404).json({
@@ -127,10 +124,7 @@ router.get('/', (request, response)=> {
                     connection.execute(sql, [storeId], (error, rows)=> {
                         connection.release();
                         if (error) {
-                            console.error(error);
-                            return response.status(500).json({
-                                message: "서버 오류입니다."
-                            });
+                            errorRespond(error);
                         } else if(rows.length === 0) {
                             return response.status(200).json({
                                 message: "지금은 손님이 없어요"
@@ -153,6 +147,13 @@ router.post('/', (request, response)=> {
     const storeId = request.params.storeId;
     const sql = `INSERT INTO waiting_customer VALUES (?, ?, ?, ?, NULL, NULL, ?)`;
 
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
+
     //회원이면 id 정보만 받아옴.
     switch (customerInfo.is_member) {
         case true:
@@ -168,10 +169,7 @@ router.post('/', (request, response)=> {
                 connection.execute(memberSql, [customerInfo.member_id], (error, rows)=> {
                     if(error) {
                         connection.release();
-                        console.error(error);
-                        return response.status(500).json({
-                            message: "서버 오류입니다."
-                        });
+                        errorRespond(error);
                     } else if(rows.length === 0) {
                         connection.release();
                         return response.status(409).json({
@@ -189,10 +187,7 @@ router.post('/', (request, response)=> {
                                         message: "이미 대기열에 등록된 회원입니다."
                                     });
                                 } else {
-                                    console.error(error);
-                                    return response.status(500).json({
-                                        message: "서버 오류입니다."
-                                    });
+                                    errorRespond(error);
                                 }
                             } else {
                                 // Error 가 존재하지 않으면
@@ -201,10 +196,7 @@ router.post('/', (request, response)=> {
                                     connection.release();
                                     // ER_DUP_ENTRY : PRIMARY CONSTRAINT 에러 , 여기선 이미 등록된 전화번호
                                     if(error) {
-                                        console.error(error);
-                                        return response.status(500).json({
-                                            message: "서버 오류입니다."
-                                        });
+                                        errorRespond(error);
                                     } else {
                                         // 손님 새로 등록할 때마다 현재 대기 인원 증가
                                         // broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
@@ -241,9 +233,7 @@ router.post('/', (request, response)=> {
                                 message: "이미 대기열에 등록된 회원입니다."
                             });
                         } else {
-                            return response.status(500).json({
-                                message: "내부 서버 오류입니다."
-                            });
+                            errorRespond(error);
                         }
                     } else {
                         const countSql = 'SELECT COUNT(*) as turnNumber FROM waiting_customer WHERE store_id=?'
@@ -251,10 +241,7 @@ router.post('/', (request, response)=> {
                                 connection.release();
                                 // ER_DUP_ENTRY : PRIMARY CONSTRAINT 에러 , 여기선 이미 등록된 전화번호
                                 if(error) {
-                                    console.error(error);
-                                    return response.status(500).json({
-                                        message: "내부 서버 오류입니다."
-                                    });
+                                    errorRespond(error);
                                 } else {
                                     // broadcast(request.app.locals.clients, `현재 대기 인원 : ${rows[0].turnNumber}명`);
                                     return response.status(201)
@@ -284,6 +271,13 @@ router.patch('/', (request, response)=> {
     //Destructuring!
     const [storeId, customerPhone = null] = [request.params.storeId, request.body.phone];
 
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
+
     if (!customerPhone) {
         return response.status(400).json({
             message: "잘못된 요청입니다."
@@ -292,12 +286,10 @@ router.patch('/', (request, response)=> {
 
     const sql = `UPDATE waiting_customer SET called_time=NOW() WHERE phone=? LIMIT 1`;
     getPoolConnection(connection=>{
+
         connection.execute(sql, [customerPhone], (error, result)=> {
             if (error) {
-                console.error(error);
-                return response.status(500).json({
-                    message: "서버 내부 오류입니다."
-                });
+                errorRespond(error);
             } else if(result.affectedRows === 0) {
                 //이럴 확률은 거의 없긴함.
                 return response.status(409).json({
@@ -328,7 +320,7 @@ router.patch('/', (request, response)=> {
                                 });
                             })
                             .catch(error=>{
-                                console.error(error)
+                                console.error(error);
                                 return response.status(500).json({
                                     message : `손님 SMS 호출 실패!\n 서버 내부 오류입니다`
                                 });
@@ -336,10 +328,7 @@ router.patch('/', (request, response)=> {
                     })
                     .catch(error=>{
                         connection.release();
-                        console.error(error);
-                        return response.status(500).json({
-                            message : "서버 내부 오류입니다."
-                        });
+                        errorRespond(error);
                     });
             }
         });
@@ -351,17 +340,19 @@ router.patch('/', (request, response)=> {
 // 비회원 -> 그냥 삭제 바로해보리기
 // 회원 -> called_time null check (구두로 예약 취소) or 정상 가게 이용 or No Show
 router.delete('/', (request, response) => {
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
     if(!request.body.phone) {
         return response.status(400).json({
             message: "잘못된 요청입니다."
         });
     }
     checkId.store(request.params.storeId)
-        .catch(error=>{
-            return response.status(500).json({
-                message: "서버 내부 오류입니다."
-            });
-        })
+        .catch(errorRespond)
         .then(storeId=>{
             if(storeId === null) {
                 return response.status(404).json({
@@ -396,10 +387,7 @@ router.delete('/', (request, response) => {
                                 connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error, result)=>{
                                     connection.release();
                                     if(error) {
-                                        console.error(error);
-                                        return response.status(500).json({
-                                            message: "서버 내부 오류입니다."
-                                        });
+                                        errorRespond(error);
                                     } else {
                                         // 대기열에서 삭제
                                         return waitingCustomer.destroy()
@@ -425,11 +413,7 @@ router.delete('/', (request, response) => {
                         memberModel.findOne({
                             where: {phone: waitingCustomer.phone}
                         })
-                            .catch(error=>{
-                                return response.status(500).json({
-                                    message: "서버 내부 오류입니다."
-                                });
-                            })
+                            .catch(errorRespond)
                             .then(member=>{
                                 //    여기에 No_Show vs 정상 가게 이용 구분.
                                 //정상적으로 가게 온 경우
@@ -439,17 +423,13 @@ router.delete('/', (request, response) => {
                                         connection.execute(visitMemberSql, [storeId, waitingCustomerModel.people_number, member.id], (error, result)=>{
                                             if(error) {
                                                 connection.release();
-                                                return response.status(500).json({
-                                                    message: "서버 내부 오류입니다."
-                                                });
+                                                errorRespond(error);
                                             } else {
                                                 console.log('삽입된 로우 수 : ', result.affectedRows)
                                                 connection.execute(deleteSql, [storeId], (error, result)=>{
                                                     connection.release();
                                                     if(error) {
-                                                        return response.status(500).json({
-                                                            message: "서버 내부 오류입니다."
-                                                        });
+                                                        errorRespond(error);
                                                     } else {
                                                         console.log('삭제된 로우 수: ', result.affectedRows)
                                                         return response.status(200).json({
@@ -482,22 +462,12 @@ router.delete('/', (request, response) => {
                                                 message: "대기열 삭제 완료!"
                                             });
                                         })
-                                        .catch(error=>{
-                                            console.error(error);
-                                            return response.status(500).json({
-                                                message : "서버 내부 오류입니다."
-                                            });
-                                        });
+                                        .catch(errorRespond);
                                 }
                             });
                     }
                 })
-                .catch(error=>{
-                    console.error(error)
-                    return response.status(500).json({
-                        message: "서버 내부 오류입니다."
-                    })
-                })
+                .catch(errorRespond)
                 .then((deletedRow)=>{
                     // 비회원 삭제임.
                     console.log(`deleted rows : ${deletedRow.affectedRows}`);

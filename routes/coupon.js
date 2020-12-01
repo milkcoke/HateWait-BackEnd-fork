@@ -6,7 +6,17 @@ const storeModel = Models.store;
 const checkId = require('../function/check_id');
 // 앱에서만 사용 (손님 회원 쿠폰&스탬프 보유 현황 확인)
 // //return info : 가게명, 쿠폰 발급 기준 스탬프수, 해당 회원 보유 스탬프 수, 발급 쿠폰 수
+
+
 router.get('/', (request, response) => {
+
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
+
     const memberId = request.params.memberId;
     console.log(memberId);
     checkId.member(memberId)
@@ -37,10 +47,7 @@ router.get('/', (request, response) => {
                 connection.execute(sql, [memberId, memberId], (error, rows) => {
                     connection.release();
                     if (error) {
-                        console.error(error);
-                        return response.status(500).json({
-                            message: '서버 내부 오류입니다.'
-                        });
+                        errorRespond(error);
                     } else if(rows.length === 0) {
                         return response.status(200).json({
                             message: '보유한 스탬프 & 쿠폰이 없어요'
@@ -54,17 +61,19 @@ router.get('/', (request, response) => {
                 });
             });
         })
-        .catch(error=>{
-            console.error(error);
-            return response.status(500).json({
-                message : "서버 내부 오류입니다."
-            })
-        })
-
+        .catch(errorRespond);
 });
 
 // 앱에서만 적용 (보유 쿠폰 현황 확인용)
 router.get('/stores', (request, response) => {
+
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
+
     // 가게 이름이 중복된 경우 문제가 생김.
     if(!request.params.hasOwnProperty('memberId') || !request.query.hasOwnProperty('id')) {
         return response.status(400).json({
@@ -93,10 +102,7 @@ router.get('/stores', (request, response) => {
             connection.execute(sql, [request.params.memberId, store.id], (error, rows)=> {
                 connection.release();
                 if (error) {
-                    console.error(error.message);
-                    return response.status(500).json({
-                        message : "서버 내부 오류입니다."
-                    })
+                    errorRespond(error);
                 } else if (rows.length === 0) {
                     return response.status(200).json({
                         message : "아직 발행된 쿠폰이 없습니다."
@@ -110,12 +116,7 @@ router.get('/stores', (request, response) => {
             });
         });
     })
-    .catch(error=>{
-        console.error(error);
-        return response.status(500).json({
-            message : "서버 내부 오류입니다."
-        });
-    });
+    .catch(errorRespond);
 });
 
 module.exports = router;

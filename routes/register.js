@@ -58,7 +58,7 @@ router.get('/stores/id/:id', (request, response) => {
                 }
             })
             .catch(error=>{
-                console.error(error.message);
+                console.error(error);
                 return response.status(500).json({
                     message: "서버 내부 오류입니다. 다시 요청해주세요."
                 });
