@@ -18,8 +18,7 @@ module.exports = function authenticationToken(request, response){
         // correctUserType is from request URL vs userType is from request Token
         // if don't sync between them => token is not valid (bad request)
         if (userType !== correctUserType) {
-            errorStatus = {};
-            errorStatus.code = 401;
+            errorStatus = {code: 401};
         }
 
         if (errorStatus) {
