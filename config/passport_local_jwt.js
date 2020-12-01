@@ -80,6 +80,7 @@ function passport_jwt_initialize(passport){
         if (request && request.cookies) {
             return request.cookies['jwt'];
         } else {
+            console.error('쿠키 인식 못함.');
             throw new Error("don't has json web token for login");
         }
     }
@@ -126,6 +127,8 @@ function passport_jwt_initialize(passport){
                 });
                 break;
             default :
+                console.log('여기를 왔다고..?');
+                done(null, false);
                 break;
         }
     }

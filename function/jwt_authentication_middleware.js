@@ -23,7 +23,7 @@ module.exports = function authenticationToken(request, response){
         }
 
         if (errorStatus) {
-            const {name: errorName = null, message: errorMessage = null} = errorStatus
+            const {name: errorName = null, message: errorMessage = null} = errorStatus;
             if (errorName === 'TokenExpiredError' || errorMessage === 'No auth token') errorStatus.code = 401;
             else {
                 console.dir(errorStatus);
