@@ -20,7 +20,7 @@ function passport_local_initialize(passport) {
         // user 객체를 Id 를 통해 받아온거임 (당연히 로그인 성공해야 받아오겠지)
         // id가 입력되지 않으면 missing credentials 에러가 옴.
         // 계정 유형 또한 type(member, store) 으로 명시해야함.
-        const {userType = null} = request.body;
+        const userType = request.userType;
         if (!userType) done(null, false, {code : 400, msg: '계정 유형을 선택해주세요'});
 
         switch (userType) {
@@ -98,17 +98,36 @@ function passport_jwt_initialize(passport){
     async function jwtAuthentication(jwt_payload, done) {
         console.log(`==========jwt_payload=======`);
         console.dir(jwt_payload);
+        const {id, type: userType = null} = jwt_payload;
 
-        storeModel.findOne({
-            where: {id: jwt_payload.id}
-        }).then(store => {
-            // if findOne result not exist => return null
-            if(!store) return done(null, false, {code: 404});
-            else return done(null, store);
-        }).catch(error=>{
-            console.error('jwt passport error : ' , error);
-            return done(error);
-        });
+        switch (userType) {
+            case 'member' :
+                memberModel.findOne({
+                    where: {id: id}
+                }).then(member => {
+                    // if findOne result not exist => return null
+                    if(!member) return done(null, false, {code: 404});
+                    else return done(null, {member, userType});
+                }).catch(error=>{
+                    console.error('jwt passport error : ' , error);
+                    return done(error);
+                });
+                break;
+            case 'store' :
+                storeModel.findOne({
+                    where: {id: id}
+                }).then(store => {
+                    // if findOne result not exist => return null
+                    if(!store) return done(null, false, {code: 404});
+                    else return done(null, {store, userType});
+                }).catch(error=>{
+                    console.error('jwt passport error : ' , error);
+                    return done(error);
+                });
+                break;
+            default :
+                break;
+        }
     }
 
     passport.use(new JwtStrategy(jwtOption, jwtAuthentication));

@@ -9,7 +9,7 @@ module.exports = function authenticate(request, response) {
         // If authentication failed, user will be set to false.
         // If an exception occurred, err will be set.
         // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.
-        const {userType} = request.body;
+        const userType = request.userType;
 
         console.log(`error : ${error}`);
         console.log(`type: ${userType}, user : ${user}`);
@@ -32,7 +32,8 @@ module.exports = function authenticate(request, response) {
                         if(status.hasOwnProperty('msg')) return response.status(status.code).json({message: status.msg});
                         else return response.status(status.code).json({message: "아이디와 비밀번호를 모두 입력해주세요"});
                     case 404:
-                        return response.status(status.code).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
+                        const accountTypeText = (userType === 'member') ? '손님이' : '가게가';
+                        return response.status(status.code).json({message: `헤잇웨잇에 가입된 ${accountTypeText} 아닙니다.`});
                         break;
                     case 409:
                         return response.status(status.code).json({message: "비밀번호를 확인해주세요"});

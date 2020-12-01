@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const getPoolConnection = require('../db/dbConnection');
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
 
 
 const localAuthenticate = require('../function/local_authentication_middleware');
@@ -12,9 +10,14 @@ const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 
 router.post('/members', (request, response, next)=>{
     // 계정 유형 : member / store
-    request.body.userType = 'member';
+    request.userType = 'member';
     next();
 }, localAuthenticate);
+
+router.get('/member', (request, response, next)=>{
+    request.userType = 'member';
+    next();
+}, jwtAuthenticate);
 
 router.post('/members/test', (request, response) => {
     const memberInfo = request.body;
@@ -125,18 +128,13 @@ router.post('/stores/test', (request, response) => {
 
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', (request, response, next)=>{
-   request.body.userType = 'store';
+   request.userType = 'store';
    next();
    }, localAuthenticate);
 
-router.get('/store', jwtAuthenticate, (request, response)=>{
-
-    if(!request.hasOwnProperty('user')) console.log('don have user property');
-    if(!request.hasOwnProperty('store')) console.log('don have store property');
-
-    return response.status(200).json({
-        store : request.store
-    });
-});
+router.get('/store', (request, response, next)=>{
+    request.userType = 'store';
+    next();
+},jwtAuthenticate);
 
 module.exports = router;
