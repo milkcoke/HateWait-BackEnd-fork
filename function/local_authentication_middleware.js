@@ -34,13 +34,10 @@ module.exports = function authenticate(request, response) {
                     case 404:
                         const accountTypeText = (userType === 'member') ? '손님이' : '가게가';
                         return response.status(status.code).json({message: `헤잇웨잇에 가입된 ${accountTypeText} 아닙니다.`});
-                        break;
                     case 409:
                         return response.status(status.code).json({message: "비밀번호를 확인해주세요"});
-                        break;
                     default:
                         return response.status(status.code || 500).json({message: "여까지 왜왔누"});
-                        break;
                 }
         } else {
             // The callback can use the arguments supplied to handle the authentication result as desired.

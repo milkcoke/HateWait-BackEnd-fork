@@ -35,14 +35,11 @@ module.exports = function authenticationToken(request, response){
             switch (errorStatus.code) {
                 case 401:
                     return response.status(errorStatus.code).json({message: "토큰이 유효하지 않습니다. 다시 로그인해주세요."});
-                    break;
                 case 404:
                     return response.status(errorStatus.code).json({message: "헤잇웨잇에 가입된 가게가 아닙니다."});
-                    break;
                 default :
                     console.log(`statusCode : ${errorStatus.code}`);
                     return response.status(errorStatus.code || 500).json({message: "여까지 왜왔지..개발자를 욕해주세요?"});
-                    break;
             }
         } else {
             //    token 이 유효하고 실제 유저 정보를 불러온 경우

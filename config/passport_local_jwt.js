@@ -103,7 +103,7 @@ function passport_jwt_initialize(passport){
 
         switch (userType) {
             case 'member' :
-                memberModel.findOne({
+                await memberModel.findOne({
                     where: {id: id}
                 }).then(member => {
                     // if findOne result not exist => return null
@@ -115,7 +115,7 @@ function passport_jwt_initialize(passport){
                 });
                 break;
             case 'store' :
-                storeModel.findOne({
+                await storeModel.findOne({
                     where: {id: id}
                 }).then(store => {
                     // if findOne result not exist => return null
