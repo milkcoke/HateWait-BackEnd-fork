@@ -135,6 +135,6 @@ router.post('/stores', (request, response, next)=>{
 router.get('/store', (request, response, next)=>{
     request.userType = 'store';
     next();
-},jwtAuthenticate);
+}, jwtAuthenticate);
 
 module.exports = router;

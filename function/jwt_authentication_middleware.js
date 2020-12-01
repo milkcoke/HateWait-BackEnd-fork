@@ -1,7 +1,6 @@
 const passport = require('passport');
-const storeModel = require('../models').store;
 
-module.exports = function authenticationToken(request, response, next){
+module.exports = function authenticationToken(request, response){
     //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
     passport.authenticate('jwt', {session: false}, (error, {userInfo, userType}, errorStatus)=> {
 
@@ -55,6 +54,6 @@ module.exports = function authenticationToken(request, response, next){
                 user: request.user
             });
         }
-    })
-    // })(request, response);
+    // });
+    })(request, response);
 }
