@@ -2,24 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const getPoolConnection = require('../db/dbConnection');
-const passport = require('../config/passport');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
-router.get('/', (request, response)=> {
-    //확인용
-    const reLoginFlash = request.flash();
-    console.log(reLoginFlash);
-    console.error(reLoginFlash.error[0]);
-
-    if (reLoginFlash.error) {
-       return response.json({
-           message : reLoginFlash.error[0]
-       })
-    } else {
-        return response.json({
-            message : '로그인에 실패하셨군요, 재로그인 페이지입니다.'
-        })
-    }
-});
 
 // Local authentication
 // 로그인 실패시 로그인 화면으로 이동.
@@ -140,21 +125,20 @@ router.post('/stores/test', (request, response) => {
     });
 });
 
+const localAuthenticate = require('../function/local_authentication_middleware');
+const jwtAuthenticate = require('../function/jwt_authentication_middleware');
+
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
-router.post('/stores', passport.authenticate('local-login',
-    {successRedirect : '/', failureRedirect : '/login', failureFlash : true}),
-    function(request, response) {
-        //로그인 이후 메인 페이지로 이동.
-        return response.json({
-            message : 'login-trying is completed!'
-        });
+router.post('/stores', localAuthenticate);
+
+router.get('/store', jwtAuthenticate, (request, response)=>{
+
+    if(!request.hasOwnProperty('user')) console.log('don have user property');
+    if(!request.hasOwnProperty('store')) console.log('don have store property');
+
+    return response.status(200).json({
+        store : request.store
     });
-
-
-router.get('/success', (request, response) => {
-    return response.json({
-        "message" : "로그인 성공!"
-    })
-})
+});
 
 module.exports = router;
