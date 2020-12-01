@@ -6,6 +6,7 @@ module.exports = function authenticationToken(request, response){
 
         console.log(`error: ${error}`);
         console.log(`token user type: ${userType}, token user Info : ${userInfo}`);
+        console.log(`errorStatus: ${errorStatus}`);
         const correctUserType = request.userType;
 
         //    object key name is automatically transformed from Upper case to lower case
