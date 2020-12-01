@@ -12,18 +12,19 @@ module.exports = function authenticate(request, response, next) {
         console.log(`error : ${error}`);
         console.log(`store : ${store}`);
         console.log(`status : ${status}`);
+        //when status is not null. 1. authenticate error 2. status code from my code.
         if(status) {
             if(status.hasOwnProperty('message')) {
                 if(status.message === 'Missing credentials') status.code = 400;
             }
         }
         if(error) {
+            console.error(error);
             return response.status(500).json({
             message : "서버 내부 오류입니다."
             });
         } else if(!store) {
             //use request.login to establish session temporarily for use custom callback
-                if(error) console.error(error);
                 switch (status.code) {
                     case 400:
                         return response.status(status.code).json({message: "아이디를 입력해주세요"});

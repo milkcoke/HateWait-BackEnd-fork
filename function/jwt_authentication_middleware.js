@@ -15,10 +15,10 @@ module.exports = function authenticationToken(request, response, next){
         // and passport jwt authenticate function return 'false' (that doesn't find id of jwt payload)
         if(error) return response.status(500).json({message: "서버 내부 오류입니다."});
         if (status) {
-            const {name: errorMessage = null} = status
-            if(errorMessage === 'TokenExpiredError') status.code = 401;
+            const {name: errorName = null, message: errorMessage} = status
+            if(errorName === 'TokenExpiredError' || errorMessage === 'No auth token') status.code = 401;
             else {
-                console.log(status);
+                console.dir(status);
             }
         }
 

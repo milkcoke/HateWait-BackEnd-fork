@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const storeModel = require('../models').store;
-
 const memberModel = require('../models').member;
 
 const LocalStrategy = require('passport-local').Strategy;
@@ -23,12 +22,12 @@ function passport_local_initialize(passport) {
         await storeModel.findOne({
             where: {id: id}
         })
-            .then(store=>{
+            .then(async store=>{
                 // 그 어느 docs 에도 나와있지 않지만
                 // done 3rd parameter must be object (Number , String 비허용)
                 if(!store) {
                     return done(null, false, {code : 404});
-                } else if (bcrypt.compareSync(pw, store.pw)) {
+                } else if (await bcrypt.compare(pw, store.pw)) {
                     return done(null, store)
                 } else {
                     return done(null, false, {code : 409});
