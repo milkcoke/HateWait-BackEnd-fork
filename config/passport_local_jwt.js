@@ -107,7 +107,7 @@ function passport_jwt_initialize(passport){
                     where: {id: id}
                 }).then(member => {
                     // if findOne result not exist => return null
-                    if(!member) return done(null, false, {code: 404});
+                    if(!member) return done(null, {userInfo: false, userType: userType}, {code: 404});
                     //customizing 2nd passing parameter
                     else return done(null, {userInfo: member, userType: userType});
                 }).catch(error=>{
