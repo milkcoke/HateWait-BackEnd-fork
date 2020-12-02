@@ -11,6 +11,14 @@ const bcrypt = require('bcrypt');
 const bcryptSetting = require('../config/bcrypt_setting');
 const checkId = require('../function/check_id');
 
+const isValidToken = require('../function/jwt_authentication_middleware');
+const isValidRequest = require('../function/is_valid_token_request_middleware');
+
+router.use((request, response, next)=>{
+    request.userType = 'store';
+    next();
+});
+
 router.get('/all', function(request, response) {
     const sql = `SELECT store.name AS name, store.phone AS phone, store.info AS info, store.business_hour AS business_hour, store.maximum_capacity AS maximum_capacity, store.address AS address, COUNT(waiting_customer.phone) AS team_count
                     FROM store LEFT OUTER JOIN waiting_customer ON store.id = waiting_customer.store_id
@@ -34,7 +42,7 @@ router.get('/all', function(request, response) {
 });
 
 
-router.get('/:id', function(request, response) {
+router.get('/:id', isValidToken, isValidRequest, function(request, response) {
     const sql = 'SELECT id, name, phone, email, info, business_hour, maximum_capacity, address, coupon_enable FROM store WHERE id=?';
     //권한을 확인하는게 필요하긴함. (가게 정보는 일단 open 된 정보므로 별도의 인증과정 X)
     getPoolConnection(connection=>{
@@ -58,7 +66,7 @@ router.get('/:id', function(request, response) {
     });
 });
 
-router.get('/:id/members', function(request, response) {
+router.get('/:id/members', isValidToken, isValidRequest, function(request, response) {
     const sql = `SELECT DISTINCT member.name AS member_name, member.phone AS member_phone, MAX(visit_log.visit_time) AS recent_visit_time, COUNT(DISTINCT coupon.issue_number) AS coupon_count
                     FROM store INNER JOIN visit_log ON store.id = visit_log.store_id
                         INNER JOIN member ON visit_log.member_id = member.id
@@ -90,15 +98,15 @@ router.get('/:id/members', function(request, response) {
 
 
 // mainURL/stores/:id/waiting-customers
-router.use('/:storeId/waiting-customers', waitingCustomerRouter);
+router.use('/:storeId/waiting-customers', isValidToken, isValidRequest, waitingCustomerRouter);
 // mainURL/stores/:id/coupon-information
-router.use('/:storeId/coupon-information', couponInformationRouter);
-router.use('/:storeId/visit-log', visitLogRouter);
+router.use('/:storeId/coupon-information', isValidToken, isValidRequest, couponInformationRouter);
+router.use('/:storeId/visit-log', isValidToken, isValidRequest, visitLogRouter);
 
 //일단 권한 검사 없이 일부 Patch 만 구현
 // ORM 은 SQL Injection 으로 부터 안전한가?
-router.patch('/information', (request, response) => {
-    //id parameter가 넘어오지 않은경우 null 처리
+router.patch('/information', isValidToken, isValidRequest, (request, response) => {
+    //id parameter 가 넘어오지 않은경우 null 처리
     const {id = null, ...newStoreInfo} = request.body;
     console.log(`storeId : ${id}`);
 
