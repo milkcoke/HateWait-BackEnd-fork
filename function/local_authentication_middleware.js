@@ -5,7 +5,8 @@ const path = require('path');
 const storeModel = require('../models').store;
 
 module.exports = function authenticate(request, response) {
-    passport.authenticate('local',{session: true}, (error, user, status)=>{
+    //test: session is true.. but I wanna session false (for custom callback)
+    passport.authenticate('local',{session: false}, (error, user, status)=>{
         // If authentication failed, user will be set to false.
         // If an exception occurred, err will be set.
         // An optional info argument will be passed, containing additional details provided by the strategy's verify callback.

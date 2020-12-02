@@ -3,7 +3,6 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const getPoolConnection = require('../db/dbConnection');
 
-
 const localAuthenticate = require('../function/local_authentication_middleware');
 const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 

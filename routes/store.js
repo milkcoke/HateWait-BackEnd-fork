@@ -19,6 +19,7 @@ router.use((request, response, next)=>{
     next();
 });
 
+// 손님 단에서도 요청 할 수 있는 서비스기 때문에 verify 제한을 걸면 안됨.
 router.get('/all', function(request, response) {
     const sql = `SELECT store.name AS name, store.phone AS phone, store.info AS info, store.business_hour AS business_hour, store.maximum_capacity AS maximum_capacity, store.address AS address, COUNT(waiting_customer.phone) AS team_count
                     FROM store LEFT OUTER JOIN waiting_customer ON store.id = waiting_customer.store_id
