@@ -1,5 +1,9 @@
 const passport = require('passport');
 
+
+// 진짜 이쪽 customizing 한거는 툭 건들면 팡 터질 수 있다..
+// passport module default behavior 가 좀 이상하다..
+
 module.exports = function authenticationToken(request, response, next){
     //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
     passport.authenticate('jwt', {session: false}, (error, user, errorStatus)=> {
@@ -33,7 +37,8 @@ module.exports = function authenticationToken(request, response, next){
 
 
         // if (!user) {
-        if (!userInfo) {
+        // 이 중복된 코드 반드시 Refactoring 하자. 보기 좋기 위해서 위에서 리턴안하고 switch-case 로 넘김.
+        if (!userInfo || TokenUserType !== correctUserType) {
 
             switch (errorStatus.code) {
                 case 401:
@@ -49,7 +54,7 @@ module.exports = function authenticationToken(request, response, next){
                     return response.status(errorStatus.code || 500).json({message: "여까지 왜왔지..개발자를 욕해주세요?"});
             }
         } else {
-            //    token 이 유효하고 실제 유저 정보를 불러온 경우 (DB에서 찾은 경우)
+            //    token 이 유효하고 실제 유저 정보를 불러온 경우 (DB 에서 찾은 경우)
             request.user = {
                 id: userInfo.id,
                 name: userInfo.name,
