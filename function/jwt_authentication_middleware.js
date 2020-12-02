@@ -7,7 +7,6 @@ module.exports = function authenticationToken(request, response, next){
         //2nd parameter is object (if fail => false, success => userModel, userType)
         console.log(`error: ${error}`);
         const {userInfo, userType : TokenUserType} = user; // if fail => destructuring fail
-        console.log(`token user type: ${TokenUserType}, token user Info : ${userInfo}`);
         console.log(`errorStatus: ${errorStatus}`);
         // type check (this type is served by previous middleware)
         const correctUserType = request.userType;
@@ -28,7 +27,8 @@ module.exports = function authenticationToken(request, response, next){
         } else {
             // DB Query 결과는 날라간 상태 but 가게 아이디를 회원에서, 회원 아이디를 가게에서 한 경우 여기로옴.
             // 가게 토큰을 가지고 손님, 손님 토큰을 가지고 가게 리소스를 요청할 경우
-            if (TokenUserType !== correctUserType) errorStatus.code = 403;
+            console.log(`token user type: ${TokenUserType}, token user Info : ${userInfo}`);
+            if (TokenUserType !== correctUserType) errorStatus = {code : 403};
         }
 
 
@@ -37,7 +37,10 @@ module.exports = function authenticationToken(request, response, next){
 
             switch (errorStatus.code) {
                 case 401:
-                    return response.status(errorStatus.code).json({message: "토큰이 유효하지 않습니다. 다시 로그인해주세요."});
+                    return response.status(errorStatus.code).json({message: "토큰이 만료되었습니다. 다시 로그인해주세요."});
+                case 403:
+                    // 가게 토큰을 가지고 손님, 손님 토큰을 가지고 가게 리소스를 요청할 경우
+                    return response.status(errorStatus.code).json({message: "잘못된 요청입니다. 계정 유형을 확인해주세요"});
                 case 404:
                     const accountTypeText = (TokenUserType === 'member') ? '손님이' : '가게가';
                     return response.status(errorStatus.code).json({message: `헤잇웨잇에 가입된 ${accountTypeText} 아닙니다.`});
