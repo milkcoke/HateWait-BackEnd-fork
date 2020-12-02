@@ -55,9 +55,8 @@ const passportConfig = require('./config/passport_local_jwt');
 passportConfig.passport_local_initialize(passport);
 passportConfig.passport_jwt_initialize(passport);
 
-
 app.use('/', indexRouter);
-app.use('/login',loginRouter);
+app.use('/login', loginRouter);
 app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);

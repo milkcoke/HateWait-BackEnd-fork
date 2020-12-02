@@ -9,6 +9,8 @@ const checkId = require('../function/check_id');
 
 
 router.get('/', (request, response) => {
+    console.log("===============I'm in coupon root route!===================");
+    console.log(`request userType : ${request.userType}`);
 
     const errorRespond = (error)=>{
         console.error(error);

@@ -4,9 +4,16 @@ const couponRouter = require('./coupon');
 const waitingCustomersRouter = require('./waiting_customer');
 const getPoolConnection = require('../db/dbConnection');
 const blurOutName = require('../function/blur_out_name');
+const isValidToken = require('../function/jwt_authentication_middleware');
+const isValidRequest = require('../function/is_valid_token_request_middleware');
+
+router.use((request, response, next)=>{
+    request.userType = 'member';
+    next();
+});
 
 // 회원 정보 조회
-router.get('/:id', (request, response) => {
+router.get('/:id', isValidToken, isValidRequest, (request, response) => {
     const errorRespond = (error)=>{
         console.error(error);
         return response.status(500).json({
@@ -57,15 +64,17 @@ router.post('/name', (request, response) => {
                     message: "아이디를 확인해주세요."
                 })
             } else {
-                const bluredOutName = blurOutName(rows[0].name)
+                const blurredOutName = blurOutName(rows[0].name)
                 return response.status(200).json({
-                    memberName: bluredOutName
+                    memberName: blurredOutName
                 });
             }
         });
-    })
+    });
 });
 
-router.use('/:memberId/coupons', couponRouter);
-router.use('/:memberId/waiting-customers', waitingCustomersRouter)
+const jwtAuthenticate = require('../function/jwt_authentication_middleware');
+
+router.use('/:memberId/coupons', isValidToken, isValidRequest, couponRouter);
+router.use('/:memberId/waiting-customers', isValidToken, isValidRequest, waitingCustomersRouter)
 module.exports = router;
