@@ -120,7 +120,7 @@ function passport_jwt_initialize(passport){
                     where: {id: id}
                 }).then(store => {
                     // if findOne result not exist => return null
-                    if(!store) return done(null, false, {code: 404});
+                    if(!store) return done(null, {userInfo: false, userType: userType}, {code: 404});
                     else return done(null, {userInfo: store, userType: userType});
                 }).catch(error=>{
                     console.error('jwt passport error : ' , error);
