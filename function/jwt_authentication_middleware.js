@@ -2,9 +2,11 @@ const passport = require('passport');
 
 module.exports = function authenticationToken(request, response){
     //성공시 store model 이 넘어옴, 실패시 statusCode (done 의 3rd parameter 가 넘어오지도 않음)
-    passport.authenticate('jwt', {session: false}, (error, [userInfo, userType], errorStatus)=> {
+    passport.authenticate('jwt', {session: false}, (error, user, errorStatus)=> {
 
+        //2nd parameter is object (if fail => false, success => userModel, userType)
         console.log(`error: ${error}`);
+        const {userInfo, userType} = user; // if fail => destructuring fail
         console.log(`token user type: ${userType}, token user Info : ${userInfo}`);
         console.log(`errorStatus: ${errorStatus}`);
         const correctUserType = request.userType;
@@ -31,7 +33,7 @@ module.exports = function authenticationToken(request, response){
             }
         }
 
-        if (!userInfo) {
+        if (!user) {
             switch (errorStatus.code) {
                 case 401:
                     return response.status(errorStatus.code).json({message: "토큰이 유효하지 않습니다. 다시 로그인해주세요."});
