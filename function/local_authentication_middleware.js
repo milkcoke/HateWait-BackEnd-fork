@@ -38,7 +38,7 @@ module.exports = function authenticate(request, response) {
                     case 409:
                         return response.status(status.code).json({message: "비밀번호를 확인해주세요"});
                     default:
-                        return response.status(status.code || 500).json({message: "여까지 왜왔누"});
+                        return response.status(status.code || 500).json({message: "서버 오류입니다. 개발자놈 예끼이놈"});
                 }
         } else {
             // The callback can use the arguments supplied to handle the authentication result as desired.
@@ -50,7 +50,7 @@ module.exports = function authenticate(request, response) {
                 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '..','config', 'id_rsa_private.pem'), 'utf8');
 
                 // 유효시간 1분
-                const accessToken = jwt.sign({id: user.id, type: userType}, PRIVATE_KEY, {expiresIn: '1m', algorithm: 'RS256'});
+                const accessToken = jwt.sign({id: user.id, type: userType}, PRIVATE_KEY, {expiresIn: '10m', algorithm: 'RS256'});
 
                 //보통의 경우 refresh token 은 database 에 담음
                 const refreshToken = jwt.sign({id: user.id}, PRIVATE_KEY, {expiresIn: '1d', algorithm: 'RS512'});
@@ -66,7 +66,10 @@ module.exports = function authenticate(request, response) {
 
                 response.cookie('jwt', accessToken, {secure: false, httpOnly: true});
                 return response.status(200).json({
-                    accessToken : accessToken
+                    message : "로그인 성공!",
+                    id : user.id,
+                    name : user.name,
+                    phone : user.phone
                 });
 
         }
