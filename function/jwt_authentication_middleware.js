@@ -40,7 +40,6 @@ module.exports = function authenticationToken(request, response, next){
         // if (!user) {
         // 이 중복된 코드 반드시 Refactoring 하자. 보기 좋기 위해서 위에서 리턴안하고 switch-case 로 넘김.
         if (!userInfo || TokenUserType !== correctUserType) {
-
             switch (errorStatus.code) {
                 case 401:
                     return response.status(errorStatus.code).json({message: "토큰이 만료되었습니다. 다시 로그인해주세요."});

@@ -134,7 +134,7 @@ router.post('/member', (request, response) => {
     //클라이언트의 요청이 서버의 상태와 충돌이 발생한 경우 (400~405 Code 에 해당하지 않는 애매한 경우에도 사용)
     if (!memberInfo.id || !memberInfo.name || !memberInfo.phone
         || !memberInfo.email || !memberInfo.pw) {
-        return response.status(409).json({
+        return response.status(400).json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }
@@ -198,7 +198,7 @@ router.post('/store', (request, response) => {
 
     if (!storeInfo.id || !storeInfo.name || !storeInfo.phone || !storeInfo.email
         || !storeInfo.maximum_capacity || !storeInfo.address || !storeInfo.pw) {
-        return response.status(409).json({
+        return response.status(400).json({
             message : "입력하지 않은 항목이 있어요 다시 시도해주세요"
         });
     }

@@ -37,7 +37,6 @@ router.get('/', (request, response,next)=> {
                     message: "헤잇웨잇에 가입된 손님이 아닙니다."
                 });
             } else {
-
                 const sql = `SELECT member.name AS memberName, member.phone AS memberPhone, waiting_customer.store_id AS storeId, store.name AS storeName
                                 FROM member JOIN waiting_customer USING(phone)
                                     INNER JOIN store ON store.id=waiting_customer.store_id
@@ -117,9 +116,11 @@ router.get('/', (request, response)=> {
                     message: "헤잇웨잇에 가입된 가게가 아닙니다."
                 });
             } else {
-                const sql = `SELECT phone, name, people_number, called_time 
-                            FROM waiting_customer WHERE store_id=?
-                            ORDER BY reservation_time ASC`;
+                const sql = `SELECT phone, name, people_number, called_time
+                             FROM waiting_customer
+                             WHERE store_id = ?
+                             ORDER BY reservation_time ASC`;
+
                 getPoolConnection(connection=>{
                     connection.execute(sql, [storeId], (error, rows)=> {
                         connection.release();
@@ -178,7 +179,7 @@ router.post('/', (request, response)=> {
                     } else {
                         const memberPhone = rows[0].phone
                         const memberName = rows[0].name
-                        connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error, result)=>{
+                        connection.execute(sql, [memberPhone, storeId, memberName, customerInfo.people_number, customerInfo.is_member], (error)=>{
                             if(error) {
                                 connection.release();
                                 if (error.code === 'ER_DUP_ENTRY') {
@@ -296,14 +297,19 @@ router.patch('/', (request, response)=> {
                     message: "전화번호나 가게 아이디를 확인해주세요."
                 })
             } else {
-                const getCalledTimeAndTurnNumberSQL = `SELECT waiting_customer.called_time AS called_time, waiting_customer.phone AS phone, tb.turnNumber AS turnNumber, store.name AS storeName
-                                                        FROM waiting_customer JOIN (
-                                                            SELECT phone, @rownum := @rownum+1 AS turnNumber
-                                                            FROM waiting_customer, (SELECT @rownum :=0) AS R
-                                                            WHERE store_id=?
-                                                            ORDER BY reservation_time) AS tb USING(phone)
-                                                            JOIN store ON store.id=waiting_customer.store_id
-                                                        WHERE waiting_customer.phone=?`;
+                const getCalledTimeAndTurnNumberSQL = `SELECT waiting_customer.called_time AS called_time,
+                                                              waiting_customer.phone       AS phone,
+                                                              tb.turnNumber                AS turnNumber,
+                                                              store.name                   AS storeName
+                                                       FROM waiting_customer
+                                                                JOIN (
+                                                           SELECT phone, @rownum := @rownum + 1 AS turnNumber
+                                                           FROM waiting_customer,
+                                                                (SELECT @rownum := 0) AS R
+                                                           WHERE store_id = ?
+                                                           ORDER BY reservation_time) AS tb USING (phone)
+                                                                JOIN store ON store.id = waiting_customer.store_id
+                                                       WHERE waiting_customer.phone = ?`;
                 connection.promise().execute(getCalledTimeAndTurnNumberSQL, [storeId, customerPhone])
                     .then(([rows,fields])=>{
                         connection.release();
@@ -313,7 +319,7 @@ router.patch('/', (request, response)=> {
                             from : twilioSetting.fromPhone,
                             body : twilioSetting.messageHeader + `${rows[0].turnNumber}번째 차례입니다. ${rows[0].storeName}로 와주세요!`
                         })
-                            .then(success=>{
+                            .then(()=>{
                                 return response.status(200).json({
                                     message: "손님 호출 완료!",
                                     called_time : rows[0].called_time
@@ -384,7 +390,7 @@ router.delete('/', (request, response) => {
                         if (request.body.visited) {
                             getPoolConnection(connection=>{
                                 // 방문 기록
-                                connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error, result)=>{
+                                connection.execute(visitSql, [storeId, waitingCustomer.people_number], (error)=>{
                                     connection.release();
                                     if(error) {
                                         errorRespond(error);
