@@ -24,6 +24,7 @@ module.exports = function authenticationToken(request, response, next){
         if (error) return response.status(500).json({message: "서버 내부 오류입니다."});
 
         // DB Query 이전에 토큰 검열 자체에서 reject 되면 errorStatus 가 넘어옴.
+        // https://github.com/auth0/node-jsonwebtoken Token Authentication Error Document..
         if (errorStatus) {
             const {name: errorName = null, message: errorMessage = null} = errorStatus;
             if (errorName === 'TokenExpiredError' || errorMessage === 'No auth token') errorStatus.code = 401;
