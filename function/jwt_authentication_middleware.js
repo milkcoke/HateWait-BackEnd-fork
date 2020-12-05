@@ -27,7 +27,8 @@ module.exports = function authenticationToken(request, response, next){
         // https://github.com/auth0/node-jsonwebtoken Token Authentication Error Document..
         if (errorStatus) {
             const {name: errorName = null, message: errorMessage = null} = errorStatus;
-            if (errorName === 'TokenExpiredError' || errorMessage === 'No auth token') errorStatus.code = 401;
+            if (errorName === 'TokenExpiredError') errorStatus.code = 401;
+            if (errorMessage === 'No auth token') errorStatus.code = 400;
             else { console.dir(errorStatus); }
         } else {
             // DB Query 결과는 날라간 상태 but 가게 아이디를 회원에서, 회원 아이디를 가게에서 한 경우 여기로옴.
@@ -41,6 +42,8 @@ module.exports = function authenticationToken(request, response, next){
         // 이 중복된 코드 반드시 Refactoring 하자. 보기 좋기 위해서 위에서 리턴안하고 switch-case 로 넘김.
         if (!userInfo || TokenUserType !== correctUserType) {
             switch (errorStatus.code) {
+                case 400:
+                    return response.status(errorStatus.code).json({message: "토큰이 존재하지 않습니다. 로그인해주세요."});
                 case 401:
                     return response.status(errorStatus.code).json({message: "토큰이 만료되었습니다. 다시 로그인해주세요."});
                 case 403:
