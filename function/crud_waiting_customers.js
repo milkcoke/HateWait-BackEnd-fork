@@ -5,6 +5,9 @@ function readAllCustomer(storeId) {
 }
 
 function addNewCustomer(storeId, newCustomer) {
+    // if(storeMap.has(storeId)) {
+    //
+    // }
     storeMap.get(storeId).forEach(session=>{
         session.response.write(`event: create\n`);
         session.response.write(`data: ${JSON.stringify({customer : newCustomer})}\n\n`);
@@ -19,9 +22,6 @@ function callCustomer(storeId, callCustomer) {
 }
 
 function removeCustomer(storeId, targetCustomer) {
-    // storeMap.get(storeId).forEach(session=>{
-    //     session.response.write(JSON.stringify({CRUD : 'delete', customer: targetCustomer}));
-    // });
     storeMap.get(storeId).forEach(session=>{
         session.response.write(`event: delete\n`);
         session.response.write(`data: ${JSON.stringify({customer : targetCustomer})}\n\n`);

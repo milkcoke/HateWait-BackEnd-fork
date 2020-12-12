@@ -232,8 +232,8 @@ router.post('/', (request, response)=> {
 
                                         //phone, name, people_number, called_time
                                         notifyToAllStoreClient.add(storeId, {
-                                            name: memberName,
                                             phone: memberPhone,
+                                            name: memberName,
                                             people_number: customerInfo.people_number,
                                             called_time : null
                                         });
@@ -367,7 +367,8 @@ router.patch('/', (request, response)=> {
                         })
                             .then(()=>{
                                 notifyToAllStoreClient.call(storeId, {
-                                    phone: customerPhone
+                                    phone: customerPhone,
+                                    called_time : rows[0].called_time
                                 });
                                 return response.status(200).json({
                                     message: "손님 호출 완료!",
