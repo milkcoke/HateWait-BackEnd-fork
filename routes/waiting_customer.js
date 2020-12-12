@@ -440,9 +440,6 @@ router.delete('/', (request, response) => {
                     } else if (!waitingCustomer.called_time) {
                         // 비회원 및 현장 대기 취소 케이스
                         console.log('호출된 적 없음!');
-                        notifyToAllStoreClient.delete(storeId, {
-                            phone : waitingCustomer.phone
-                        });
                         return waitingCustomer.destroy()
                         //    비회원이긴 한데 호출된 적 있는 경우
                     } else if (!waitingCustomer.is_member) {
