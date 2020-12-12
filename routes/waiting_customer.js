@@ -127,14 +127,14 @@ router.get('/', registerSession, (request, response)=> {
                 // return response.status(200).json({
                 //     message: "지금은 손님이 없어요"
                 // });
-                response.flushHeaders();
-                response.write(JSON.stringify({message: "지금은 손님이 없어요"}));
+                response.write(`event: read`);
+                response.write(`${JSON.stringify({message: '지금은 손님이 없어요'})}\n\n`);
             } else {
                 // return response.status(200).json({
                 //     waiting_customers: rows
                 // });
-                response.flushHeaders();
-                response.write(JSON.stringify({waiting_customers: rows}));
+                response.write(`event: read`);
+                response.write(`${JSON.stringify({waiting_customers: rows})}\n\n`);
 
             }
         });
