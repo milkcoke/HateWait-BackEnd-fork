@@ -110,6 +110,7 @@ router.get('/', registerSession, (request, response)=> {
             message: "서버 내부 오류입니다."
         });
      }
+    console.log("------I'm in after registerSession------");
 
     // 최초 1회 대기열 정보 알려줌.
     const sql = `SELECT phone, name, people_number, called_time
@@ -131,7 +132,8 @@ router.get('/', registerSession, (request, response)=> {
                 // return response.status(200).json({
                 //     waiting_customers: rows
                 // });
-                response.write(JSON.stringify({waiting_customers: rows[0]}));
+                response.write(JSON.stringify({waiting_customers: rows}));
+
             }
         });
     });

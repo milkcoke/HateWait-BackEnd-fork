@@ -3,9 +3,6 @@ const StoreSession = require('../models/StoreSession');
 const responseHeader = require('../config/response_header.json');
 const keepAliveMS = 60 * 1000; // 1 minute
 
-console.log('====== response Header =======')
-console.dir(responseHeader);
-
 // session array remove customizing
 Array.prototype.remove = function(targetSessionTime){
     const targetIndex = this.findIndex(session=> session.sessionTime === targetSessionTime);
