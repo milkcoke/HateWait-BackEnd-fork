@@ -17,8 +17,8 @@ module.exports = function registerSessionAtServer(request, response, next){
     // default Constructor new Date (시간으로 id 부여)
     response.writeHead(200, responseHeader);
     response.setTimeout(keepAliveMS, ()=> {
-        response.write(`event: ping`);
-        response.write(`data: ${JSON.stringify("timeout!")}`);
+        response.write(`event: ping\n`);
+        response.write(`data: ${JSON.stringify("timeout!")}\n\n`);
     });
 
     const clientSession = new StoreSession(response);
