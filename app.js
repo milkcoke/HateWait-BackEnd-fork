@@ -46,7 +46,7 @@ sequelize.authenticate()
         console.log('sequelize success to connect with DB');
         return sequelize.sync()
     })
-    .then(success => {
+    .then(() => {
         console.log('sequelize success to synchronize defined models to the DB');
     })
     .catch(console.error);
