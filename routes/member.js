@@ -73,7 +73,6 @@ router.post('/name', (request, response) => {
     });
 });
 
-const jwtAuthenticate = require('../function/jwt_authentication_middleware');
 
 router.use('/:memberId/coupons', isValidToken, isValidRequest, couponRouter);
 router.use('/:memberId/waiting-customers', isValidToken, isValidRequest, waitingCustomersRouter)

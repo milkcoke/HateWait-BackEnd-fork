@@ -128,53 +128,47 @@ router.get('/', registerSession, (request, response)=> {
                 //     message: "지금은 손님이 없어요"
                 // });
                 response.write(`event: read\n`);
-                response.write(`${JSON.stringify({message: '지금은 손님이 없어요'})}\n\n`);
+                response.write(`data: ${JSON.stringify({message: '지금은 손님이 없어요'})}\n\n`);
             } else {
                 // return response.status(200).json({
                 //     waiting_customers: rows
                 // });
                 response.write(`event: read\n`);
-                response.write(`${JSON.stringify({waiting_customers: rows})}\n\n`);
+                response.write(`data: ${JSON.stringify({waiting_customers: rows})}\n\n`);
 
             }
         });
     });
-     /*
-     // 로그인해서 토큰을 발급받지 않으면 여기까지 올 수도 없음.
-     checkId.store(storeId)
-         .catch(errorRespond)
-         .then(resultId => {
-            if (resultId === null) {
-                return response.status(404).json({
-                    message: "헤잇웨잇에 가입된 가게가 아닙니다."
-                });
-            } else {
-                const sql = `SELECT phone, name, people_number, called_time
-                             FROM waiting_customer
-                             WHERE store_id = ?
-                             ORDER BY reservation_time ASC`;
+});
+// Tablet 실시간 팀 수 조회
+router.get('/tablet', registerSession, (request, response)=>{
+    // request.params.id
+    const storeId = request.params.storeId;
+    const errorRespond = (error)=>{
+        console.error(error);
+        return response.status(500).json({
+            message: "서버 내부 오류입니다."
+        });
+    }
 
-                getPoolConnection(connection=>{
-                    connection.execute(sql, [storeId], (error, rows)=> {
-                        connection.release();
-                        if (error) {
-                            errorRespond(error);
-                        } else if(rows.length === 0) {
-                            return response.status(200).json({
-                                message: "지금은 손님이 없어요"
-                            });
-                        } else {
-                            return response.status(200).json({
-                                waiting_customers: rows
-                            });
-                        }
-                    });
-                });
+    const sql = `SELECT COUNT(*) AS count
+                             FROM waiting_customer
+                             WHERE store_id = ?`;
+
+    getPoolConnection(connection=>{
+        connection.execute(sql, [storeId], (error, rows)=> {
+            connection.release();
+            if (error) {
+                errorRespond(error);
+            } else {
+                // create, delete event 발생시 마다 클라이언트에서 +1, -1 처리해주면 됨.
+                response.write(`event: read\n`);
+                response.write(`data: ${JSON.stringify({count : rows[0].count})}\n\n`);
             }
         });
-
-      */
+    });
 });
+
 
 //대기열 등록 (비회원 - 회원)
 router.post('/', (request, response)=> {
@@ -413,19 +407,6 @@ router.delete('/', (request, response) => {
         });
     }
     const storeId = request.user.id;
-
-    // checkId.store(request.params.storeId)
-    //     .catch(errorRespond)
-    //     .then(storeId=>{
-    //         if(storeId === null) {
-    //             return response.status(404).json({
-    //                 message: "헤잇웨잇에 가입된 가게가 아닙니다."
-    //             })
-    //         }
-    //         return storeId;
-    //     })
-    //     .then(storeId=> {
-            // (비회원 or 구두 대기 취소) vs (No_Show vs 정상 이용 가게)
             waitingCustomerModel.findOne({
                 where : {phone: request.body.phone}
             })
