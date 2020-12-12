@@ -61,7 +61,7 @@ app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
-
+app.use('/session', require('./routes/session_check'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
