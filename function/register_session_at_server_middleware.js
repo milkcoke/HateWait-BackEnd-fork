@@ -16,9 +16,11 @@ module.exports = function registerSessionAtServer(request, response, next){
     // Register at storeMap, if not construct 'date?'
     // default Constructor new Date (시간으로 id 부여)
     response.writeHead(200, responseHeader);
+
+    // ping message
     response.setTimeout(keepAliveMS, ()=> {
         response.write(`event: ping\n`);
-        response.write(`data: ${JSON.stringify("timeout!")}\n\n`);
+    //    ping event doesn't have msg data
     });
 
     const clientSession = new StoreSession(response);

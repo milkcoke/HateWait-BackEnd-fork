@@ -127,13 +127,13 @@ router.get('/', registerSession, (request, response)=> {
                 // return response.status(200).json({
                 //     message: "지금은 손님이 없어요"
                 // });
-                response.write(`event: read`);
+                response.write(`event: read\n`);
                 response.write(`${JSON.stringify({message: '지금은 손님이 없어요'})}\n\n`);
             } else {
                 // return response.status(200).json({
                 //     waiting_customers: rows
                 // });
-                response.write(`event: read`);
+                response.write(`event: read\n`);
                 response.write(`${JSON.stringify({waiting_customers: rows})}\n\n`);
 
             }
@@ -270,7 +270,8 @@ router.post('/', (request, response)=> {
             }
             getPoolConnection(connection=>{
                 console.log(customerInfo);
-                const {phone : nonMemberPhone, name : nonMemberName, people_number : nonMemberPeopleNumber} = customerInfo
+                const {phone : nonMemberPhone, name : nonMemberName, people_number : nonMemberPeopleNumber} = customerInfo;
+
                 connection.execute(sql, [nonMemberPhone, storeId,nonMemberName, nonMemberPeopleNumber, customerInfo.is_member], (error, result)=> {
                     if(error) {
                         connection.release();
@@ -290,17 +291,11 @@ router.post('/', (request, response)=> {
                                 if(error) {
                                     errorRespond(error);
                                 } else {
-                                    //phone, name, people_number, called_time
-
-                                    // notifyToAllStoreClient.add(storeId, {
-                                    //     name: nonMemberName,
-                                    //     phone: nonMemberPhone,
-                                    //     people_number: nonMemberPeopleNumber,
-                                    //     called_time : null
-                                    // });
                                     delete customerInfo['is_member'];
                                     notifyToAllStoreClient.add(storeId, {
-                                        customerInfo,
+                                        phone: nonMemberPhone,
+                                        name: nonMemberName,
+                                        people_number: nonMemberPeopleNumber,
                                         called_time : null
                                     });
 
