@@ -125,8 +125,6 @@ router.post('/stores/test', (request, response) => {
     });
 });
 
-
-
 // authentication 함수 원형 :Authenticator.prototype.authenticate = function(strategy, options, callback)
 router.post('/stores', (request, response, next)=>{
    request.userType = 'store';
@@ -137,5 +135,6 @@ router.get('/store', (request, response, next)=>{
     request.userType = 'store';
     next();
 }, jwtAuthenticate);
+
 
 module.exports = router;

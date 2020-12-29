@@ -63,8 +63,7 @@ function passport_local_initialize(passport) {
             default :
                 done(null, false, {code : 400, msg: '계정 유형을 바르게 입력해주세요'});
                 break;
-        }
-
+        } 
     }
 
     passport.use(new LocalStrategy(localOption, localAuthentication))

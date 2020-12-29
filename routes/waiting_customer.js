@@ -449,10 +449,6 @@ router.delete('/', (request, response) => {
                             });
                         } else {
                             //    정상적으로 오지 않은 경우. (호출되고 빤스런)
-                            notifyToAllStoreClient.delete(storeId, {
-                                phone : waitingCustomer.phone
-                            });
-
                             waitingCustomer.destroy()
                                 .then(()=>{
                                     return response.status(200).json({
@@ -538,7 +534,6 @@ router.delete('/', (request, response) => {
                         message: "예약 취소 완료!",
                     });
                 });
-        // });
 });
 
 module.exports = router;
