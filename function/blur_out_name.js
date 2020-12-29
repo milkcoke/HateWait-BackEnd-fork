@@ -6,13 +6,10 @@ module.exports = function(name) {
         //한글이름 2~4자, 물론 4자 이하의 영문이름으로 가입해도 공통적으로 적용됨
         case 2 :
             return name.charAt(0) + mosaicCharacter;
-            break;
         case 3 :
             return name.charAt(0) + mosaicCharacter + name.charAt(2);
-            break;
         case 4 :
             return name.charAt(0) + "XX" + name.charAt(3);
-            break;
         //    그 이상은 영문이름
         default :
             //String.prototype.replaceAll called with a non-global RegExp argument
@@ -26,7 +23,6 @@ module.exports = function(name) {
                 const midLength = name.length / 2;
                 return mosaicCharacter.repeat(midLength) + name.substring(midLength);
             }
-            break;
     }
 
 }

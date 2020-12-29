@@ -46,23 +46,23 @@ sequelize.authenticate()
         console.log('sequelize success to connect with DB');
         return sequelize.sync()
     })
-    .then(success => {
-        console.log('sequelize success to synchronize defined models to the DB' + success);
+    .then(() => {
+        console.log('sequelize success to synchronize defined models to the DB');
     })
     .catch(console.error);
-
+  
 const passportConfig = require('./config/passport_local_jwt');
 passportConfig.passport_local_initialize(passport);
 passportConfig.passport_jwt_initialize(passport);
 
-
 app.use('/', indexRouter);
-app.use('/login',loginRouter);
+app.use('/login', loginRouter);
 app.use('/members', memberRouter);
 app.use('/stores', storeRouter);
 app.use('/register', registerRouter);
 app.use('/react-test', reactRouter);
 
+app.use('/session', require('./routes/session_check'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

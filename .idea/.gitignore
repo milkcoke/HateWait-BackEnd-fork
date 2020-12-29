@@ -3,6 +3,39 @@
 /workspace.xml
 # Datasource local storage ignored files
 /dataSources/
+dataSources.xml
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+/tasks.xml
+/usage.statistics.xml
+/dictionaries
+/shelf
+
+# Generated files
+/contentModel.xml
+
+# Sensitive or high-churn files
+/dataSources.ids
+/sqlDataSources.xml
+/dynamic.xml
+/uiDesigner.xml
+/dbnavigator.xml
+
+# Gradle
+/gradle.xml
+/libraries
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+
